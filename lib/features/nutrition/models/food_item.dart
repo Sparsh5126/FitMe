@@ -7,7 +7,7 @@ class FoodItem {
   final int fats;
   final double consumedAmount;
   final String consumedUnit;
-
+  final bool isAiLogged;
   FoodItem({
     required this.id,
     required this.name,
@@ -17,6 +17,7 @@ class FoodItem {
     required this.fats,
     this.consumedAmount = 1.0,
     this.consumedUnit = 'serving',
+    this.isAiLogged = false,
   });
 
   // 1. Translates the Dart Object into JSON to save to Firebase
@@ -33,6 +34,7 @@ class FoodItem {
       // We generate the timestamp & dateString right before saving!
       'timestamp': DateTime.now().toIso8601String(),
       'dateString': DateTime.now().toIso8601String().split('T')[0], // YYYY-MM-DD format
+      'isAiLogged': isAiLogged,
     };
   }
 
@@ -47,6 +49,7 @@ class FoodItem {
       fats: map['fats']?.toInt() ?? 0,
       consumedAmount: (map['consumedAmount'] ?? 1.0).toDouble(),
       consumedUnit: map['consumedUnit'] ?? 'serving',
+      isAiLogged: map['isAiLogged'] ?? false,
     );
   }
 }

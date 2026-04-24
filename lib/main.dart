@@ -1,29 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_auth/firebase_auth.dart'; // NEW: Import Auth
-import 'firebase_options.dart'; 
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
 import 'core/theme/app_theme.dart';
 import 'features/dashboard/dashboard_screen.dart';
+import 'features/onboarding/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-
-  // NEW: The Invisible Login
-  // If the user doesn't have an account yet, silently create one in the background.
   if (FirebaseAuth.instance.currentUser == null) {
     await FirebaseAuth.instance.signInAnonymously();
   }
 
-  runApp(
-    const ProviderScope(
-      child: FitMeApp(),
-    ),
-  );
+  runApp(const ProviderScope(child: FitMeApp()));
 }
 
 class FitMeApp extends StatelessWidget {
@@ -33,6 +26,7 @@ class FitMeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'FitMe',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: AppTheme.background,
         colorScheme: const ColorScheme.dark(
@@ -41,7 +35,36 @@ class FitMeApp extends StatelessWidget {
           background: AppTheme.background,
         ),
       ),
-      home: const DashboardScreen(),
+      home: const _AuthGate(),
+    );
+  }
+}
+
+class _AuthGate extends StatelessWidget {
+  const _AuthGate();
+
+  @override
+  Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return const OnboardingScreen();
+
+    // Check if user has completed onboarding (profile exists in Firestore)
+    return FutureBuilder<DocumentSnapshot>(
+      future: FirebaseFirestore.instance.collection('users').doc(uid).get(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            backgroundColor: AppTheme.background,
+            body: Center(child: CircularProgressIndicator(color: AppTheme.accent)),
+          );
+        }
+        // If doc exists and has 'name' field, onboarding is done
+        final data = snapshot.data?.data() as Map<String, dynamic>?;
+        if (data != null && data.containsKey('name') && (data['name'] as String).isNotEmpty) {
+          return const AppShell();
+        }
+        return const OnboardingScreen();
+      },
     );
   }
 }

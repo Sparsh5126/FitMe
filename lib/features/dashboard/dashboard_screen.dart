@@ -36,6 +36,9 @@ class DashboardScreen extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.accent)),
         error: (err, stack) => Center(child: Text('Error loading profile: $err', style: const TextStyle(color: Colors.redAccent))),
         data: (userProfile) {
+           if (userProfile == null) {
+              return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+          }
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [

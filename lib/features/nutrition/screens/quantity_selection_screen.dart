@@ -1,223 +1,330 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/food_item.dart';
 import '../providers/nutrition_provider.dart';
 
 class QuantitySelectionScreen extends ConsumerStatefulWidget {
-  final FoodItem baseFood; 
-  final String? editItemId; 
+  final FoodItem baseFood;
 
-  const QuantitySelectionScreen({super.key, required this.baseFood, this.editItemId});
+  const QuantitySelectionScreen({super.key, required this.baseFood});
 
   @override
   ConsumerState<QuantitySelectionScreen> createState() => _QuantitySelectionScreenState();
 }
 
 class _QuantitySelectionScreenState extends ConsumerState<QuantitySelectionScreen> {
-  late TextEditingController _controller;
-  double _currentAmount = 1.0;
-  String _selectedUnit = 'serving';
-  final List<String> _units = ['serving', 'g', 'oz', 'ml'];
+  late TextEditingController _amountController;
+  late String _selectedUnit;
+  late FoodItem _scaled;
+  bool _logging = false;
 
-  // MOCK: Assuming 1 serving of this item = 150 grams
-  final double _baseGramsPerServing = 150.0; 
+  // Common units to pick from
+  static const _units = ['g', 'kg', 'ml', 'l', 'piece', 'serving', 'cup', 'tbsp', 'tsp', 'slice', 'katori', 'plate', 'scoop', 'bar'];
 
   @override
   void initState() {
     super.initState();
-    _currentAmount = widget.baseFood.consumedAmount;
     _selectedUnit = widget.baseFood.consumedUnit;
-    
-    // Format the starting number cleanly
-    String initialText = _currentAmount.truncateToDouble() == _currentAmount 
-        ? _currentAmount.toInt().toString() 
-        : _currentAmount.toStringAsFixed(1);
-        
-    _controller = TextEditingController(text: initialText);
+    _amountController = TextEditingController(
+      text: widget.baseFood.consumedAmount % 1 == 0
+          ? widget.baseFood.consumedAmount.toInt().toString()
+          : widget.baseFood.consumedAmount.toString(),
+    );
+    _scaled = widget.baseFood;
+    _amountController.addListener(_onAmountChanged);
   }
 
   @override
   void dispose() {
-    _controller.dispose();
+    _amountController.removeListener(_onAmountChanged);
+    _amountController.dispose();
     super.dispose();
   }
 
-  // Calculates the macro multiplier based on the current unit and amount
-  double get _macroMultiplier {
-    if (_selectedUnit == 'serving') return _currentAmount;
-    if (_selectedUnit == 'g' || _selectedUnit == 'ml') return _currentAmount / _baseGramsPerServing;
-    if (_selectedUnit == 'oz') return _currentAmount / (_baseGramsPerServing / 28.35); // 1 oz = 28.35g
-    return 1.0;
+  void _onAmountChanged() {
+    final val = double.tryParse(_amountController.text);
+    if (val != null && val > 0) {
+      setState(() => _scaled = widget.baseFood.scaleToAmount(val));
+    }
   }
 
-  // The bidirectional math conversion
-  void _changeUnit(String newUnit) {
-    if (newUnit == _selectedUnit) return;
-
-    double baseServings = _macroMultiplier;
-    double newAmount = 0.0;
-    
-    if (newUnit == 'serving') newAmount = baseServings;
-    else if (newUnit == 'g' || newUnit == 'ml') newAmount = baseServings * _baseGramsPerServing;
-    else if (newUnit == 'oz') newAmount = baseServings * (_baseGramsPerServing / 28.35);
-
-    setState(() {
-      _selectedUnit = newUnit;
-      _currentAmount = newAmount;
-      _controller.text = _currentAmount.truncateToDouble() == _currentAmount 
-          ? _currentAmount.toInt().toString() 
-          : _currentAmount.toStringAsFixed(1);
-    });
+  void _adjustAmount(double delta) {
+    final current = double.tryParse(_amountController.text) ?? widget.baseFood.consumedAmount;
+    final newVal = (current + delta).clamp(0.1, 9999.0);
+    final display = newVal % 1 == 0 ? newVal.toInt().toString() : newVal.toStringAsFixed(1);
+    _amountController.text = display;
+    _amountController.selection = TextSelection.fromPosition(TextPosition(offset: display.length));
   }
 
-void _logOrUpdateFood() {
-    final m = _macroMultiplier;
-    final newItem = FoodItem(
-      id: widget.editItemId ?? DateTime.now().millisecondsSinceEpoch.toString(),
-      name: widget.baseFood.name,
-      calories: (widget.baseFood.calories * m).round(),
-      protein: (widget.baseFood.protein * m).round(),
-      carbs: (widget.baseFood.carbs * m).round(),
-      fats: (widget.baseFood.fats * m).round(),
-      consumedAmount: _currentAmount, 
-      consumedUnit: _selectedUnit,    
+  Future<void> _logFood() async {
+    setState(() => _logging = true);
+    HapticFeedback.mediumImpact();
+
+    final food = _scaled.copyWith(
+      id: '${widget.baseFood.id}_${DateTime.now().millisecondsSinceEpoch}',
+      consumedUnit: _selectedUnit,
+      dateString: FoodItem.dateFor(ref.read(selectedDateProvider)),
+      timestamp: DateTime.now().millisecondsSinceEpoch,
     );
 
-    if (widget.editItemId != null) {
-      ref.read(nutritionProvider.notifier).updateFood(widget.editItemId!, newItem);
-    } else {
-      // THE FIX: Use our new clean addFood method instead of modifying state directly!
-      ref.read(nutritionProvider.notifier).addFood(newItem);
+    await ref.read(foodActionsProvider).logFood(food);
+
+    if (mounted) {
+      Navigator.of(context).popUntil((route) => route.isFirst || route.settings.name == '/home');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${food.name} logged! ✓'),
+          backgroundColor: AppTheme.accent.withOpacity(0.9),
+          duration: const Duration(seconds: 1),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
     }
-    
-    Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
   @override
   Widget build(BuildContext context) {
-    final m = _macroMultiplier;
-    final currentCals = (widget.baseFood.calories * m).round();
-    final currentPro = (widget.baseFood.protein * m).round();
-    final currentCarb = (widget.baseFood.carbs * m).round();
-    final currentFat = (widget.baseFood.fats * m).round();
-
     return Scaffold(
       backgroundColor: AppTheme.background,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(widget.editItemId != null ? 'Edit Quantity' : 'Adjust Quantity', style: const TextStyle(color: Colors.white, fontSize: 16)),
-      ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              // THE FIX: Wrap the top content in an Expanded + SingleChildScrollView
-              Expanded(
-                child: SingleChildScrollView(
-                  physics: const BouncingScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.baseFood.name, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                      const SizedBox(height: 8),
-                      Text('1 serving = ${_baseGramsPerServing.toInt()}g', style: const TextStyle(fontSize: 14, color: AppTheme.textSecondary)),
-                      const SizedBox(height: 24),
-                      
-                      // DYNAMIC MACRO ROW
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          _buildDynamicMacro('${currentPro}g\nPro', Colors.blueAccent),
-                          _buildDynamicMacro('$currentCals\nKcal', AppTheme.accent),
-                          _buildDynamicMacro('${currentCarb}g\nCarb', Colors.orangeAccent),
-                          _buildDynamicMacro('${currentFat}g\nFat', Colors.purpleAccent),
-                        ],
-                      ),
-                      const SizedBox(height: 40),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // ── Header ──────────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 12, 16, 0),
+              child: Row(
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(
+                    child: Text(widget.baseFood.name,
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                        overflow: TextOverflow.ellipsis),
+                  ),
+                ],
+              ),
+            ),
 
-                      // THE TEXT INPUT BOX
-                      Center(
-                        child: IntrinsicWidth(
+            Expanded(
+              child: SingleChildScrollView(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // ── Quantity input ───────────────────
+                    const Text('Quantity', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    const SizedBox(height: 10),
+
+                    Row(
+                      children: [
+                        // Minus
+                        _AdjustBtn(icon: Icons.remove_rounded, onTap: () => _adjustAmount(-1)),
+                        const SizedBox(width: 12),
+
+                        // Amount input
+                        Expanded(
                           child: TextField(
-                            controller: _controller,
+                            controller: _amountController,
                             keyboardType: const TextInputType.numberWithOptions(decimal: true),
                             textAlign: TextAlign.center,
-                            autofocus: true, 
-                            style: const TextStyle(fontSize: 64, fontWeight: FontWeight.bold, color: Colors.white),
-                            decoration: const InputDecoration(border: InputBorder.none, isDense: true),
-                            onChanged: (val) {
-                              setState(() {
-                                _currentAmount = double.tryParse(val) ?? 0.0;
-                              });
-                            },
+                            style: const TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                            inputFormatters: [FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*'))],
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: AppTheme.surface,
+                              border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                              ),
+                            ),
                           ),
                         ),
-                      ),
 
-                      // UNIT SELECTOR TOGGLE
-                      Container(
-                        margin: const EdgeInsets.only(top: 24, bottom: 20),
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(12)),
-                        child: Row(
-                          children: _units.map((unit) {
-                            final isSelected = _selectedUnit == unit;
-                            return Expanded(
-                              child: GestureDetector(
-                                onTap: () => _changeUnit(unit),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(vertical: 10),
-                                  decoration: BoxDecoration(
-                                    color: isSelected ? AppTheme.accent : Colors.transparent,
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Text(
-                                    unit,
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: isSelected ? AppTheme.background : AppTheme.textSecondary),
-                                  ),
-                                ),
+                        const SizedBox(width: 12),
+                        // Plus
+                        _AdjustBtn(icon: Icons.add_rounded, onTap: () => _adjustAmount(1)),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ── Unit selector ────────────────────
+                    const Text('Unit', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    const SizedBox(height: 10),
+
+                    SizedBox(
+                      height: 40,
+                      child: ListView.separated(
+                        scrollDirection: Axis.horizontal,
+                        itemCount: _units.length,
+                        separatorBuilder: (_, __) => const SizedBox(width: 8),
+                        itemBuilder: (_, i) {
+                          final unit = _units[i];
+                          final isSelected = unit == _selectedUnit;
+                          return GestureDetector(
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              setState(() => _selectedUnit = unit);
+                            },
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: isSelected ? AppTheme.accent.withOpacity(0.15) : AppTheme.surface,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(color: isSelected ? AppTheme.accent : Colors.transparent, width: 1.5),
                               ),
-                            );
-                          }).toList(),
+                              child: Text(unit,
+                                  style: TextStyle(
+                                    color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
+                                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                                    fontSize: 13,
+                                  )),
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+
+                    const SizedBox(height: 28),
+
+                    // ── Live macro preview ───────────────
+                    const Text('Nutritional Values', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                    const SizedBox(height: 10),
+
+                    Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.all(20),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surface,
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: Column(
+                        children: [
+                          // Big calorie number
+                          Text('${_scaled.calories}', style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.black)),
+                          const Text('kcal', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                          const SizedBox(height: 20),
+
+                          // Macro row
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              _MacroCell(label: 'Protein', value: '${_scaled.protein}g', color: Colors.blueAccent),
+                              _Divider(),
+                              _MacroCell(label: 'Carbs', value: '${_scaled.carbs}g', color: Colors.orangeAccent),
+                              _Divider(),
+                              _MacroCell(label: 'Fats', value: '${_scaled.fats}g', color: Colors.purpleAccent),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // AI estimate notice
+                    if (widget.baseFood.isAiLogged)
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.amberAccent.withOpacity(0.08),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
+                        ),
+                        child: const Row(
+                          children: [
+                            Text('🪄', style: TextStyle(fontSize: 14)),
+                            SizedBox(width: 8),
+                            Expanded(
+                              child: Text('AI-estimated values. Macros may vary.',
+                                  style: TextStyle(color: Colors.amberAccent, fontSize: 12)),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ),
-              
-              // THE BUTTON: Anchored perfectly above the keyboard
-              SizedBox(
+            ),
+
+            // ── Log button ───────────────────────────
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 0, 20, 24),
+              child: SizedBox(
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: _logOrUpdateFood,
+                  onPressed: _logging ? null : _logFood,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accent,
+                    foregroundColor: AppTheme.background,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    elevation: 0,
                   ),
-                  child: Text(widget.editItemId != null ? 'Update Meal' : 'Log Food', style: const TextStyle(color: AppTheme.background, fontSize: 18, fontWeight: FontWeight.bold)),
+                  child: _logging
+                      ? const CircularProgressIndicator(color: AppTheme.background, strokeWidth: 2)
+                      : const Text('Log Food', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                 ),
               ),
-              const SizedBox(height: 8),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildDynamicMacro(String text, Color color) {
-    return Container(
-      width: 75,
-      padding: const EdgeInsets.symmetric(vertical: 16),
-      decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(16)),
-      child: Text(text, textAlign: TextAlign.center, style: TextStyle(color: color, fontSize: 16, fontWeight: FontWeight.bold)),
+class _AdjustBtn extends StatelessWidget {
+  final IconData icon;
+  final VoidCallback onTap;
+  const _AdjustBtn({required this.icon, required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      child: Container(
+        width: 48,
+        height: 48,
+        decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(14)),
+        child: Icon(icon, color: AppTheme.accent),
+      ),
     );
+  }
+}
+
+class _MacroCell extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color color;
+  const _MacroCell({required this.label, required this.value, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(value, style: TextStyle(color: color, fontSize: 20, fontWeight: FontWeight.black)),
+        const SizedBox(height: 2),
+        Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+      ],
+    );
+  }
+}
+
+class _Divider extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container(width: 1, height: 36, color: Colors.white.withOpacity(0.08));
   }
 }
