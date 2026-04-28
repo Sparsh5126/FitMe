@@ -5,40 +5,45 @@ import '../../core/theme/app_theme.dart';
 import '../nutrition/widgets/smart_logger_sheet.dart';
 import '../nutrition/widgets/smart_food_card.dart';
 import '../nutrition/providers/nutrition_provider.dart';
-import '../nutrition/screens/food_details_screen.dart'; 
+import '../nutrition/screens/food_details_screen.dart';
 import '../nutrition/screens/quantity_selection_screen.dart';
-import 'providers/user_provider.dart'; 
-import '../../core/models/user_profile.dart';
-import '../profile/screens/profile_screen.dart';
+import 'providers/user_provider.dart';
+import '../../core/models/user_profile.dart'; 
+import '../profile/screens/profile_screen.dart'; 
+import '../streak/screens/streak_screen.dart'; // Gives access to FitMe3DModel
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final loggedMeals = ref.watch(nutritionProvider);
-    
-    // Watch the live user profile from Firebase
+    final loggedMealsAsync = ref.watch(nutritionProvider);
     final userProfileAsync = ref.watch(userProfileProvider);
-
-    int totalCals = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
-    for (var meal in loggedMeals) {
-      totalCals += meal.calories;
-      totalPro += meal.protein;
-      totalCarb += meal.carbs;
-      totalFat += meal.fats;
-    }
+    final streakAsync = ref.watch(streakProvider);
+    
+    // Listens to your Bug Icon debug state!
+    final debugLevel = ref.watch(debugStreakLevelProvider);
+    final currentStreakLevel = debugLevel ?? streakAsync.value?.level ?? 0;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      // Handle Firebase Loading/Error states for the profile
       body: userProfileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.accent)),
         error: (err, stack) => Center(child: Text('Error loading profile: $err', style: const TextStyle(color: Colors.redAccent))),
         data: (userProfile) {
-           if (userProfile == null) {
-              return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+          if (userProfile == null) {
+            return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
           }
+
+          final loggedMeals = loggedMealsAsync.value ?? [];
+          int totalCals = 0, totalPro = 0, totalCarb = 0, totalFat = 0;
+          for (var meal in loggedMeals) {
+            totalCals += meal.calories;
+            totalPro += meal.protein;
+            totalCarb += meal.carbs;
+            totalFat += meal.fats;
+          }
+
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
             slivers: [
@@ -49,21 +54,21 @@ class DashboardScreen extends ConsumerWidget {
                   totalPro: totalPro,
                   totalCarb: totalCarb,
                   totalFat: totalFat,
-                  // Use REAL goals from Firebase
                   goalCals: userProfile.dailyCalories,
                   goalPro: userProfile.dailyProtein,
                   goalCarb: userProfile.dailyCarbs,
                   goalFat: userProfile.dailyFats,
+                  streakLevel: currentStreakLevel, 
                 ),
               ),
-              
+
               if (loggedMeals.isEmpty)
                 SliverToBoxAdapter(
                   child: Container(
-                    height: 300, 
+                    height: 300,
                     alignment: Alignment.center,
                     child: const Text(
-                      "No meals logged yet.\nTap + to start.", 
+                      "No meals logged yet.\nTap + to start.",
                       textAlign: TextAlign.center,
                       style: TextStyle(color: AppTheme.textSecondary, fontSize: 16),
                     ),
@@ -99,7 +104,7 @@ class DashboardScreen extends ConsumerWidget {
                               ),
                             );
                           },
-                          onDeleteSwipe: () => ref.read(nutritionProvider.notifier).deleteFood(meal.id),
+                          onDeleteSwipe: () => ref.read(foodActionsProvider).deleteFood(meal.id),
                         );
                       },
                       childCount: loggedMeals.length,
@@ -109,7 +114,7 @@ class DashboardScreen extends ConsumerWidget {
             ],
           );
         },
-      ), 
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.accent,
         foregroundColor: AppTheme.background,
@@ -121,18 +126,18 @@ class DashboardScreen extends ConsumerWidget {
 }
 
 class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
-  final double expandedHeight = 360.0; 
+  final double expandedHeight = 360.0;
   final double collapsedHeight = 120.0;
 
   final int totalCals;
   final int totalPro;
   final int totalCarb;
   final int totalFat;
-
   final int goalCals;
   final int goalPro;
   final int goalCarb;
   final int goalFat;
+  final int streakLevel;
 
   DashboardHeaderDelegate({
     required this.totalCals,
@@ -143,6 +148,7 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
     required this.goalPro,
     required this.goalCarb,
     required this.goalFat,
+    required this.streakLevel,
   });
 
   @override
@@ -174,17 +180,34 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          // NEW: The Row that holds the "Today" text and the Settings Gear
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const SizedBox(width: 48), // Invisible spacer to keep "Today" perfectly centered
-                              const Text('Today', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
-                              IconButton(
-                                icon: const Icon(Icons.settings_outlined, color: AppTheme.textSecondary),
-                                onPressed: () {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const ProfileScreen()));
+                              const Text('FitMe', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white, letterSpacing: -0.5)),
+                              
+                              // ── THE TRUE 3D ICON EMBEDDED IN DASHBOARD ──
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(context, MaterialPageRoute(builder: (context) => const StreakScreen()));
                                 },
+                                behavior: HitTestBehavior.opaque,
+                                child: Container(
+                                  color: Colors.transparent, 
+                                  padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+                                  child: SizedBox(
+                                    width: 75, // Wide enough to see the plates
+                                    height: 35,
+                                    child: FitMe3DModel(
+                                      key: ValueKey('dashboard_streak_$streakLevel'), // Forces hard redraw on level change
+                                      level: streakLevel,
+                                      angleX: -0.15, // Slight top-down tilt so it looks 3D
+                                      angleY: -0.35, // Tilted to show the 3D plates clearly
+                                      interactive: false,
+                                      drawText: false, 
+                                      drawWireframe: true, 
+                                    ),
+                                  ),
+                                ),
                               ),
                             ],
                           ),
@@ -193,7 +216,7 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
                             radius: 70.0,
                             lineWidth: 10.0,
                             animation: true,
-                            animateFromLastPercent: true, 
+                            animateFromLastPercent: true,
                             percent: (totalCals / goalCals).clamp(0.0, 1.0),
                             center: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
@@ -212,7 +235,7 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
                             children: [
                               _buildSmallWheel("Protein", totalPro, goalPro, Colors.blueAccent),
                               _buildSmallWheel("Carbs", totalCarb, goalCarb, Colors.orangeAccent),
-                              _buildSmallWheel("Fats", totalFat, goalFat, Colors.purpleAccent), 
+                              _buildSmallWheel("Fats", totalFat, goalFat, Colors.purpleAccent),
                             ],
                           ),
                         ],
@@ -254,7 +277,7 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
     return Column(
       children: [
         CircularPercentIndicator(
-          radius: 36.0, 
+          radius: 36.0,
           lineWidth: 6.0,
           animation: true,
           animateFromLastPercent: true,
@@ -282,7 +305,7 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
     Color textColor = isOver ? Colors.redAccent : Colors.white;
 
     final String valueText = isCal ? "$current / $goal" : "${current}g / ${goal}g";
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -312,10 +335,11 @@ class DashboardHeaderDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   bool shouldRebuild(covariant DashboardHeaderDelegate oldDelegate) {
-    return oldDelegate.totalCals != totalCals || 
-           oldDelegate.totalPro != totalPro || 
-           oldDelegate.totalCarb != totalCarb || 
-           oldDelegate.totalFat != totalFat ||
-           oldDelegate.goalCals != goalCals; 
+    return oldDelegate.totalCals != totalCals ||
+        oldDelegate.totalPro != totalPro ||
+        oldDelegate.totalCarb != totalCarb ||
+        oldDelegate.totalFat != totalFat ||
+        oldDelegate.goalCals != goalCals ||
+        oldDelegate.streakLevel != streakLevel;
   }
 }

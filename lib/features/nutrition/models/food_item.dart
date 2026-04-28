@@ -8,6 +8,13 @@ class FoodItem {
   final double consumedAmount;
   final String consumedUnit;
   final bool isAiLogged;
+  final bool isFavorite;
+  final String dateString; // YYYY-MM-DD of when logged
+  final int timestamp;
+  final double? servingWeightGrams;
+  final int? totalServings;
+  final String? servingDescription;
+
   FoodItem({
     required this.id,
     required this.name,
@@ -18,9 +25,24 @@ class FoodItem {
     this.consumedAmount = 1.0,
     this.consumedUnit = 'serving',
     this.isAiLogged = false,
-  });
+    this.isFavorite = false,
+    String? dateString,
+    int? timestamp,
+    this.servingWeightGrams,
+    this.totalServings,
+    this.servingDescription,
+  })  : dateString = dateString ?? _today(),
+        timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
-  // 1. Translates the Dart Object into JSON to save to Firebase
+  static String _today() {
+    final now = DateTime.now();
+    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
+  }
+
+  static String dateFor(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -31,25 +53,81 @@ class FoodItem {
       'fats': fats,
       'consumedAmount': consumedAmount,
       'consumedUnit': consumedUnit,
-      // We generate the timestamp & dateString right before saving!
-      'timestamp': DateTime.now().toIso8601String(),
-      'dateString': DateTime.now().toIso8601String().split('T')[0], // YYYY-MM-DD format
       'isAiLogged': isAiLogged,
+      'isFavorite': isFavorite,
+      'dateString': dateString,
+      'timestamp': timestamp,
+      'servingWeightGrams': servingWeightGrams,
+      'totalServings': totalServings,
+      'servingDescription': servingDescription,
     };
   }
 
-  // 2. Translates the Firebase JSON back into a Dart Object
-  factory FoodItem.fromMap(Map<String, dynamic> map, String documentId) {
+  factory FoodItem.fromMap(Map<String, dynamic> map, [String? documentId]) {
     return FoodItem(
-      id: documentId,
-      name: map['name'] ?? 'Unknown Food',
-      calories: map['calories']?.toInt() ?? 0,
-      protein: map['protein']?.toInt() ?? 0,
-      carbs: map['carbs']?.toInt() ?? 0,
-      fats: map['fats']?.toInt() ?? 0,
+      id: documentId ?? map['id'] ?? '',
+      name: map['name'] ?? '',
+      calories: (map['calories'] ?? 0).toInt(),
+      protein: (map['protein'] ?? 0).toInt(),
+      carbs: (map['carbs'] ?? 0).toInt(),
+      fats: (map['fats'] ?? 0).toInt(),
       consumedAmount: (map['consumedAmount'] ?? 1.0).toDouble(),
       consumedUnit: map['consumedUnit'] ?? 'serving',
       isAiLogged: map['isAiLogged'] ?? false,
+      isFavorite: map['isFavorite'] ?? false,
+      dateString: map['dateString'] ?? _today(),
+      timestamp: map['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
+      servingWeightGrams: map['servingWeightGrams'] != null ? (map['servingWeightGrams'] as num).toDouble() : null,
+      totalServings: map['totalServings'] != null ? (map['totalServings'] as num).toInt() : null,
+      servingDescription: map['servingDescription'] as String?,
+    );
+  }
+
+  FoodItem copyWith({
+    String? id,
+    String? name,
+    int? calories,
+    int? protein,
+    int? carbs,
+    int? fats,
+    double? consumedAmount,
+    String? consumedUnit,
+    bool? isAiLogged,
+    bool? isFavorite,
+    String? dateString,
+    int? timestamp,
+    double? servingWeightGrams,
+    int? totalServings,
+    String? servingDescription,
+  }) {
+    return FoodItem(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      calories: calories ?? this.calories,
+      protein: protein ?? this.protein,
+      carbs: carbs ?? this.carbs,
+      fats: fats ?? this.fats,
+      consumedAmount: consumedAmount ?? this.consumedAmount,
+      consumedUnit: consumedUnit ?? this.consumedUnit,
+      isAiLogged: isAiLogged ?? this.isAiLogged,
+      isFavorite: isFavorite ?? this.isFavorite,
+      dateString: dateString ?? this.dateString,
+      timestamp: timestamp ?? this.timestamp,
+      servingWeightGrams: servingWeightGrams ?? this.servingWeightGrams,
+      totalServings: totalServings ?? this.totalServings,
+      servingDescription: servingDescription ?? this.servingDescription,
+    );
+  }
+
+  // Scale macros to a new amount (used in quantity selection)
+  FoodItem scaleToAmount(double newAmount) {
+    final ratio = newAmount / (consumedAmount == 0 ? 1 : consumedAmount);
+    return copyWith(
+      calories: (calories * ratio).round(),
+      protein: (protein * ratio).round(),
+      carbs: (carbs * ratio).round(),
+      fats: (fats * ratio).round(),
+      consumedAmount: newAmount,
     );
   }
 }

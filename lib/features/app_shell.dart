@@ -1,115 +1,169 @@
-class FoodItem {
-  final String id;
-  final String name;
-  final int calories;
-  final int protein;
-  final int carbs;
-  final int fats;
-  final double consumedAmount;
-  final String consumedUnit;
-  final bool isAiLogged;
-  final bool isFavorite;
-  final String dateString;   // YYYY-MM-DD of when logged
-  final int timestamp;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../core/theme/app_theme.dart';
+import 'nutrition/screens/home_screen.dart';
+import 'profile/screens/profile_screen.dart';
+import 'menu/screens/menu_screen.dart';
+import 'insights/screens/insights_screen.dart';
+import 'nutrition/widgets/log_sheet.dart';
+import 'nutrition/widgets/smart_logger_sheet.dart';
 
-  FoodItem({
-    required this.id,
-    required this.name,
-    required this.calories,
-    required this.protein,
-    required this.carbs,
-    required this.fats,
-    this.consumedAmount = 1,
-    this.consumedUnit = 'serving',
-    this.isAiLogged = false,
-    this.isFavorite = false,
-    String? dateString,
-    int? timestamp,
-  })  : dateString = dateString ?? _today(),
-        timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+class AppShell extends ConsumerStatefulWidget {
+  const AppShell({super.key});
 
-  static String _today() {
-    final now = DateTime.now();
-    return '${now.year}-${now.month.toString().padLeft(2, '0')}-${now.day.toString().padLeft(2, '0')}';
-  }
+  @override
+  ConsumerState<AppShell> createState() => _AppShellState();
+}
 
-  static String dateFor(DateTime date) {
-    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
-  }
+class _AppShellState extends ConsumerState<AppShell> {
+  int _selectedIndex = 2;
 
-  // Scale macros to a new amount (used in quantity selection)
-  FoodItem scaleToAmount(double newAmount) {
-    final ratio = newAmount / (consumedAmount == 0 ? 1 : consumedAmount);
-    return copyWith(
-      calories: (calories * ratio).round(),
-      protein: (protein * ratio).round(),
-      carbs: (carbs * ratio).round(),
-      fats: (fats * ratio).round(),
-      consumedAmount: newAmount,
+  static const _screens = [
+    MenuScreen(),
+    InsightsScreen(),
+    HomeScreen(),
+    SizedBox(), // placeholder — Smart Logger nav opens modal, never shown
+    ProfileScreen(),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: _screens,
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(32),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.menu_rounded,
+                  label: 'Menu',
+                  isSelected: _selectedIndex == 0,
+                  onTap: () => setState(() => _selectedIndex = 0),
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.show_chart_rounded,
+                  label: 'Insights',
+                  isSelected: _selectedIndex == 1,
+                  onTap: () => setState(() => _selectedIndex = 1),
+                ),
+              ),
+              
+              // Central Action Button
+              Expanded(
+                child: GestureDetector(
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    if (_selectedIndex != 2) {
+                       setState(() => _selectedIndex = 2);
+                    } else {
+                       LogSheet.show(context);
+                    }
+                  },
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: AppTheme.background,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppTheme.accent, width: 2),
+                          boxShadow: [
+                            BoxShadow(color: AppTheme.accent.withValues(alpha: 0.3), blurRadius: 12)
+                          ],
+                        ),
+                        child: const Icon(Icons.add_rounded, color: AppTheme.accent, size: 28),
+                      ),
+                      const SizedBox(height: 4),
+                      Text('Log', style: TextStyle(color: _selectedIndex == 2 ? AppTheme.accent : AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+              ),
+
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.auto_awesome_rounded,
+                  label: 'Smart Logger',
+                  isSelected: false,
+                  onTap: () {
+                    HapticFeedback.lightImpact();
+                    SmartLoggerSheet.show(context);
+                  },
+                ),
+              ),
+              Expanded(
+                child: _NavItem(
+                  icon: Icons.person_outline_rounded,
+                  label: 'Profile',
+                  isSelected: _selectedIndex == 4,
+                  onTap: () => setState(() => _selectedIndex = 4),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
+}
 
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'calories': calories,
-      'protein': protein,
-      'carbs': carbs,
-      'fats': fats,
-      'consumedAmount': consumedAmount,
-      'consumedUnit': consumedUnit,
-      'isAiLogged': isAiLogged,
-      'isFavorite': isFavorite,
-      'dateString': dateString,
-      'timestamp': timestamp,
-    };
-  }
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
 
-  factory FoodItem.fromMap(Map<String, dynamic> map) {
-    return FoodItem(
-      id: map['id'] ?? '',
-      name: map['name'] ?? '',
-      calories: (map['calories'] ?? 0).toInt(),
-      protein: (map['protein'] ?? 0).toInt(),
-      carbs: (map['carbs'] ?? 0).toInt(),
-      fats: (map['fats'] ?? 0).toInt(),
-      consumedAmount: (map['consumedAmount'] ?? 1).toDouble(),
-      consumedUnit: map['consumedUnit'] ?? 'serving',
-      isAiLogged: map['isAiLogged'] ?? false,
-      isFavorite: map['isFavorite'] ?? false,
-      dateString: map['dateString'] ?? _today(),
-      timestamp: map['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
-    );
-  }
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
-  FoodItem copyWith({
-    String? id,
-    String? name,
-    int? calories,
-    int? protein,
-    int? carbs,
-    int? fats,
-    double? consumedAmount,
-    String? consumedUnit,
-    bool? isAiLogged,
-    bool? isFavorite,
-    String? dateString,
-    int? timestamp,
-  }) {
-    return FoodItem(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      calories: calories ?? this.calories,
-      protein: protein ?? this.protein,
-      carbs: carbs ?? this.carbs,
-      fats: fats ?? this.fats,
-      consumedAmount: consumedAmount ?? this.consumedAmount,
-      consumedUnit: consumedUnit ?? this.consumedUnit,
-      isAiLogged: isAiLogged ?? this.isAiLogged,
-      isFavorite: isFavorite ?? this.isFavorite,
-      dateString: dateString ?? this.dateString,
-      timestamp: timestamp ?? this.timestamp,
+  @override
+  Widget build(BuildContext context) {
+    final color = isSelected ? AppTheme.accent : AppTheme.textSecondary;
+    return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        onTap();
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isSelected ? AppTheme.accent.withValues(alpha: 0.15) : Colors.transparent,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: color, size: 22),
+          ),
+          const SizedBox(height: 4),
+          Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+        ],
+      ),
     );
   }
 }

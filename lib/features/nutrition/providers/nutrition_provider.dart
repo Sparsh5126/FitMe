@@ -11,7 +11,15 @@ final _repo = NutritionRepository();
 // ─────────────────────────────────────────
 // SELECTED DATE
 // ─────────────────────────────────────────
-final selectedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
+class _SelectedDateNotifier extends Notifier<DateTime> {
+  @override
+  DateTime build() => DateTime.now();
+
+  void setDate(DateTime date) => state = date;
+  void changeBy(int days) => state = state.add(Duration(days: days));
+}
+
+final selectedDateProvider = NotifierProvider<_SelectedDateNotifier, DateTime>(_SelectedDateNotifier.new);
 
 String _dateStr(DateTime d) => FoodItem.dateFor(d);
 
@@ -86,6 +94,17 @@ class FoodActions {
     await _repo.removeFavorite(foodName);
   }
 
+  Future<void> toggleFavorite(FoodItem food) async {
+    final favs = _ref.read(favoritesProvider).value ?? [];
+    final isFav = favs.any(
+        (f) => f.name.toLowerCase() == food.name.toLowerCase());
+    if (isFav) {
+      await _repo.removeFavorite(food.name);
+    } else {
+      await _repo.addFavorite(food);
+    }
+  }
+
   Future<void> saveCustomMeal(FoodItem food) async {
     await _repo.saveCustomMeal(food);
   }
@@ -118,18 +137,14 @@ class FoodActions {
 // ─────────────────────────────────────────
 final dailyTotalsProvider = Provider<Map<String, int>>((ref) {
   final mealsAsync = ref.watch(nutritionProvider);
-  return mealsAsync.when(
-    data: (meals) {
-      int cals = 0, pro = 0, carbs = 0, fats = 0;
-      for (final m in meals) {
-        cals += m.calories;
-        pro += m.protein;
-        carbs += m.carbs;
-        fats += m.fats;
-      }
-      return {'calories': cals, 'protein': pro, 'carbs': carbs, 'fats': fats};
-    },
-    loading: () => {'calories': 0, 'protein': 0, 'carbs': 0, 'fats': 0},
-    error: (_, __) => {'calories': 0, 'protein': 0, 'carbs': 0, 'fats': 0},
-  );
+  final meals = mealsAsync.value ?? [];
+  
+  int cals = 0, pro = 0, carbs = 0, fats = 0;
+  for (final m in meals) {
+    cals += m.calories;
+    pro += m.protein;
+    carbs += m.carbs;
+    fats += m.fats;
+  }
+  return {'calories': cals, 'protein': pro, 'carbs': carbs, 'fats': fats};
 });

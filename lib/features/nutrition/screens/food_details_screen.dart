@@ -3,17 +3,57 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/oil_level_selector.dart';
 import '../models/food_item.dart';
 import '../providers/nutrition_provider.dart';
+import '../providers/oil_level_provider.dart';
 import 'quantity_selection_screen.dart';
 
-class FoodDetailsScreen extends ConsumerWidget {
+class FoodDetailsScreen extends ConsumerStatefulWidget {
   final FoodItem food;
 
   const FoodDetailsScreen({super.key, required this.food});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<FoodDetailsScreen> createState() => _FoodDetailsScreenState();
+}
+
+class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
+  OilLevel _oilLevel = OilLevel.normal;
+  late bool _isOily;
+  late FoodItem _displayFood;
+
+  @override
+  void initState() {
+    super.initState();
+    _isOily = isOilyIndianFood(widget.food.name);
+    _displayFood = widget.food;
+    if (_isOily) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final saved = ref.read(oilPreferenceProvider);
+        final level = saved[widget.food.name.toLowerCase()] ?? OilLevel.normal;
+        if (level != _oilLevel) {
+          setState(() {
+            _oilLevel = level;
+            _displayFood = applyOilLevel(widget.food, _oilLevel);
+          });
+        }
+      });
+    }
+  }
+
+  void _onOilLevelChanged(OilLevel level) {
+    setState(() {
+      _oilLevel = level;
+      _displayFood = applyOilLevel(widget.food, level);
+    });
+    ref.read(oilPreferenceProvider.notifier).set(widget.food.name, level);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final food = _displayFood;
     final favoritesAsync = ref.watch(favoritesProvider);
     final isFavorite = favoritesAsync.value?.any((f) => f.name == food.name) ?? false;
 
@@ -103,6 +143,15 @@ class FoodDetailsScreen extends ConsumerWidget {
                       ],
                     ),
 
+                    // ── Oil/Richness Slider ───────────────
+                    if (_isOily) ...[
+                      const SizedBox(height: 16),
+                      OilLevelSelector(
+                        value: _oilLevel,
+                        onChanged: _onOilLevelChanged,
+                      ),
+                    ],
+
                     const SizedBox(height: 28),
 
                     // ── Big calorie display ──────────────
@@ -110,7 +159,7 @@ class FoodDetailsScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           Text('${food.calories}',
-                              style: const TextStyle(color: Colors.white, fontSize: 52, fontWeight: FontWeight.black, height: 1)),
+                              style: const TextStyle(color: Colors.white, fontSize: 52, fontWeight: FontWeight.w900, height: 1)),
                           const Text('kcal', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
                         ],
                       ),
@@ -169,13 +218,13 @@ class FoodDetailsScreen extends ConsumerWidget {
               ),
               child: Column(
                 children: [
-                  // Log this food
+                  // Log this food (with current oil level applied)
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
                       onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food))),
+                          MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: _displayFood))),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.accent,
                         foregroundColor: AppTheme.background,
@@ -252,7 +301,7 @@ class _DetailRing extends StatelessWidget {
           center: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('${value}g', style: TextStyle(color: color, fontWeight: FontWeight.black, fontSize: 14)),
+              Text('${value}g', style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 14)),
               Text('${(pct * 100).round()}%', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
             ],
           ),
@@ -340,6 +389,6 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.black, fontSize: 16));
+    return Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16));
   }
 }

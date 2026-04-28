@@ -1,10 +1,20 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/oil_level_selector.dart';
 import '../models/food_item.dart';
 import '../providers/nutrition_provider.dart';
+import '../providers/oil_level_provider.dart';
 import '../services/gemini_service.dart';
+import '../services/food_search_service.dart';
+import '../screens/quantity_selection_screen.dart';
 import '../../dashboard/providers/user_provider.dart';
 
 class SmartLoggerSheet extends ConsumerStatefulWidget {
@@ -24,32 +34,74 @@ class SmartLoggerSheet extends ConsumerStatefulWidget {
 }
 
 class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
-  final _inputController = TextEditingController();
-  final _scrollController = ScrollController();
-  final List<_ChatMessage> _messages = [];
-  bool _isLoading = false;
-  bool _showFeatureTray = false;
+  final _inputController    = TextEditingController();
+  final _searchController   = TextEditingController();
+  final _scrollController   = ScrollController();
+  final List<_ChatMessage>  _messages = [];
 
-  // Swipe to reveal feature tray
-  double _dragOffset = 0;
+  bool _isLoading      = false;
+  bool _isListening    = false;
+  bool _isSearching    = false;
+
+  // Search state
+  List<FoodItem> _searchResults = [];
+  bool _hasSearched = false;
+  Timer? _searchDebounce;
+
+  // Speech
+  final _speech = stt.SpeechToText();
+  bool _speechAvailable = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initSpeech();
+    _loadHistory();
+  }
+
+  Future<void> _initSpeech() async {
+    _speechAvailable = await _speech.initialize(
+      onError: (e) => debugPrint('[Speech] error: $e'),
+    );
+  }
+
+  Future<void> _loadHistory() async {
+    final today = FoodItem.dateFor(DateTime.now());
+    final history = await _SmartLoggerHistory.loadMessages(today);
+    if (mounted) {
+      setState(() {
+        _messages.addAll(history);
+      });
+      _scrollToBottom();
+    }
+  }
+
+  void _saveHistory() {
+    final today = FoodItem.dateFor(DateTime.now());
+    _SmartLoggerHistory.saveMessages(today, _messages);
+  }
 
   @override
   void dispose() {
     _inputController.dispose();
+    _searchController.dispose();
     _scrollController.dispose();
+    _searchDebounce?.cancel();
+    _speech.cancel();
     super.dispose();
   }
 
   int get _logsUsed {
     final profile = ref.read(userProfileProvider).value;
     if (profile == null) return 0;
-    // Reset if last reset date != today
     final today = DateTime.now().toIso8601String().split('T')[0];
     if (profile.smartLoggerLastResetDate != today) return 0;
     return profile.smartLoggerUsedToday;
   }
 
-  bool get _limitReached => _logsUsed >= 5;
+  bool get _limitReached => _logsUsed >= 10;
+
+  // ── Text send ─────────────────────────────────────────────────────────────
 
   Future<void> _sendMessage() async {
     final text = _inputController.text.trim();
@@ -57,54 +109,314 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
     HapticFeedback.lightImpact();
     _inputController.clear();
-
-    setState(() {
-      _messages.add(_ChatMessage.user(text));
-      _isLoading = true;
-    });
+    setState(() { _messages.add(_ChatMessage.user(text)); _isLoading = true; });
+    _saveHistory();
     _scrollToBottom();
 
-    try {
-      final foods = await GeminiService.parseFood(text);
+    final commonFoods = ref.read(commonFoodsProvider).value ?? [];
+    final recents     = ref.read(recentsProvider).value ?? [];
+    final customs     = ref.read(customMealsProvider).value ?? [];
 
+    // 1) NLP multi-food parser — handles "3 roti with dal and paneer"
+    final parsed = FoodSearchService.parseNaturalMeal(
+      text: text,
+      recents: recents,
+      customMeals: customs,
+      commonFoods: commonFoods,
+    );
+    if (parsed.isNotEmpty) {
       setState(() {
         _isLoading = false;
-        if (foods.isEmpty) {
-          _messages.add(_ChatMessage.error("Couldn't parse that. Try being more specific, e.g. '2 rotis with dal and sabzi'."));
-        } else {
-          for (final food in foods) {
-            _messages.add(_ChatMessage.foodCard(food));
-          }
-          // Increment usage counter
-          ref.read(nutritionProvider.notifier).incrementSmartLoggerCount();
+        for (final item in parsed) {
+          _messages.add(_ChatMessage.foodCard(item.food, noAiUsed: true));
         }
       });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-        _messages.add(_ChatMessage.error('Something went wrong. Try again.'));
-      });
+      _saveHistory();
+      _scrollToBottom();
+      return;
     }
 
+    // 2) Fallback to Gemini (safe — never throws)
+    await _runGemini(() => GeminiService.parseFoodSafe(text));
+  }
+
+
+  // ── Photo logging ─────────────────────────────────────────────────────────
+
+  Future<void> _pickPhoto() async {
+    if (_isLoading || _limitReached) return;
+    HapticFeedback.lightImpact();
+
+    final picker = ImagePicker();
+    final source = await _showImageSourceDialog();
+    if (source == null) return;
+
+    final xfile = await picker.pickImage(source: source, imageQuality: 85);
+    if (xfile == null) return;
+
+    final file = File(xfile.path);
+    setState(() {
+      _messages.add(_ChatMessage.user('📷 Photo submitted'));
+      _isLoading = true;
+    });
+    _saveHistory();
+    _scrollToBottom();
+
+    await _runGemini(() => GeminiService.parseFoodFromImage(file));
+  }
+
+  Future<ImageSource?> _showImageSourceDialog() {
+    return showModalBottomSheet<ImageSource>(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (_) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.camera_alt_rounded, color: Colors.white),
+              title: const Text('Take Photo', style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.pop(context, ImageSource.camera),
+            ),
+            ListTile(
+              leading: const Icon(Icons.photo_library_rounded, color: Colors.white),
+              title: const Text('Choose from Gallery',
+                  style: TextStyle(color: Colors.white)),
+              onTap: () => Navigator.pop(context, ImageSource.gallery),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ── Voice logging ─────────────────────────────────────────────────────────
+
+  Future<void> _toggleVoice() async {
+    if (_isLoading || _limitReached) return;
+
+    if (_isListening) {
+      await _speech.stop();
+      setState(() => _isListening = false);
+      return;
+    }
+
+    if (!_speechAvailable) {
+      _showSnackbar('Microphone not available on this device.', error: true);
+      return;
+    }
+
+    setState(() => _isListening = true);
+    HapticFeedback.mediumImpact();
+
+    await _speech.listen(
+      onResult: (result) async {
+        if (result.finalResult) {
+          final transcript = result.recognizedWords.trim();
+          await _speech.stop();
+          setState(() => _isListening = false);
+
+          if (transcript.isEmpty) {
+            _showSnackbar('Could not hear anything. Try again.', error: true);
+            return;
+          }
+
+          _inputController.text = transcript;
+          // Give user a moment to see what was transcribed, then send
+          await Future.delayed(const Duration(milliseconds: 400));
+          await _sendMessage();
+        }
+      },
+      listenFor: const Duration(seconds: 15),
+      pauseFor: const Duration(seconds: 3),
+      localeId: 'en_IN', // Indian English for better Hindi food name recognition
+    );
+  }
+
+  // ── Common Gemini runner ──────────────────────────────────────────────────
+
+  Future<void> _runGemini(Future<List<FoodItem>> Function() fn) async {
+    List<FoodItem> foods = [];
+    try {
+      foods = await fn();
+    } catch (e) {
+      debugPrint('[SmartLogger] error: $e');
+      // parseFoodSafe should never reach here, but just in case
+    }
+
+    if (!mounted) return;
+    setState(() {
+      _isLoading = false;
+      if (foods.isEmpty) {
+        _messages.add(_ChatMessage.error(
+            "Couldn't identify that food. Try describing more specifically,\n"
+            "e.g. '2 rotis with dal and sabzi', or search below."));
+      } else {
+        for (final food in foods) {
+          _messages.add(_ChatMessage.foodCard(food));
+        }
+        ref.read(foodActionsProvider).incrementSmartLoggerCount();
+      }
+    });
+    _saveHistory();
     _scrollToBottom();
   }
 
-  void _acceptFood(FoodItem food) {
-    HapticFeedback.mediumImpact();
-    ref.read(nutritionProvider.notifier).addFood(food.copyWith(isAiLogged: true));
-    setState(() {
-      final i = _messages.indexWhere((m) => m.food?.id == food.id);
-      if (i != -1) _messages[i] = _messages[i].copyAccepted(true);
+  // ── Search bar logic ──────────────────────────────────────────────────────
+
+  Future<void> _onSearchChanged(String query) async {
+    _searchDebounce?.cancel();
+    if (query.trim().isEmpty) {
+      setState(() { _searchResults = []; _hasSearched = false; _isSearching = false; });
+      return;
+    }
+    setState(() => _isSearching = true);
+    _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
+      final recents     = ref.read(recentsProvider).value ?? [];
+      final customs     = ref.read(customMealsProvider).value ?? [];
+      final commonFoods = ref.read(commonFoodsProvider).value ?? [];
+
+      // Use local-only smartLoggerSearch (instant, no network)
+      final result = await FoodSearchService.smartLoggerSearch(
+        query: query,
+        recents: recents,
+        customMeals: customs,
+        commonFoods: commonFoods,
+      );
+
+      if (mounted) {
+        setState(() {
+          _searchResults = result.foods;
+          _isSearching   = false;
+          _hasSearched   = true;
+        });
+      }
     });
-    // Show celebration if enabled
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('${food.name} logged! ✓'),
-        backgroundColor: AppTheme.accent.withOpacity(0.9),
-        duration: const Duration(seconds: 1),
-        behavior: SnackBarBehavior.floating,
+  }
+
+  void _onSearchFoodTapped(FoodItem food) {
+    _searchController.clear();
+    setState(() { _searchResults = []; _hasSearched = false; });
+    Navigator.push(context,
+        MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+  }
+
+  // ── Food card actions ─────────────────────────────────────────────────────
+
+
+
+  Future<void> _acceptFood(FoodItem food, {String? originalId}) async {
+    HapticFeedback.mediumImpact();
+    try {
+      // Resolve the source message to read noAiUsed before logging.
+      int msgIndex = -1;
+      if (originalId != null) {
+        msgIndex = _messages.indexWhere((m) => m.food?.id == originalId);
+      }
+      if (msgIndex == -1) {
+        msgIndex = _messages.indexWhere((m) => m.food?.id == food.id);
+      }
+      if (msgIndex == -1) {
+        msgIndex = _messages.indexWhere(
+          (m) => m.type == _MsgType.foodCard &&
+                 m.accepted == null &&
+                 m.food?.name.toLowerCase() == food.name.toLowerCase(),
+        );
+      }
+
+      // Strip the AI-logged flag when no AI was used, so wand never appears
+      // in Recents/Favorites for locally-resolved foods.
+      final bool aiWasUsed = msgIndex != -1 ? !_messages[msgIndex].noAiUsed : true;
+      final FoodItem toLog = food.copyWith(isAiLogged: aiWasUsed);
+
+      await ref.read(foodActionsProvider).logFood(toLog);
+
+      if (!mounted) return;
+      setState(() {
+        if (msgIndex != -1) {
+          _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
+        }
+      });
+      _saveHistory();
+
+      ref.invalidate(nutritionProvider);
+      ref.invalidate(dailyTotalsProvider);
+
+      final pendingCount = _messages
+          .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
+          .length;
+      if (pendingCount == 0 && mounted) {
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      if (mounted) {
+        _showSnackbar('Failed to log ${food.name}: $e', error: true);
+      }
+    }
+  }
+
+  void _editFood(FoodItem food) {
+    HapticFeedback.lightImpact();
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuantitySelectionScreen(
+          baseFood: food,
+          popToHome: false,
+        ),
       ),
-    );
+    ).then((wasLogged) {
+      if (!mounted || wasLogged != true) return;
+      setState(() {
+        final i = _messages.indexWhere((m) => m.food?.id == food.id);
+        if (i != -1) _messages[i] = _messages[i].copyAccepted(true);
+      });
+      _saveHistory();
+      
+      final pendingCount = _messages
+          .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
+          .length;
+      if (pendingCount == 0) {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  void _favFood(FoodItem food) {
+    HapticFeedback.lightImpact();
+    ref.read(foodActionsProvider).toggleFavorite(food);
+    final favs = ref.read(favoritesProvider).value ?? [];
+    final isFav = favs.any((f) => f.name.toLowerCase() == food.name.toLowerCase());
+    _showSnackbar(isFav
+        ? '${food.name} removed from favourites'
+        : '${food.name} saved to favourites ★');
+  }
+
+  void _logAll() {
+    final pending = _messages.where((m) =>
+        m.type == _MsgType.foodCard && m.accepted == null).toList();
+    for (final msg in pending) {
+      if (msg.food != null) {
+        // Only mark isAiLogged when AI was actually used for this card.
+        final food = msg.noAiUsed
+            ? msg.food!.copyWith(isAiLogged: false)
+            : msg.food!.copyWith(isAiLogged: true);
+        ref.read(foodActionsProvider).logFood(food);
+      }
+    }
+    setState(() {
+      for (int i = 0; i < _messages.length; i++) {
+        if (_messages[i].type == _MsgType.foodCard &&
+            _messages[i].accepted == null) {
+          _messages[i] = _messages[i].copyAccepted(true);
+        }
+      }
+    });
+    _saveHistory();
+    _showSnackbar('All items logged! ✓');
+    Navigator.pop(context);
   }
 
   void _denyFood(FoodItem food) {
@@ -113,6 +425,14 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       final i = _messages.indexWhere((m) => m.food?.id == food.id);
       if (i != -1) _messages[i] = _messages[i].copyAccepted(false);
     });
+    _saveHistory();
+    
+    final pendingCount = _messages
+        .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
+        .length;
+    if (pendingCount == 0) {
+      Navigator.pop(context);
+    }
   }
 
   void _scrollToBottom() {
@@ -127,76 +447,22 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    final height = MediaQuery.of(context).size.height * 0.92;
-    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-
-    return GestureDetector(
-      onHorizontalDragUpdate: (d) {
-        setState(() => _dragOffset += d.delta.dx);
-        if (_dragOffset.abs() > 60) {
-          setState(() {
-            _showFeatureTray = true;
-            _dragOffset = 0;
-          });
-        }
-      },
-      onHorizontalDragEnd: (_) => setState(() => _dragOffset = 0),
-      child: AnimatedSwitcher(
-        duration: const Duration(milliseconds: 300),
-        child: _showFeatureTray
-            ? _FeatureTray(onClose: () => setState(() => _showFeatureTray = false))
-            : _ChatUI(
-                height: height,
-                bottomInset: bottomInset,
-                messages: _messages,
-                logsUsed: _logsUsed,
-                isLoading: _isLoading,
-                limitReached: _limitReached,
-                inputController: _inputController,
-                scrollController: _scrollController,
-                onSend: _sendMessage,
-                onAccept: _acceptFood,
-                onDeny: _denyFood,
-              ),
-      ),
-    );
+  void _showSnackbar(String msg, {bool error = false}) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text(msg),
+      backgroundColor:
+          error ? Colors.redAccent.withOpacity(0.9) : AppTheme.accent.withOpacity(0.9),
+      duration: const Duration(seconds: 2),
+      behavior: SnackBarBehavior.floating,
+    ));
   }
-}
-
-// ─────────────────────────────────────────────
-// CHAT UI
-// ─────────────────────────────────────────────
-class _ChatUI extends StatelessWidget {
-  final double height;
-  final double bottomInset;
-  final List<_ChatMessage> messages;
-  final int logsUsed;
-  final bool isLoading;
-  final bool limitReached;
-  final TextEditingController inputController;
-  final ScrollController scrollController;
-  final VoidCallback onSend;
-  final ValueChanged<FoodItem> onAccept;
-  final ValueChanged<FoodItem> onDeny;
-
-  const _ChatUI({
-    required this.height,
-    required this.bottomInset,
-    required this.messages,
-    required this.logsUsed,
-    required this.isLoading,
-    required this.limitReached,
-    required this.inputController,
-    required this.scrollController,
-    required this.onSend,
-    required this.onAccept,
-    required this.onDeny,
-  });
 
   @override
   Widget build(BuildContext context) {
+    final height      = MediaQuery.of(context).size.height * 0.92;
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+    final isSearchActive = _searchController.text.isNotEmpty;
+
     return Container(
       height: height,
       decoration: const BoxDecoration(
@@ -205,132 +471,233 @@ class _ChatUI extends StatelessWidget {
       ),
       child: Column(
         children: [
-          // Handle + header
+          // ── Handle ─────────────────────────────────────────────────────
           const SizedBox(height: 12),
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(2))),
+          Container(width: 40, height: 4,
+              decoration: BoxDecoration(color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 12),
+
+          // ── Header: title + usage counter ──────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(
-                  children: [
-                    Text('🪄', style: TextStyle(fontSize: 18)),
-                    SizedBox(width: 8),
-                    Text('Smart Logger', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                  ],
-                ),
-                // Usage counter
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: limitReached ? Colors.redAccent.withOpacity(0.15) : AppTheme.surface,
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: limitReached ? Colors.redAccent.withOpacity(0.5) : Colors.transparent),
-                  ),
-                  child: Text(
-                    '$logsUsed / 5 today',
-                    style: TextStyle(
-                      color: limitReached ? Colors.redAccent : AppTheme.textSecondary,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+                const Row(children: [
+                  Text('🪄', style: TextStyle(fontSize: 18)),
+                  SizedBox(width: 8),
+                  Text('Smart Logger',
+                      style: TextStyle(color: Colors.white,
+                          fontWeight: FontWeight.bold, fontSize: 16)),
+                ]),
+                _UsageChip(used: _logsUsed, limitReached: _limitReached),
               ],
             ),
           ),
-          const SizedBox(height: 4),
+
+          const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: const Text(
-              '← swipe to access more features →',
+              'Normal food logging is unlimited. Credits are only used when AI helps identify meals, photos, or complex foods.',
               style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
-              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 12),
+
+          // ── Search bar (below smart logger header) ─────────────────────
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+              decoration: InputDecoration(
+                hintText: 'Or search food directly…',
+                hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                prefixIcon: _isSearching
+                    ? const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(width: 16, height: 16,
+                            child: CircularProgressIndicator(
+                                strokeWidth: 2, color: AppTheme.accent)))
+                    : const Icon(Icons.search_rounded,
+                        color: AppTheme.textSecondary, size: 20),
+                suffixIcon: isSearchActive
+                    ? IconButton(
+                        icon: const Icon(Icons.close_rounded,
+                            color: AppTheme.textSecondary, size: 18),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() { _searchResults = []; _hasSearched = false; });
+                        })
+                    : null,
+                filled: true,
+                fillColor: AppTheme.surface,
+                border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                ),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+              ),
             ),
           ),
 
+          const SizedBox(height: 4),
           const Divider(color: AppTheme.surface, height: 16),
 
-          // Messages
+          // ── Content: search results OR chat ──────────────────────────
           Expanded(
-            child: messages.isEmpty
-                ? const _EmptyChat()
-                : ListView.builder(
-                    controller: scrollController,
-                    physics: const BouncingScrollPhysics(),
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    itemCount: messages.length + (isLoading ? 1 : 0),
-                    itemBuilder: (_, i) {
-                      if (i == messages.length) return const _TypingIndicator();
-                      final msg = messages[i];
-                      if (msg.type == _MsgType.user) return _UserBubble(text: msg.text!);
-                      if (msg.type == _MsgType.error) return _ErrorBubble(text: msg.text!);
-                      if (msg.type == _MsgType.foodCard) {
-                        return _FoodCardMsg(
-                          food: msg.food!,
-                          accepted: msg.accepted,
-                          onAccept: () => onAccept(msg.food!),
-                          onDeny: () => onDeny(msg.food!),
-                        );
-                      }
-                      return const SizedBox();
-                    },
-                  ),
+            child: Builder(builder: (_) {
+              final pendingCount = _messages
+                  .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
+                  .length;
+              return Stack(
+                children: [
+                  if (isSearchActive)
+                    _SearchResultsList(
+                      results: _searchResults,
+                      isLoading: _isSearching,
+                      hasSearched: _hasSearched,
+                      onTap: _onSearchFoodTapped,
+                    )
+                  else if (_messages.isEmpty)
+                    const _EmptyChat()
+                  else
+                    ListView.builder(
+                      controller: _scrollController,
+                      physics: const BouncingScrollPhysics(),
+                      padding: EdgeInsets.fromLTRB(16, 8, 16,
+                          pendingCount >= 2 ? 68 : 8),
+                      itemCount: _messages.length + (_isLoading ? 1 : 0),
+                      itemBuilder: (_, i) {
+                        if (i == _messages.length) return const _TypingIndicator();
+                        final msg = _messages[i];
+                        if (msg.type == _MsgType.user)
+                          return _UserBubble(text: msg.text!);
+                        if (msg.type == _MsgType.error)
+                          return _ErrorBubble(text: msg.text!);
+                        if (msg.type == _MsgType.foodCard) {
+                          final favs = ref.watch(favoritesProvider).value ?? [];
+                          final isFav = favs.any((f) =>
+                              f.name.toLowerCase() == msg.food!.name.toLowerCase());
+                          return _FoodCardMsg(
+                            food: msg.food!,
+                            accepted: msg.accepted,
+                            isFavorite: isFav,
+                            noAiUsed: msg.noAiUsed,
+                            onAccept: (food) => _acceptFood(food, originalId: msg.food!.id),
+                            onEdit:   () => _editFood(msg.food!),
+                            onFav:    () => _favFood(msg.food!),
+                            onDeny:   () => _denyFood(msg.food!),
+                          );
+                        }
+                        return const SizedBox();
+                      },
+                    ),
+                  // Log All FAB
+                  if (!isSearchActive && pendingCount >= 2)
+                    Positioned(
+                      bottom: 8, left: 40, right: 40,
+                      child: ElevatedButton.icon(
+                        onPressed: _logAll,
+                        icon: const Icon(Icons.done_all_rounded, size: 18),
+                        label: Text('Log All ($pendingCount items)'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.accent,
+                          foregroundColor: AppTheme.background,
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14)),
+                          elevation: 4,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                        ),
+                      ),
+                    ),
+                ],
+              );
+            }),
           ),
 
-          // Input
+
+          // ── Input bar ──────────────────────────────────────────────────
           Container(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, bottomInset > 0 ? bottomInset : 24),
+            padding: EdgeInsets.fromLTRB(
+                16, 8, 16, bottomInset > 0 ? bottomInset : 24),
             decoration: BoxDecoration(
               color: AppTheme.background,
-              border: Border(top: BorderSide(color: Colors.white.withOpacity(0.06))),
+              border:
+                  Border(top: BorderSide(color: Colors.white.withOpacity(0.06))),
             ),
-            child: limitReached
-                ? Container(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(14),
-                      border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(Icons.lock_outline, color: Colors.redAccent, size: 16),
-                        SizedBox(width: 8),
-                        Text("Daily limit reached (5/5). Resets tomorrow.", style: TextStyle(color: Colors.redAccent, fontSize: 13)),
-                      ],
-                    ),
-                  )
+            child: _limitReached
+                ? _LimitBanner()
                 : Row(
                     children: [
                       Expanded(
                         child: TextField(
-                          controller: inputController,
+                          controller: _inputController,
                           style: const TextStyle(color: Colors.white),
                           textCapitalization: TextCapitalization.sentences,
                           maxLines: 3,
                           minLines: 1,
-                          onSubmitted: (_) => onSend(),
+                          onSubmitted: (_) => _sendMessage(),
                           decoration: InputDecoration(
-                            hintText: 'e.g. "3 rotis with dal and sabzi"',
-                            hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                            hintText: _isListening
+                                ? '🎤 Listening…'
+                                : 'e.g. "3 rotis with dal and sabzi"',
+                            hintStyle: TextStyle(
+                                color: _isListening
+                                    ? AppTheme.accent
+                                    : AppTheme.textSecondary,
+                                fontSize: 13),
                             filled: true,
                             fillColor: AppTheme.surface,
-                            border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(14),
+                                borderSide: BorderSide.none),
                             focusedBorder: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(14),
-                              borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                              borderSide: const BorderSide(
+                                  color: AppTheme.accent, width: 1.5),
                             ),
-                            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                            contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 12),
+                            suffixIcon: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                // Camera
+                                IconButton(
+                                  icon: const Icon(Icons.camera_alt_outlined,
+                                      color: AppTheme.textSecondary),
+                                  onPressed: _pickPhoto,
+                                  tooltip: 'Log from photo',
+                                ),
+                                // Mic
+                                IconButton(
+                                  icon: Icon(
+                                    _isListening
+                                        ? Icons.mic_rounded
+                                        : Icons.mic_none_rounded,
+                                    color: _isListening
+                                        ? AppTheme.accent
+                                        : AppTheme.textSecondary,
+                                  ),
+                                  onPressed: _toggleVoice,
+                                  tooltip: 'Log by voice',
+                                ),
+                                const SizedBox(width: 4),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                       const SizedBox(width: 10),
                       GestureDetector(
-                        onTap: onSend,
+                        onTap: _sendMessage,
                         child: Container(
                           width: 46,
                           height: 46,
@@ -338,7 +705,8 @@ class _ChatUI extends StatelessWidget {
                             color: AppTheme.accent,
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: const Icon(Icons.send_rounded, color: AppTheme.background, size: 20),
+                          child: const Icon(Icons.send_rounded,
+                              color: AppTheme.background, size: 20),
                         ),
                       ),
                     ],
@@ -351,215 +719,361 @@ class _ChatUI extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────
-// FEATURE TRAY
+// SEARCH RESULTS
 // ─────────────────────────────────────────────
-class _FeatureTray extends StatelessWidget {
-  final VoidCallback onClose;
-  const _FeatureTray({required this.onClose});
+class _SearchResultsList extends StatelessWidget {
+  final List<FoodItem> results;
+  final bool isLoading;
+  final bool hasSearched;
+  final ValueChanged<FoodItem> onTap;
 
-  static const _features = [
-    (Icons.restaurant_menu_rounded, 'Diet Plan', 'Design a personalized diet plan'),
-    (Icons.analytics_rounded, 'Analyse Diet', 'Rate and analyse your eating habits'),
-    (Icons.menu_book_rounded, 'Recipes', 'Get meal suggestions based on your macros'),
-    (Icons.storefront_rounded, 'Store', 'Supplements & gear'),
-    (Icons.people_rounded, 'Challenge', 'Challenge a friend to a fitness goal'),
-  ];
+  const _SearchResultsList({
+    required this.results, required this.isLoading,
+    required this.hasSearched, required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: MediaQuery.of(context).size.height * 0.92,
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        children: [
-          const SizedBox(height: 12),
-          Container(width: 40, height: 4, decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(2))),
-          const SizedBox(height: 16),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
-                  onPressed: onClose,
-                ),
-                const SizedBox(width: 8),
-                const Text('More Features', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-              ],
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.all(20),
-              itemCount: _features.length,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (_, i) {
-                final f = _features[i];
-                return GestureDetector(
-                  onTap: () {}, // TODO: route to each feature
-                  child: Container(
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: Colors.white.withOpacity(0.05)),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: AppTheme.accent.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(f.$1, color: AppTheme.accent, size: 22),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(f.$2, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                              const SizedBox(height: 2),
-                              Text(f.$3, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                        const Icon(Icons.chevron_right_rounded, color: AppTheme.textSecondary),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ],
-      ),
+    if (isLoading) {
+      return const Center(
+          child: CircularProgressIndicator(color: AppTheme.accent));
+    }
+    if (hasSearched && results.isEmpty) {
+      return const Center(
+        child: Text('No results found.',
+            style: TextStyle(color: AppTheme.textSecondary)),
+      );
+    }
+    return ListView.builder(
+      physics: const BouncingScrollPhysics(),
+      itemCount: results.length,
+      itemBuilder: (_, i) {
+        final food = results[i];
+        return ListTile(
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+          title: Text(food.name,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+          subtitle: Text(
+              '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
+              style: const TextStyle(
+                  color: AppTheme.textSecondary, fontSize: 12)),
+          trailing: Text('${food.calories} kcal',
+              style: const TextStyle(
+                  color: AppTheme.accent, fontWeight: FontWeight.bold)),
+          onTap: () => onTap(food),
+        );
+      },
     );
   }
 }
 
 // ─────────────────────────────────────────────
-// CHAT MESSAGE TYPES
+// USAGE CHIP
+// ─────────────────────────────────────────────
+class _UsageChip extends StatelessWidget {
+  final int used;
+  final bool limitReached;
+  const _UsageChip({required this.used, required this.limitReached});
+
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: limitReached
+              ? Colors.redAccent.withOpacity(0.15)
+              : AppTheme.surface,
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+              color: limitReached
+                  ? Colors.redAccent.withOpacity(0.5)
+                  : Colors.transparent),
+        ),
+        child: Text('Nutrition AI Assists: ${(10 - used).clamp(0, 10)} remaining',
+            style: TextStyle(
+              color: limitReached ? Colors.redAccent : AppTheme.textSecondary,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            )),
+      );
+}
+
+// ─────────────────────────────────────────────
+// LIMIT BANNER
+// ─────────────────────────────────────────────
+class _LimitBanner extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: Colors.redAccent.withOpacity(0.1),
+          borderRadius: BorderRadius.circular(14),
+          border: Border.all(color: Colors.redAccent.withOpacity(0.3)),
+        ),
+        child: const Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.lock_outline, color: Colors.redAccent, size: 16),
+            SizedBox(width: 8),
+            Text('Daily limit reached (10/10). Resets tomorrow.',
+                style: TextStyle(color: Colors.redAccent, fontSize: 13)),
+          ],
+        ),
+      );
+}
+
+// ─────────────────────────────────────────────
+// CHAT MESSAGE MODEL
 // ─────────────────────────────────────────────
 enum _MsgType { user, foodCard, error }
 
 class _ChatMessage {
   final _MsgType type;
-  final String? text;
+  final String?  text;
   final FoodItem? food;
-  final bool? accepted; // null = pending, true = accepted, false = denied
+  final bool?    accepted;
+  final DateTime timestamp;
+  final bool noAiUsed;
 
-  const _ChatMessage({required this.type, this.text, this.food, this.accepted});
+  const _ChatMessage({
+    required this.type,
+    this.text,
+    this.food,
+    this.accepted,
+    required this.timestamp,
+    this.noAiUsed = false,
+  });
 
-  factory _ChatMessage.user(String text) => _ChatMessage(type: _MsgType.user, text: text);
-  factory _ChatMessage.foodCard(FoodItem food) => _ChatMessage(type: _MsgType.foodCard, food: food);
-  factory _ChatMessage.error(String text) => _ChatMessage(type: _MsgType.error, text: text);
+  factory _ChatMessage.user(String t) =>
+      _ChatMessage(type: _MsgType.user, text: t, timestamp: DateTime.now());
+  factory _ChatMessage.foodCard(FoodItem f, {bool noAiUsed = false}) =>
+      _ChatMessage(type: _MsgType.foodCard, food: f, timestamp: DateTime.now(), noAiUsed: noAiUsed);
+  factory _ChatMessage.error(String t) =>
+      _ChatMessage(type: _MsgType.error, text: t, timestamp: DateTime.now());
 
-  _ChatMessage copyAccepted(bool value) => _ChatMessage(type: type, text: text, food: food, accepted: value);
+  _ChatMessage copyAccepted(bool v) =>
+      _ChatMessage(type: type, text: text, food: food, accepted: v, timestamp: timestamp, noAiUsed: noAiUsed);
+
+  Map<String, dynamic> toMap() {
+    return {
+      'type': type.name,
+      'text': text,
+      'food': food?.toMap(),
+      'accepted': accepted,
+      'timestamp': timestamp.millisecondsSinceEpoch,
+      'noAiUsed': noAiUsed,
+    };
+  }
+
+  factory _ChatMessage.fromMap(Map<String, dynamic> map) {
+    return _ChatMessage(
+      type: _MsgType.values.byName(map['type']),
+      text: map['text'],
+      food: map['food'] != null ? FoodItem.fromMap(Map<String, dynamic>.from(map['food'])) : null,
+      accepted: map['accepted'],
+      timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
+      noAiUsed: map['noAiUsed'] ?? false,
+    );
+  }
+}
+
+class _SmartLoggerHistory {
+  static const _keyPrefix = 'smart_logger_history_';
+
+  static Future<void> saveMessages(String date, List<_ChatMessage> messages) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String> encoded = messages.map((m) => jsonEncode(m.toMap())).toList();
+    await prefs.setStringList('$_keyPrefix$date', encoded);
+    await _cleanupOldHistory(prefs);
+  }
+
+  static Future<List<_ChatMessage>> loadMessages(String date) async {
+    final prefs = await SharedPreferences.getInstance();
+    final List<String>? encoded = prefs.getStringList('$_keyPrefix$date');
+    if (encoded == null) return [];
+    return encoded.map((s) => _ChatMessage.fromMap(jsonDecode(s))).toList();
+  }
+
+  static Future<void> _cleanupOldHistory(SharedPreferences prefs) async {
+    final keys = prefs.getKeys().where((k) => k.startsWith(_keyPrefix)).toList();
+    if (keys.length <= 7) return;
+
+    keys.sort();
+
+    final keysToRemove = keys.sublist(0, keys.length - 7);
+    for (final key in keysToRemove) {
+      await prefs.remove(key);
+    }
+  }
 }
 
 // ─────────────────────────────────────────────
-// CHAT BUBBLES
+// BUBBLES & CARDS (unchanged from original)
 // ─────────────────────────────────────────────
 class _UserBubble extends StatelessWidget {
   final String text;
   const _UserBubble({required this.text});
-
   @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerRight,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12, left: 60),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: AppTheme.accent.withOpacity(0.15),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(16),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(4),
+  Widget build(BuildContext context) => Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12, left: 60),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: AppTheme.accent.withOpacity(0.15),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(16), topRight: Radius.circular(16),
+              bottomLeft: Radius.circular(16), bottomRight: Radius.circular(4),
+            ),
+            border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
           ),
-          border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+          child: Text(text, style: const TextStyle(color: Colors.white)),
         ),
-        child: Text(text, style: const TextStyle(color: Colors.white)),
-      ),
-    );
-  }
+      );
 }
 
 class _ErrorBubble extends StatelessWidget {
   final String text;
   const _ErrorBubble({required this.text});
-
   @override
-  Widget build(BuildContext context) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 12, right: 60),
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.redAccent.withOpacity(0.1),
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(4),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(16),
+  Widget build(BuildContext context) => Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 12, right: 60),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: Colors.redAccent.withOpacity(0.1),
+            borderRadius: const BorderRadius.only(
+              topLeft: Radius.circular(4), topRight: Radius.circular(16),
+              bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16),
+            ),
           ),
+          child: Text(text,
+              style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
         ),
-        child: Text(text, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
-      ),
-    );
-  }
+      );
 }
 
-class _FoodCardMsg extends StatelessWidget {
+class _FoodCardMsg extends ConsumerStatefulWidget {
   final FoodItem food;
   final bool? accepted;
-  final VoidCallback onAccept;
+  final bool isFavorite;
+  final bool noAiUsed;
+  final ValueChanged<FoodItem> onAccept;
+  final VoidCallback onEdit;
+  final VoidCallback onFav;
   final VoidCallback onDeny;
 
-  const _FoodCardMsg({required this.food, required this.accepted, required this.onAccept, required this.onDeny});
+  const _FoodCardMsg({
+    required this.food,
+    required this.accepted,
+    this.isFavorite = false,
+    this.noAiUsed = false,
+    required this.onAccept,
+    required this.onEdit,
+    required this.onFav,
+    required this.onDeny,
+  });
+
+  @override
+  ConsumerState<_FoodCardMsg> createState() => _FoodCardMsgState();
+}
+
+class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
+  late OilLevel _oilLevel;
+  late FoodItem _adjustedFood;
+  late bool _isOily;
+
+  @override
+  void initState() {
+    super.initState();
+    _isOily = isOilyIndianFood(widget.food.name);
+    _oilLevel = OilLevel.normal;
+    _adjustedFood = widget.food;
+    if (_isOily) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        final saved = ref.read(oilPreferenceProvider);
+        final level = saved[widget.food.name.toLowerCase()] ?? OilLevel.normal;
+        setState(() {
+          _oilLevel = level;
+          _adjustedFood = applyOilLevel(widget.food, level);
+        });
+      });
+    }
+  }
+
+  void _onOilChanged(OilLevel level) {
+    setState(() {
+      _oilLevel = level;
+      _adjustedFood = applyOilLevel(widget.food, level);
+    });
+    ref.read(oilPreferenceProvider.notifier).set(widget.food.name, level);
+  }
 
   @override
   Widget build(BuildContext context) {
+    final food = _adjustedFood;
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.only(bottom: 12, right: 40),
+        margin: const EdgeInsets.only(bottom: 12, right: 24),
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppTheme.surface,
           borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(4),
-            topRight: Radius.circular(16),
-            bottomLeft: Radius.circular(16),
-            bottomRight: Radius.circular(16),
+            topLeft: Radius.circular(4), topRight: Radius.circular(16),
+            bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16),
           ),
           border: Border.all(
-            color: accepted == null
-                ? Colors.white.withOpacity(0.08)
-                : accepted!
-                    ? AppTheme.accent.withOpacity(0.5)
-                    : Colors.redAccent.withOpacity(0.5),
+            color: widget.accepted == null
+                ? Colors.white.withValues(alpha: 0.08)
+                : widget.accepted!
+                    ? AppTheme.accent.withValues(alpha: 0.5)
+                    : Colors.redAccent.withValues(alpha: 0.5),
           ),
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
-              children: [
+            Row(children: [
+              if (!widget.noAiUsed)
                 const Text('🪄 ', style: TextStyle(fontSize: 13)),
-                Expanded(child: Text(food.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold))),
-              ],
-            ),
+              Expanded(child: Text(food.name,
+                  style: const TextStyle(color: Colors.white,
+                      fontWeight: FontWeight.bold))),
+              // Serving hint
+              Text(
+                '${food.consumedAmount % 1 == 0 ? food.consumedAmount.toInt() : food.consumedAmount} ${food.consumedUnit}',
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+              ),
+            ]),
+
+            if (widget.noAiUsed) ...[
+              const SizedBox(height: 4),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: AppTheme.accent.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: const Text(
+                  'No AI used ✓',
+                  style: TextStyle(color: AppTheme.accent, fontSize: 9, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ],
+
+            const SizedBox(height: 10),
+            if (_isOily && widget.accepted == null) ...[
+              const SizedBox(height: 10),
+              OilLevelPills(
+                value: _oilLevel,
+                onChanged: _onOilChanged,
+              ),
+            ],
+
             const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -570,49 +1084,65 @@ class _FoodCardMsg extends StatelessWidget {
                 _MacroBadge('${food.fats}g', 'Fats', Colors.purpleAccent),
               ],
             ),
-            if (accepted == null) ...[
+            if (widget.accepted == null) ...[
               const SizedBox(height: 12),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: onDeny,
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.redAccent,
-                        side: const BorderSide(color: Colors.redAccent),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                      ),
-                      child: const Text('Deny'),
-                    ),
+              // 4-action row
+              Row(children: [
+                // Edit qty
+                _SmallBtn(
+                  icon: Icons.edit_rounded,
+                  label: 'Edit',
+                  color: Colors.white70,
+                  onTap: widget.onEdit,
+                ),
+                const SizedBox(width: 6),
+                // Favourite
+                _SmallBtn(
+                  icon: widget.isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
+                  label: widget.isFavorite ? 'Saved' : 'Fav',
+                  color: widget.isFavorite ? AppTheme.accent : Colors.amberAccent,
+                  onTap: widget.onFav,
+                ),
+                const Spacer(),
+                // Dismiss
+                _SmallBtn(
+                  icon: Icons.close_rounded,
+                  label: 'Deny',
+                  color: Colors.redAccent,
+                  onTap: widget.onDeny,
+                ),
+                const SizedBox(width: 6),
+                // Accept → opens QuantitySelectionScreen with adjusted food
+                ElevatedButton.icon(
+                  onPressed: () => widget.onAccept(_adjustedFood),
+                  icon: const Icon(Icons.check_rounded, size: 16),
+                  label: const Text('Log',
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppTheme.accent,
+                    foregroundColor: AppTheme.background,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10)),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 14, vertical: 8),
+                    elevation: 0,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: onAccept,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accent,
-                        foregroundColor: AppTheme.background,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        elevation: 0,
-                      ),
-                      child: const Text('Accept', style: TextStyle(fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ]),
             ] else ...[
               const SizedBox(height: 10),
-              Row(
-                children: [
-                  Icon(accepted! ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                      color: accepted! ? AppTheme.accent : Colors.redAccent, size: 16),
-                  const SizedBox(width: 6),
-                  Text(accepted! ? 'Logged' : 'Dismissed',
-                      style: TextStyle(color: accepted! ? AppTheme.accent : Colors.redAccent, fontSize: 12, fontWeight: FontWeight.bold)),
-                ],
-              ),
+              Row(children: [
+                Icon(widget.accepted! ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                    color: widget.accepted! ? AppTheme.accent : Colors.redAccent,
+                    size: 16),
+                const SizedBox(width: 6),
+                Text(widget.accepted! ? 'Logged' : 'Dismissed',
+                    style: TextStyle(
+                        color: widget.accepted! ? AppTheme.accent : Colors.redAccent,
+                        fontSize: 12, fontWeight: FontWeight.bold)),
+              ]),
             ],
           ],
         ),
@@ -622,66 +1152,85 @@ class _FoodCardMsg extends StatelessWidget {
 }
 
 class _MacroBadge extends StatelessWidget {
-  final String value;
-  final String label;
+  final String value, label;
   final Color color;
-
   const _MacroBadge(this.value, this.label, this.color);
-
   @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
+  Widget build(BuildContext context) => Column(children: [
         Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
         Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
-      ],
-    );
-  }
+      ]);
 }
+
+class _SmallBtn extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+  const _SmallBtn({required this.icon, required this.label,
+      required this.color, required this.onTap});
+  @override
+  Widget build(BuildContext context) => GestureDetector(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+          decoration: BoxDecoration(
+            color: color.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(8),
+            border: Border.all(color: color.withValues(alpha: 0.25)),
+          ),
+          child: Row(mainAxisSize: MainAxisSize.min, children: [
+            Icon(icon, size: 14, color: color),
+            const SizedBox(width: 4),
+            Text(label, style: TextStyle(color: color, fontSize: 11,
+                fontWeight: FontWeight.w600)),
+          ]),
+        ),
+      );
+}
+
 
 class _EmptyChat extends StatelessWidget {
   const _EmptyChat();
-
   @override
-  Widget build(BuildContext context) {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text('🪄', style: TextStyle(fontSize: 40)),
-          SizedBox(height: 12),
-          Text('Type your meal in plain English.', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          SizedBox(height: 6),
-          Text('"Had 2 eggs and toast for breakfast"', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-          Text('"3 rotis with dal and sabzi"', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-          Text('"Large biryani from Behrouz"', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('🪄', style: TextStyle(fontSize: 40)),
+            SizedBox(height: 12),
+            Text('Describe your meal, take a photo, or speak.',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+            SizedBox(height: 6),
+            Text('"3 rotis with dal and sabzi"',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            Text('"Large biryani from Behrouz"',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            Text('"Idli sambar breakfast"',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+          ],
+        ),
+      );
 }
 
 class _TypingIndicator extends StatelessWidget {
   const _TypingIndicator();
-
   @override
-  Widget build(BuildContext context) {
-    return const Align(
-      alignment: Alignment.centerLeft,
-      child: Padding(
-        padding: EdgeInsets.only(bottom: 12),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text('🪄', style: TextStyle(fontSize: 14)),
-            SizedBox(width: 8),
-            SizedBox(
-              width: 40,
-              child: LinearProgressIndicator(color: AppTheme.accent, backgroundColor: AppTheme.surface),
-            ),
-          ],
+  Widget build(BuildContext context) => const Align(
+        alignment: Alignment.centerLeft,
+        child: Padding(
+          padding: EdgeInsets.only(bottom: 12),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text('🪄', style: TextStyle(fontSize: 14)),
+              SizedBox(width: 8),
+              SizedBox(width: 40,
+                  child: LinearProgressIndicator(
+                      color: AppTheme.accent,
+                      backgroundColor: AppTheme.surface)),
+            ],
+          ),
         ),
-      ),
-    );
-  }
+      );
 }

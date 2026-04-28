@@ -1,0 +1,726 @@
+﻿Analyzing fitme...                                              
+
+  error - The operator '>' can't be unconditionally invoked because the receiver can be 'null' - lib\core\models\exercise.dart:217:62 - unchecked_use_of_nullable_value
+  error - A class declaration must have a body, even if it is empty - lib\core\theme\app_theme.dart:3:7 - expected_body
+  error - Expected a method, getter, setter or operator declaration - lib\core\theme\app_theme.dart:3:15 - expected_executable
+   info - Missing type annotation - lib\core\theme\app_theme.dart:3:16 - strict_top_level_inference
+  error - Functions must have an explicit list of parameters - lib\core\theme\app_theme.dart:3:16 - missing_function_parameters
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:5:3 - extraneous_modifier
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:6:3 - extraneous_modifier
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:7:3 - extraneous_modifier
+warning - The value of the local variable 'surfaceElevated' isn't used - lib\core\theme\app_theme.dart:7:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:8:3 - extraneous_modifier
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:9:3 - extraneous_modifier
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:10:3 - extraneous_modifier
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:13:3 - extraneous_modifier
+warning - The value of the local variable 'proteinColor' isn't used - lib\core\theme\app_theme.dart:13:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:14:3 - extraneous_modifier
+warning - The value of the local variable 'carbsColor' isn't used - lib\core\theme\app_theme.dart:14:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:15:3 - extraneous_modifier
+warning - The value of the local variable 'fatsColor' isn't used - lib\core\theme\app_theme.dart:15:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:16:3 - extraneous_modifier
+warning - The value of the local variable 'waterColor' isn't used - lib\core\theme\app_theme.dart:16:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:17:3 - extraneous_modifier
+warning - The value of the local variable 'caloriesColor' isn't used - lib\core\theme\app_theme.dart:17:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:20:3 - extraneous_modifier
+warning - The value of the local variable 'success' isn't used - lib\core\theme\app_theme.dart:20:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:21:3 - extraneous_modifier
+warning - The value of the local variable 'warning' isn't used - lib\core\theme\app_theme.dart:21:22 - unused_local_variable
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:22:3 - extraneous_modifier
+  error - Can't have modifier 'static' here - lib\core\theme\app_theme.dart:25:3 - extraneous_modifier
+warning - The value of the local variable 'get' isn't used - lib\core\theme\app_theme.dart:25:20 - unused_local_variable
+  error - Expected to find ';' - lib\core\theme\app_theme.dart:25:20 - expected_token
+  error - Expected to find ';' - lib\core\theme\app_theme.dart:25:24 - expected_token
+   info - 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\core\theme\app_theme.dart:34:9 - deprecated_member_use
+   info - 'onBackground' is deprecated and shouldn't be used. Use onSurface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\core\theme\app_theme.dart:39:9 - deprecated_member_use
+  error - Invalid constant value - lib\core\theme\app_theme.dart:48:65 - invalid_constant
+  error - The getter 'black' isn't defined for the type 'FontWeight' - lib\core\theme\app_theme.dart:48:76 - undefined_getter
+  error - Invalid constant value - lib\core\theme\app_theme.dart:49:66 - invalid_constant
+  error - The getter 'black' isn't defined for the type 'FontWeight' - lib\core\theme\app_theme.dart:49:77 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\core\theme\app_theme.dart:70:48 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\core\theme\app_theme.dart:87:21 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\core\theme\app_theme.dart:87:73 - deprecated_member_use
+   info - 'MaterialStateProperty' is deprecated and shouldn't be used. Use WidgetStateProperty instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\core\theme\app_theme.dart:88:21 - deprecated_member_use
+   info - 'MaterialState' is deprecated and shouldn't be used. Use WidgetState instead. Moved to the Widgets layer to make code available outside of Material. This feature was deprecated after v3.19.0-0.3.pre - lib\core\theme\app_theme.dart:88:73 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\core\theme\app_theme.dart:88:106 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\core\theme\app_theme.dart:90:58 - deprecated_member_use
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:25:33 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:31:35 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:32:34 - undefined_getter
+  error - Invalid constant value - lib\features\app_shell.dart:37:63 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:37:72 - undefined_getter
+  error - Invalid constant value - lib\features\app_shell.dart:38:70 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:38:79 - undefined_getter
+  error - Invalid constant value - lib\features\app_shell.dart:42:61 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:42:70 - undefined_getter
+  error - Invalid constant value - lib\features\app_shell.dart:43:61 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\app_shell.dart:43:70 - undefined_getter
+warning - Unused import: '../../core/models/user_profile.dart' - lib\features\dashboard\dashboard_screen.dart:11:8 - unused_import
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:23:33 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:25:77 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:25:86 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:29:73 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:29:82 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:66:47 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:66:56 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:112:35 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:113:35 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:153:66 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:158:25 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:181:82 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:181:91 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:199:97 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:199:106 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:204:55 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:230:79 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:263:76 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:263:85 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:268:37 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:271:65 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:271:74 - undefined_getter
+  error - Invalid constant value - lib\features\dashboard\dashboard_screen.dart:287:65 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:287:74 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\dashboard\dashboard_screen.dart:297:37 - undefined_getter
+   info - The import of 'package:flutter/services.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\gamification\screens\wrapped_screen.dart:4:8 - unnecessary_import
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:27:33 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:45:85 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:45:94 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:116:43 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:117:43 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:155:44 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:167:63 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:167:72 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:167:92 - invalid_constant
+  error - The getter 'black' isn't defined for the type 'FontWeight' - lib\features\gamification\screens\wrapped_screen.dart:167:103 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:168:85 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:168:94 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:178:83 - invalid_constant
+  error - The getter 'black' isn't defined for the type 'FontWeight' - lib\features\gamification\screens\wrapped_screen.dart:178:94 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:180:73 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:189:92 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:207:51 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:207:60 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:229:62 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:229:71 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\gamification\screens\wrapped_screen.dart:249:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\gamification\screens\wrapped_screen.dart:251:43 - deprecated_member_use
+  error - The getter 'black' isn't defined for the type 'FontWeight' - lib\features\gamification\screens\wrapped_screen.dart:255:79 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:258:47 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:258:56 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:275:77 - invalid_constant
+  error - The getter 'black' isn't defined for the type 'FontWeight' - lib\features\gamification\screens\wrapped_screen.dart:275:88 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:276:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:276:60 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:293:49 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:302:73 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:303:32 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:303:41 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:305:73 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:306:73 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:307:69 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:308:32 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:308:41 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:310:70 - undefined_getter
+  error - Invalid constant value - lib\features\gamification\screens\wrapped_screen.dart:330:53 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:330:62 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\gamification\screens\wrapped_screen.dart:347:28 - undefined_getter
+   info - Statements in an if should be enclosed in a block - lib\features\gamification\screens\wrapped_screen.dart:438:23 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\features\gamification\screens\wrapped_screen.dart:439:28 - curly_braces_in_flow_control_structures
+   info - Statements in an if should be enclosed in a block - lib\features\gamification\screens\wrapped_screen.dart:440:27 - curly_braces_in_flow_control_structures
+  error - Target of URI doesn't exist: '../../core/models/user_profile.dart' - lib\features\gamification\services\fitpoints_service.dart:3:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../nutrition/models/food_item.dart' - lib\features\gamification\services\fitpoints_service.dart:4:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../nutrition/repositories/nutrition_repository.dart' - lib\features\gamification\services\fitpoints_service.dart:5:8 - uri_does_not_exist
+  error - Undefined class 'UserProfile' - lib\features\gamification\services\fitpoints_service.dart:23:35 - undefined_class
+  error - Undefined name 'FoodItem' - lib\features\gamification\services\fitpoints_service.dart:24:19 - undefined_identifier
+  error - The method 'NutritionRepository' isn't defined for the type 'FitPointsService' - lib\features\gamification\services\fitpoints_service.dart:31:18 - undefined_method
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\gamification\services\fitpoints_service.dart:37:36 - invalid_assignment
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\gamification\services\fitpoints_service.dart:42:15 - invalid_assignment
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\gamification\services\fitpoints_service.dart:42:34 - invalid_assignment
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\gamification\services\fitpoints_service.dart:42:54 - invalid_assignment
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\gamification\services\fitpoints_service.dart:42:71 - invalid_assignment
+  error - Undefined name 'FoodItem' - lib\features\gamification\services\fitpoints_service.dart:103:19 - undefined_identifier
+  error - Target of URI doesn't exist: '../../core/models/user_profile.dart' - lib\features\gamification\services\streak_service.dart:3:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../nutrition/models/food_item.dart' - lib\features\gamification\services\streak_service.dart:4:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../nutrition/repositories/nutrition_repository.dart' - lib\features\gamification\services\streak_service.dart:5:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../notifications/notification_service.dart' - lib\features\gamification\services\streak_service.dart:6:8 - uri_does_not_exist
+  error - The method 'NutritionRepository' isn't defined for the type 'StreakService' - lib\features\gamification\services\streak_service.dart:10:24 - undefined_method
+  error - Undefined class 'UserProfile' - lib\features\gamification\services\streak_service.dart:18:32 - undefined_class
+  error - Undefined name 'FoodItem' - lib\features\gamification\services\streak_service.dart:19:19 - undefined_identifier
+  error - Undefined name 'NotificationService' - lib\features\gamification\services\streak_service.dart:41:15 - undefined_identifier
+  error - Undefined name 'NotificationService' - lib\features\gamification\services\streak_service.dart:48:13 - undefined_identifier
+  error - Undefined name 'FoodItem' - lib\features\gamification\services\streak_service.dart:63:23 - undefined_identifier
+  error - Undefined name 'FoodItem' - lib\features\gamification\services\streak_service.dart:75:19 - undefined_identifier
+warning - Unused import: '../../nutrition/providers/nutrition_provider.dart' - lib\features\insights\screens\insights_screen.dart:5:8 - unused_import
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:49:33 - undefined_getter
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:81:63 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:81:72 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:87:82 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:131:29 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:131:63 - undefined_getter
+   info - The local variable '_fmt' starts with an underscore - lib\features\insights\screens\insights_screen.dart:172:12 - no_leading_underscores_for_local_identifiers
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:178:25 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:180:44 - undefined_getter
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:187:50 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:187:59 - undefined_getter
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:190:43 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:190:52 - undefined_getter
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:196:43 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:196:52 - undefined_getter
+   info - Use interpolation to compose strings and values - lib\features\insights\screens\insights_screen.dart:202:60 - prefer_interpolation_to_compose_strings
+   info - Use interpolation to compose strings and values - lib\features\insights\screens\insights_screen.dart:203:56 - prefer_interpolation_to_compose_strings
+   info - Use interpolation to compose strings and values - lib\features\insights\screens\insights_screen.dart:204:54 - prefer_interpolation_to_compose_strings
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:226:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:226:60 - undefined_getter
+warning - The member 'state' can only be used within 'package:riverpod/src/framework.dart' or a test - lib\features\insights\screens\insights_screen.dart:252:68 - invalid_use_of_visible_for_testing_member
+warning - The member 'state' can only be used within instance members of subclasses of 'AnyNotifier' - lib\features\insights\screens\insights_screen.dart:252:68 - invalid_use_of_protected_member
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:258:46 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:258:82 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:260:65 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:265:50 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:265:68 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:312:25 - undefined_getter
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:338:79 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:338:88 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\insights\screens\insights_screen.dart:339:65 - deprecated_member_use
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:340:78 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:340:87 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\insights\screens\insights_screen.dart:366:46 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\features\insights\screens\insights_screen.dart:379:19 - curly_braces_in_flow_control_structures
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\insights\screens\insights_screen.dart:392:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\insights\screens\insights_screen.dart:392:48 - deprecated_member_use
+   info - Statements in an if should be enclosed in a block - lib\features\insights\screens\insights_screen.dart:403:19 - curly_braces_in_flow_control_structures
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:444:49 - undefined_getter
+  error - Invalid constant value - lib\features\insights\screens\insights_screen.dart:471:53 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\insights\screens\insights_screen.dart:471:62 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:15:33 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:30:61 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:35:67 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:38:59 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:38:68 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:45:83 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:45:92 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:119:69 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:119:78 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:137:39 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:137:48 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:156:51 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:159:40 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:162:72 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:162:81 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:175:49 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:176:57 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:176:66 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:188:29 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:188:63 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:210:55 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\menu_screen.dart:211:66 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\menu_screen.dart:211:75 - undefined_getter
+warning - Unused import: 'package:firebase_auth/firebase_auth.dart' - lib\features\menu\screens\settings_screen.dart:5:8 - unused_import
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:18:33 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\settings_screen.dart:36:74 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:36:83 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:97:100 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:105:59 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\menu\screens\settings_screen.dart:106:70 - deprecated_member_use
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:121:71 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\settings_screen.dart:124:68 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:124:77 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\settings_screen.dart:132:95 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:132:104 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\settings_screen.dart:136:73 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:136:82 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\settings_screen.dart:186:39 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:186:48 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:203:49 - undefined_getter
+  error - Invalid constant value - lib\features\menu\screens\settings_screen.dart:212:62 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:212:71 - undefined_getter
+   info - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre - lib\features\menu\screens\settings_screen.dart:219:13 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:219:35 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:220:42 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\menu\screens\settings_screen.dart:239:49 - undefined_getter
+  error - The named parameter 'settings' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:25:19 - missing_required_argument
+  error - Too many positional arguments: 0 expected, but 1 found - lib\features\notifications\notification_service.dart:26:7 - extra_positional_arguments_could_be_named
+  error - The named parameter 'id' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:48:19 - missing_required_argument
+  error - The named parameter 'notificationDetails' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:48:19 - missing_required_argument
+  error - The named parameter 'scheduledDate' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:48:19 - missing_required_argument
+  error - Too many positional arguments: 0 expected, but 5 found - lib\features\notifications\notification_service.dart:49:7 - extra_positional_arguments_could_be_named
+  error - The named parameter 'uiLocalNotificationDateInterpretation' isn't defined - lib\features\notifications\notification_service.dart:55:7 - undefined_named_parameter
+  error - Undefined name 'UILocalNotificationDateInterpretation' - lib\features\notifications\notification_service.dart:55:46 - undefined_identifier
+  error - The named parameter 'id' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:67:19 - missing_required_argument
+  error - The named parameter 'notificationDetails' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:67:19 - missing_required_argument
+  error - The named parameter 'scheduledDate' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:67:19 - missing_required_argument
+  error - Too many positional arguments: 0 expected, but 5 found - lib\features\notifications\notification_service.dart:68:7 - extra_positional_arguments_could_be_named
+  error - The named parameter 'uiLocalNotificationDateInterpretation' isn't defined - lib\features\notifications\notification_service.dart:74:7 - undefined_named_parameter
+  error - Undefined name 'UILocalNotificationDateInterpretation' - lib\features\notifications\notification_service.dart:74:46 - undefined_identifier
+   info - Unnecessary braces in a string interpolation - lib\features\notifications\notification_service.dart:152:15 - unnecessary_brace_in_string_interps
+  error - The named parameter 'id' is required, but there's no corresponding argument - lib\features\notifications\notification_service.dart:179:19 - missing_required_argument
+  error - Too many positional arguments: 0 expected, but 4 found - lib\features\notifications\notification_service.dart:179:24 - extra_positional_arguments_could_be_named
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:21:33 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:54:73 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:76:45 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\food_details_screen.dart:81:59 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:81:68 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:89:57 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:91:76 - deprecated_member_use
+  error - Invalid constant value - lib\features\nutrition\screens\food_details_screen.dart:114:70 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:114:79 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:147:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:149:72 - deprecated_member_use
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:167:33 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:168:68 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:180:51 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:181:51 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:213:62 - deprecated_member_use
+  error - Invalid constant value - lib\features\nutrition\screens\food_details_screen.dart:256:77 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:256:86 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:261:37 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\food_details_screen.dart:264:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:264:60 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:286:53 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:288:49 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:289:42 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:295:25 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:313:51 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\food_details_screen.dart:318:51 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\food_details_screen.dart:325:67 - deprecated_member_use
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:55:26 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:55:35 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:56:62 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:56:71 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:59:35 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:78:37 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:149:37 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:151:59 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:154:67 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:154:76 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:181:107 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:181:116 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:183:88 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:183:97 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:187:98 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:188:43 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:274:47 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:274:56 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:304:59 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:304:68 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:306:76 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:306:85 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:313:33 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:316:87 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:316:96 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:356:64 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:356:73 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:367:64 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:367:73 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:367:90 - invalid_constant
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:367:99 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:383:87 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:383:129 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:429:82 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:429:91 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:434:41 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:439:65 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:439:74 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:468:31 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\home_screen.dart:470:54 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:472:47 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:475:67 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:475:76 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\home_screen.dart:500:59 - deprecated_member_use
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:513:29 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\home_screen.dart:515:52 - deprecated_member_use
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:531:55 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:531:64 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\home_screen.dart:536:49 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:536:58 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:557:51 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\home_screen.dart:558:43 - undefined_getter
+   info - The import of 'package:flutter/services.dart' is unnecessary because all of the used elements are also provided by the import of 'package:flutter/material.dart' - lib\features\nutrition\screens\macro_detail_screen.dart:2:8 - unnecessary_import
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:19:65 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:19:74 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:41:33 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:84:112 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:93:49 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:93:58 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:129:90 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:129:99 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:133:79 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:133:88 - undefined_getter
+   info - Unnecessary use of multiple underscores - lib\features\nutrition\screens\macro_detail_screen.dart:134:36 - unnecessary_underscores
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:173:25 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:190:52 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:190:61 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:196:41 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:202:87 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:202:96 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:231:65 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:231:74 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\macro_detail_screen.dart:280:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\macro_detail_screen.dart:282:43 - deprecated_member_use
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:288:55 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:288:64 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:309:25 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:323:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:323:60 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\macro_detail_screen.dart:327:71 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\macro_detail_screen.dart:327:80 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:145:37 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:156:33 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:187:68 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:187:77 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:206:51 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:210:69 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:210:78 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:225:64 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:225:73 - undefined_getter
+   info - Unnecessary use of multiple underscores - lib\features\nutrition\screens\quantity_selection_screen.dart:233:47 - unnecessary_underscores
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:246:62 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:246:98 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:248:81 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:252:66 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:252:84 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:265:78 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:265:87 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:272:41 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:279:70 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:279:79 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\quantity_selection_screen.dart:304:53 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\quantity_selection_screen.dart:306:72 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:333:47 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:334:47 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:339:64 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:339:73 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:366:51 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:367:43 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\screens\quantity_selection_screen.dart:385:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\screens\quantity_selection_screen.dart:385:60 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\screens\quantity_selection_screen.dart:394:64 - deprecated_member_use
+   info - The local variable '_n' starts with an underscore - lib\features\nutrition\services\food_search_service.dart:228:13 - no_leading_underscores_for_local_identifiers
+warning - The value of the field '_activeTab' isn't used - lib\features\nutrition\widgets\log_sheet.dart:37:7 - unused_field
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:103:16 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:103:25 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:110:85 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:123:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:123:60 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:124:69 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:124:78 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:131:120 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:131:129 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:135:78 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:135:87 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:144:37 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:148:55 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:148:64 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:160:40 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:162:36 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:163:46 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:215:67 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:215:76 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:224:85 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:224:94 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:252:88 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:252:97 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:269:41 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:296:136 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:296:145 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:313:41 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:314:41 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:340:39 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:340:48 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\log_sheet.dart:342:77 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\log_sheet.dart:342:86 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_food_card.dart:47:59 - deprecated_member_use
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_food_card.dart:58:29 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_food_card.dart:60:48 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_food_card.dart:76:106 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_food_card.dart:76:115 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_food_card.dart:80:115 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_food_card.dart:80:124 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_food_card.dart:102:46 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_food_card.dart:102:136 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:103:35 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:203:16 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:203:25 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:210:85 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:228:60 - deprecated_member_use
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:228:89 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:230:79 - deprecated_member_use
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:235:73 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:249:39 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:249:48 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:254:32 - invalid_constant
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:254:41 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:287:31 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:288:66 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:294:47 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:296:66 - deprecated_member_use
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:319:63 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:319:72 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:321:49 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:325:67 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:325:76 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:338:45 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:341:72 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:341:81 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:373:16 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:373:25 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:379:85 - undefined_getter
+   info - Unnecessary use of multiple underscores - lib\features\nutrition\widgets\smart_logger_sheet.dart:399:37 - unnecessary_underscores
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:407:39 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:409:62 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:417:45 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:420:61 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:429:72 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:429:81 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:433:72 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:433:81 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:482:27 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:489:46 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:509:35 - deprecated_member_use
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:539:27 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:548:32 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:550:32 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\nutrition\widgets\smart_logger_sheet.dart:551:40 - deprecated_member_use
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:567:66 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:594:51 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:595:51 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:610:51 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:613:68 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:636:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:636:60 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:655:80 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:655:89 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:656:72 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:656:81 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:657:72 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:657:81 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:680:53 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:680:62 - undefined_getter
+  error - Invalid constant value - lib\features\nutrition\widgets\smart_logger_sheet.dart:680:87 - invalid_constant
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\nutrition\widgets\smart_logger_sheet.dart:680:96 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:69:38 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:158:33 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:173:61 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:173:79 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:244:47 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:245:47 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:250:64 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:250:73 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:302:79 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:302:88 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:311:56 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:311:65 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\onboarding\onboarding_screen.dart:337:33 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\onboarding\onboarding_screen.dart:339:52 - deprecated_member_use
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:392:74 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:392:83 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:400:74 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:400:83 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:419:33 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:421:52 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:426:47 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:426:56 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:462:87 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:462:96 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:504:77 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:504:86 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:507:59 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:507:68 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:524:69 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:524:78 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:562:98 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:562:107 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:572:49 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:572:58 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:574:35 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:578:53 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:578:62 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:586:37 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:586:46 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:622:44 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:622:53 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:624:29 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:628:47 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:628:56 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:653:42 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:653:78 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:655:61 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:658:76 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:658:94 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:681:40 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:681:75 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:683:59 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:691:77 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:693:64 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:693:73 - undefined_getter
+  error - Invalid constant value - lib\features\onboarding\onboarding_screen.dart:698:53 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\onboarding\onboarding_screen.dart:698:62 - undefined_getter
+warning - Unused import: 'package:firebase_auth/firebase_auth.dart' - lib\features\profile\screens\profile_screen.dart:5:8 - unused_import
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:18:33 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:21:79 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:21:88 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:72:43 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:74:62 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:91:53 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:147:25 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:156:31 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:162:45 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:162:54 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:173:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:173:60 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:175:73 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:175:82 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:199:116 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:220:51 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:226:55 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:226:64 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:251:71 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:263:35 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:271:33 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:276:115 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:276:124 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:296:71 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:296:105 - undefined_getter
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\profile\screens\profile_screen.dart:320:24 - deprecated_member_use
+   info - 'withOpacity' is deprecated and shouldn't be used. Use .withValues() to avoid precision loss - lib\features\profile\screens\profile_screen.dart:322:43 - deprecated_member_use
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:327:55 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:327:64 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:350:49 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:353:38 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:355:53 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:355:62 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:450:16 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:450:25 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:458:59 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:538:45 - undefined_getter
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:538:79 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:542:62 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:542:71 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:567:62 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:567:71 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:568:43 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:572:47 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:572:56 - undefined_getter
+  error - Invalid constant value - lib\features\profile\screens\profile_screen.dart:605:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:605:60 - undefined_getter
+   info - 'value' is deprecated and shouldn't be used. Use initialValue instead. This will set the initial value for the form field. This feature was deprecated after v3.33.0-1.0.pre - lib\features\profile\screens\profile_screen.dart:608:11 - deprecated_member_use
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:609:35 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\profile\screens\profile_screen.dart:612:47 - undefined_getter
+warning - Unused import: '../../nutrition/models/food_item.dart' - lib\features\rebalancer\services\rebalancer_service.dart:4:8 - unused_import
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:19:33 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:38:85 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:38:94 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:49:57 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:49:66 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:56:51 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:56:60 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:60:59 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:60:68 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:64:106 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:124:28 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:182:39 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:183:29 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:191:67 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:191:76 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:193:47 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:193:56 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:194:71 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:194:80 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:226:47 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:226:56 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:240:46 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:240:82 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:242:69 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:245:62 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:245:71 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:280:41 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:280:76 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:282:60 - undefined_getter
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:294:73 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:296:62 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:296:71 - undefined_getter
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:303:61 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:305:47 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:305:56 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:308:63 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:308:72 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:310:63 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:310:72 - undefined_getter
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:333:51 - undefined_getter
+  error - Invalid constant value - lib\features\streak\screens\streak_screen.dart:339:47 - invalid_constant
+  error - The getter 'textSecondary' isn't defined for the type 'AppTheme' - lib\features\streak\screens\streak_screen.dart:339:56 - undefined_getter
+  error - Target of URI doesn't exist: '../../core/models/workout.dart' - lib\features\workout\providers\workout_provider.dart:4:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../../core/models/exercise.dart' - lib\features\workout\providers\workout_provider.dart:5:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../workout/repositories/workout_repository.dart' - lib\features\workout\providers\workout_provider.dart:6:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../gamification/services/fitpoints_service.dart' - lib\features\workout\providers\workout_provider.dart:7:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../notifications/notification_service.dart' - lib\features\workout\providers\workout_provider.dart:8:8 - uri_does_not_exist
+  error - The function 'WorkoutRepository' isn't defined - lib\features\workout\providers\workout_provider.dart:11:15 - undefined_function
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:16:46 - non_type_as_type_argument
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:23:52 - non_type_as_type_argument
+  error - The name 'Exercise' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:30:53 - non_type_as_type_argument
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:54:10 - non_type_as_type_argument
+  error - Undefined class 'Workout' - lib\features\workout\providers\workout_provider.dart:58:28 - undefined_class
+  error - Undefined class 'Exercise' - lib\features\workout\providers\workout_provider.dart:58:45 - undefined_class
+  error - Undefined class 'Workout' - lib\features\workout\providers\workout_provider.dart:65:31 - undefined_class
+  error - Undefined class 'Workout' - lib\features\workout\providers\workout_provider.dart:76:14 - undefined_class
+  error - The name 'ExerciseSet' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:86:30 - non_type_as_type_argument
+  error - Undefined name 'SetStatus' - lib\features\workout\providers\workout_provider.dart:90:15 - undefined_identifier
+  error - The name 'Exercise' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:94:35 - non_type_as_type_argument
+  error - Undefined class 'Workout' - lib\features\workout\providers\workout_provider.dart:107:23 - undefined_class
+  error - The name 'Exercise' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:114:35 - non_type_as_type_argument
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\providers\workout_provider.dart:122:10 - non_type_as_type_argument
+  error - Undefined class 'Workout' - lib\features\workout\providers\workout_provider.dart:122:33 - undefined_class
+  error - Undefined name 'FitPointsService' - lib\features\workout\providers\workout_provider.dart:133:11 - undefined_identifier
+  error - Undefined name 'NotificationService' - lib\features\workout\providers\workout_provider.dart:136:13 - undefined_identifier
+  error - Undefined class 'Workout' - lib\features\workout\providers\workout_provider.dart:144:31 - undefined_class
+  error - Undefined class 'Exercise' - lib\features\workout\providers\workout_provider.dart:150:36 - undefined_class
+  error - Undefined name 'NotificationService' - lib\features\workout\providers\workout_provider.dart:167:11 - undefined_identifier
+  error - Undefined class 'Exercise' - lib\features\workout\providers\workout_provider.dart:178:29 - undefined_class
+  error - Undefined class 'Exercise' - lib\features\workout\providers\workout_provider.dart:196:1 - undefined_class
+  error - The function 'ExerciseSet' isn't defined - lib\features\workout\providers\workout_provider.dart:206:12 - undefined_function
+  error - The function 'Exercise' isn't defined - lib\features\workout\providers\workout_provider.dart:213:10 - undefined_function
+  error - Target of URI doesn't exist: '../../core/models/workout.dart' - lib\features\workout\repositories\workout_repository.dart:3:8 - uri_does_not_exist
+  error - Target of URI doesn't exist: '../../core/models/exercise.dart' - lib\features\workout\repositories\workout_repository.dart:4:8 - uri_does_not_exist
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:22:10 - non_type_as_type_argument
+  error - Undefined name 'Workout' - lib\features\workout\repositories\workout_repository.dart:31:14 - undefined_identifier
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:35:15 - non_type_as_type_argument
+  error - Undefined name 'Workout' - lib\features\workout\repositories\workout_repository.dart:42:25 - undefined_identifier
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:46:10 - non_type_as_type_argument
+  error - Undefined name 'Workout' - lib\features\workout\repositories\workout_repository.dart:49:12 - undefined_identifier
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:52:15 - non_type_as_type_argument
+  error - Undefined name 'Workout' - lib\features\workout\repositories\workout_repository.dart:58:21 - undefined_identifier
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:63:10 - non_type_as_type_argument
+  error - The method 'Workout' isn't defined for the type 'WorkoutRepository' - lib\features\workout\repositories\workout_repository.dart:65:21 - undefined_method
+  error - Undefined class 'Workout' - lib\features\workout\repositories\workout_repository.dart:71:28 - undefined_class
+  error - The name 'Workout' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:76:10 - non_type_as_type_argument
+  error - Undefined class 'Workout' - lib\features\workout\repositories\workout_repository.dart:76:35 - undefined_class
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\workout\repositories\workout_repository.dart:81:22 - invalid_assignment
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\workout\repositories\workout_repository.dart:82:20 - invalid_assignment
+  error - The name 'Exercise' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:116:15 - non_type_as_type_argument
+  error - Undefined name 'Exercise' - lib\features\workout\repositories\workout_repository.dart:121:25 - undefined_identifier
+  error - The name 'Exercise' isn't a type, so it can't be used as a type argument - lib\features\workout\repositories\workout_repository.dart:125:15 - non_type_as_type_argument
+  error - Undefined name 'Exercise' - lib\features\workout\repositories\workout_repository.dart:128:21 - undefined_identifier
+  error - Undefined class 'Exercise' - lib\features\workout\repositories\workout_repository.dart:132:29 - undefined_class
+  error - Undefined class 'Exercise' - lib\features\workout\repositories\workout_repository.dart:147:34 - undefined_class
+  error - Undefined name 'Workout' - lib\features\workout\repositories\workout_repository.dart:180:17 - undefined_identifier
+  error - A value of type 'double' can't be assigned to a variable of type 'int' - lib\features\workout\repositories\workout_repository.dart:181:30 - invalid_assignment
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\main.dart:33:43 - undefined_getter
+  error - Invalid constant value - lib\main.dart:35:20 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\main.dart:35:29 - undefined_getter
+  error - Invalid constant value - lib\main.dart:36:20 - invalid_constant
+  error - The getter 'surface' isn't defined for the type 'AppTheme' - lib\main.dart:36:29 - undefined_getter
+   info - 'background' is deprecated and shouldn't be used. Use surface instead. This feature was deprecated after v3.18.0-0.1.pre - lib\main.dart:37:11 - deprecated_member_use
+  error - Invalid constant value - lib\main.dart:37:23 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\main.dart:37:32 - undefined_getter
+  error - Invalid constant value - lib\main.dart:59:30 - invalid_constant
+  error - The getter 'background' isn't defined for the type 'AppTheme' - lib\main.dart:59:39 - undefined_getter
+  error - Invalid constant value - lib\main.dart:60:66 - invalid_constant
+  error - The getter 'accent' isn't defined for the type 'AppTheme' - lib\main.dart:60:75 - undefined_getter
+
+flutter : 716 issues found. (ran in 5.4s)
+At line:1 char:1
++ flutter analyze 2>&1 | Out-File -FilePath "analyze_output3.txt" -Enco ...
++ ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (716 issues found. (ran in 5.4s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

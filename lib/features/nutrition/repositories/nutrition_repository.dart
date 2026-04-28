@@ -24,6 +24,14 @@ class NutritionRepository {
         .map((snap) => snap.docs.map((d) => FoodItem.fromMap(d.data() as Map<String, dynamic>)).toList());
   }
 
+  Future<List<FoodItem>> getLogsForDate(String dateString) async {
+    final snap = await _logs
+        .where('dateString', isEqualTo: dateString)
+        .orderBy('timestamp', descending: false)
+        .get();
+    return snap.docs.map((d) => FoodItem.fromMap(d.data() as Map<String, dynamic>)).toList();
+  }
+
   Future<void> addLog(FoodItem food) async {
     await _logs.doc(food.id).set(food.toMap());
     await _saveToRecents(food);

@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/models/user_profile.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../../core/widgets/goal_pace_slider.dart';
 import '../dashboard/dashboard_screen.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -28,6 +29,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   // Step 2 - Goal
   final _goalWeightController = TextEditingController();
+  String _goalPace = 'moderate';
 
   // Step 3 - Activity
   String _activityLevel = 'moderate';
@@ -130,6 +132,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         dietType: _dietType,
         appUse: _appUse,
         mantra: _mantraController.text.trim(),
+        goalPace: _goalPace,
       );
 
       await FirebaseFirestore.instance
@@ -213,6 +216,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   _Step2Goal(
                     currentWeight: _weight,
                     goalWeightController: _goalWeightController,
+                    height: _height,
+                    age: int.tryParse(_ageController.text) ?? 25,
+                    gender: _gender,
+                    goalPace: _goalPace,
+                    onPaceChanged: (p) => setState(() => _goalPace = p),
                     onFieldChanged: () => setState(() {}),
                   ),
                   _Step3Activity(
@@ -360,78 +368,136 @@ class _Step1Basics extends StatelessWidget {
 // ─────────────────────────────────────────────
 // STEP 2: Goal Weight
 // ─────────────────────────────────────────────
-class _Step2Goal extends StatelessWidget {
+class _Step2Goal extends StatefulWidget {
   final double currentWeight;
   final TextEditingController goalWeightController;
+  final double height;
+  final int age;
+  final String gender;
+  final String goalPace;
+  final ValueChanged<String> onPaceChanged;
   final VoidCallback onFieldChanged;
 
   const _Step2Goal({
     required this.currentWeight,
     required this.goalWeightController,
+    required this.height,
+    required this.age,
+    required this.gender,
+    required this.goalPace,
+    required this.onPaceChanged,
     required this.onFieldChanged,
   });
 
+  @override
+  State<_Step2Goal> createState() => _Step2GoalState();
+}
+
+class _Step2GoalState extends State<_Step2Goal> {
+  double get _goalWeight =>
+      double.tryParse(widget.goalWeightController.text) ?? 0;
+
   String get _goalLabel {
-    final goal = double.tryParse(goalWeightController.text) ?? 0;
-    if (goal <= 0 || currentWeight <= 0) return '';
-    final diff = (goal - currentWeight).abs();
-    if (goal < currentWeight) return 'Lose ${diff.toStringAsFixed(1)} kg';
-    if (goal > currentWeight) return 'Gain ${diff.toStringAsFixed(1)} kg';
+    final goal = _goalWeight;
+    if (goal <= 0 || widget.currentWeight <= 0) return '';
+    final diff = (goal - widget.currentWeight).abs();
+    if (goal < widget.currentWeight) return 'Lose ${diff.toStringAsFixed(1)} kg';
+    if (goal > widget.currentWeight) return 'Gain ${diff.toStringAsFixed(1)} kg';
     return 'Maintain weight';
+  }
+
+  double get _tdeeEstimate {
+    if (widget.height <= 0 || widget.currentWeight <= 0) return 2000;
+    double bmr = widget.gender == 'male'
+        ? 10 * widget.currentWeight + 6.25 * widget.height - 5 * widget.age + 5
+        : 10 * widget.currentWeight + 6.25 * widget.height - 5 * widget.age - 161;
+    return bmr * 1.55; // moderate activity default
   }
 
   @override
   Widget build(BuildContext context) {
+    final showPace = _goalWeight > 0 && widget.currentWeight > 0;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Your Goal', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+          const Text('Your Goal',
+              style: TextStyle(fontSize: 28,
+                  fontWeight: FontWeight.bold, color: Colors.white)),
           const SizedBox(height: 6),
-          const Text('Where do you want to be?', style: TextStyle(color: AppTheme.textSecondary)),
+          const Text('Where do you want to be?',
+              style: TextStyle(color: AppTheme.textSecondary)),
           const SizedBox(height: 32),
 
-          if (currentWeight > 0)
+          if (widget.currentWeight > 0)
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(
-                children: [
-                  const Text('Current weight: ', style: TextStyle(color: AppTheme.textSecondary)),
-                  Text('${currentWeight.toStringAsFixed(1)} kg', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                ],
-              ),
+              child: Row(children: [
+                const Text('Current weight: ',
+                    style: TextStyle(color: AppTheme.textSecondary)),
+                Text('${widget.currentWeight.toStringAsFixed(1)} kg',
+                    style: const TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.bold)),
+              ]),
             ),
 
           _OField(
             label: 'Goal weight (kg)',
-            controller: goalWeightController,
+            controller: widget.goalWeightController,
             keyboardType: TextInputType.number,
-            onChanged: (_) => onFieldChanged(),
+            onChanged: (_) {
+              widget.onFieldChanged();
+              setState(() {});
+            },
           ),
 
           if (_goalLabel.isNotEmpty) ...[
-            const SizedBox(height: 20),
+            const SizedBox(height: 16),
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
                 color: AppTheme.accent.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
               ),
-              child: Text(
-                _goalLabel,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold, fontSize: 16),
-              ),
+              child: Text(_goalLabel,
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                      color: AppTheme.accent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16)),
             ),
           ],
+
+          if (showPace) ...[
+            const SizedBox(height: 24),
+            const Text('Choose your pace',
+                style: TextStyle(color: Colors.white,
+                    fontWeight: FontWeight.bold, fontSize: 15)),
+            const SizedBox(height: 4),
+            const Text('How fast do you want to reach your goal?',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            const SizedBox(height: 16),
+            GoalPaceSlider(
+              weight:            widget.currentWeight,
+              goalWeight:        _goalWeight,
+              tdee:              _tdeeEstimate,
+              initialPace:       widget.goalPace,
+              onPaceChanged:     widget.onPaceChanged,
+              onCaloriesChanged: (_) {}, // calories computed server-side in fromOnboarding
+            ),
+          ],
+
+          const SizedBox(height: 16),
         ],
       ),
     );
   }
 }
+
 
 // ─────────────────────────────────────────────
 // STEP 3: Activity Level

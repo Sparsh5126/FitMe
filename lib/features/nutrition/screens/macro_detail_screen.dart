@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:percent_indicator/percent_indicator.dart';
 import '../../../core/theme/app_theme.dart';
 import '../models/food_item.dart';
 import '../providers/nutrition_provider.dart';
 import '../../dashboard/providers/user_provider.dart';
 
 class MacroDetailScreen extends ConsumerWidget {
-  const MacroDetailScreen({super.key});
+  final FoodItem? singleFood;
+  const MacroDetailScreen({super.key, this.singleFood});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -18,18 +18,24 @@ class MacroDetailScreen extends ConsumerWidget {
 
     if (profile == null) return const Scaffold(backgroundColor: AppTheme.background);
 
-    final cals = totals['calories'] ?? 0;
-    final pro = totals['protein'] ?? 0;
-    final carbs = totals['carbs'] ?? 0;
-    final fats = totals['fats'] ?? 0;
+    final cals = singleFood != null ? singleFood!.calories : (totals['calories'] ?? 0);
+    final pro = singleFood != null ? singleFood!.protein : (totals['protein'] ?? 0);
+    final carbs = singleFood != null ? singleFood!.carbs : (totals['carbs'] ?? 0);
+    final fats = singleFood != null ? singleFood!.fats : (totals['fats'] ?? 0);
 
-    // Derived micros (estimated from meals)
+    // Derived micros (estimated from meals or single food)
     final meals = mealsAsync.value ?? [];
+    final itemCount = singleFood != null ? 1 : meals.length;
     final fiber = (carbs * 0.08).round();       // ~8% of carbs
     final sugar = (carbs * 0.25).round();        // ~25% of carbs
     final saturatedFat = (fats * 0.35).round();  // ~35% of total fat
-    final sodium = meals.length * 180;            // rough estimate per item
+    final sodium = itemCount * 180;            // rough estimate per item
     final cholesterol = (pro * 1.2).round();
+    final vitaminA = (pro * 15 + carbs * 10).round();   // IU
+    final vitaminC = (carbs * 0.5).round();      // mg
+    final calcium = (pro * 12).round();          // mg
+    final iron = (pro * 0.2).round();            // mg
+    final potassium = (carbs * 10 + pro * 5).round();    // mg
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -45,7 +51,13 @@ class MacroDetailScreen extends ConsumerWidget {
                     icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text('Today\'s Nutrition', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                  Expanded(
+                    child: Text(singleFood?.name ?? 'Today\'s Nutrition', 
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -57,42 +69,7 @@ class MacroDetailScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── Big calorie ring ─────────────────
-                    Center(
-                      child: CircularPercentIndicator(
-                        radius: 90,
-                        lineWidth: 14,
-                        animation: true,
-                        animateFromLastPercent: true,
-                        percent: (cals / profile.dynamicCalories).clamp(0.0, 1.0),
-                        center: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text('$cals', style: const TextStyle(fontSize: 32, fontWeight: FontWeight.black, color: Colors.white)),
-                            Text('/ ${profile.dynamicCalories}', style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
-                            const Text('kcal', style: TextStyle(fontSize: 11, color: AppTheme.textSecondary)),
-                          ],
-                        ),
-                        circularStrokeCap: CircularStrokeCap.round,
-                        progressColor: cals > profile.dynamicCalories ? Colors.redAccent : AppTheme.accent,
-                        backgroundColor: AppTheme.surface,
-                      ),
-                    ),
 
-                    const SizedBox(height: 28),
-
-                    // ── 4 small rings ────────────────────
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        _MiniRing(label: 'Protein', current: pro, goal: profile.dynamicProtein, color: Colors.blueAccent, unit: 'g'),
-                        _MiniRing(label: 'Carbs', current: carbs, goal: profile.dynamicCarbs, color: Colors.orangeAccent, unit: 'g'),
-                        _MiniRing(label: 'Fats', current: fats, goal: profile.dynamicFats, color: Colors.purpleAccent, unit: 'g'),
-                        _MiniRing(label: 'Water', current: 0, goal: 8, color: Colors.cyanAccent, unit: 'gl'),
-                      ],
-                    ),
-
-                    const SizedBox(height: 32),
 
                     // ── Macros section ───────────────────
                     const _SectionHeader('Macronutrients'),
@@ -121,6 +98,11 @@ class MacroDetailScreen extends ConsumerWidget {
                     _MicroRow(label: 'Saturated Fat', value: '${saturatedFat}g', goal: '< 20g'),
                     _MicroRow(label: 'Sodium', value: '${sodium}mg', goal: '< 2300mg'),
                     _MicroRow(label: 'Cholesterol', value: '${cholesterol}mg', goal: '< 300mg'),
+                    _MicroRow(label: 'Vitamin A', value: '${vitaminA}IU', goal: '3000IU'),
+                    _MicroRow(label: 'Vitamin C', value: '${vitaminC}mg', goal: '90mg'),
+                    _MicroRow(label: 'Calcium', value: '${calcium}mg', goal: '1000mg'),
+                    _MicroRow(label: 'Iron', value: '${iron}mg', goal: '18mg'),
+                    _MicroRow(label: 'Potassium', value: '${potassium}mg', goal: '3400mg'),
 
                     const SizedBox(height: 28),
 
@@ -135,21 +117,23 @@ class MacroDetailScreen extends ConsumerWidget {
                       totalCals: cals,
                     ),
 
-                    const SizedBox(height: 28),
+                    if (singleFood == null) ...[
+                      const SizedBox(height: 28),
 
-                    // ── Logged meals ─────────────────────
-                    const _SectionHeader('Logged Meals'),
-                    const SizedBox(height: 12),
+                      // ── Logged meals ─────────────────────
+                      const _SectionHeader('Logged Meals'),
+                      const SizedBox(height: 12),
 
-                    mealsAsync.when(
-                      data: (meals) => meals.isEmpty
-                          ? const Text('No meals logged yet.', style: TextStyle(color: AppTheme.textSecondary))
-                          : Column(
-                              children: meals.map((m) => _LoggedMealRow(food: m)).toList(),
-                            ),
-                      loading: () => const CircularProgressIndicator(color: AppTheme.accent),
-                      error: (_, __) => const SizedBox(),
-                    ),
+                      mealsAsync.when(
+                        data: (meals) => meals.isEmpty
+                            ? const Text('No meals logged yet.', style: TextStyle(color: AppTheme.textSecondary))
+                            : Column(
+                                children: meals.map((m) => _LoggedMealRow(food: m)).toList(),
+                              ),
+                        loading: () => const CircularProgressIndicator(color: AppTheme.accent),
+                        error: (_, __) => const SizedBox(),
+                      ),
+                    ],
 
                     const SizedBox(height: 40),
                   ],
@@ -163,47 +147,6 @@ class MacroDetailScreen extends ConsumerWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// MINI RING
-// ─────────────────────────────────────────────
-class _MiniRing extends StatelessWidget {
-  final String label;
-  final int current;
-  final int goal;
-  final Color color;
-  final String unit;
-
-  const _MiniRing({required this.label, required this.current, required this.goal, required this.color, required this.unit});
-
-  @override
-  Widget build(BuildContext context) {
-    final isOver = current > goal;
-    return Column(
-      children: [
-        CircularPercentIndicator(
-          radius: 40,
-          lineWidth: 6,
-          animation: true,
-          animateFromLastPercent: true,
-          percent: (current / (goal == 0 ? 1 : goal)).clamp(0.0, 1.0),
-          center: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text('$current', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: isOver ? Colors.redAccent : Colors.white)),
-              Text('$unit', style: const TextStyle(fontSize: 9, color: AppTheme.textSecondary)),
-            ],
-          ),
-          circularStrokeCap: CircularStrokeCap.round,
-          progressColor: isOver ? Colors.redAccent : color,
-          backgroundColor: AppTheme.surface,
-        ),
-        const SizedBox(height: 6),
-        Text(label, style: const TextStyle(fontSize: 11, color: AppTheme.textSecondary, fontWeight: FontWeight.bold)),
-        Text('/ $goal$unit', style: const TextStyle(fontSize: 10, color: AppTheme.textSecondary)),
-      ],
-    );
-  }
-}
 
 // ─────────────────────────────────────────────
 // MACRO BAR
@@ -340,7 +283,7 @@ class _PieSegment extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text('${(pct * 100).round()}%', style: TextStyle(color: color, fontWeight: FontWeight.black, fontSize: 18)),
+            Text('${(pct * 100).round()}%', style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 18)),
             Text('$cals kcal', style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
             Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
           ],
@@ -397,6 +340,6 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.black, fontSize: 16));
+    return Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16));
   }
 }

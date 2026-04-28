@@ -1,0 +1,630 @@
+[
+    {
+        "id": "pullup",
+        "name": "Pull-up",
+        "muscle": "Back / Biceps",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Negative Pull-ups",
+                "reps": "5x3",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 5
+                }
+            },
+            {
+                "level": 2,
+                "name": "Pull-ups",
+                "reps": "3x8",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 3,
+                "name": "Pull-ups (High Volume)",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 4,
+                "name": "Weighted Pull-ups (+5kg)",
+                "reps": "3x8",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 5,
+                "name": "L-Sit Pull-ups",
+                "reps": "3x6",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 8
+                }
+            },
+            {
+                "level": 6,
+                "name": "Archer Pull-ups",
+                "reps": "3x5 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 6
+                }
+            },
+            {
+                "level": 7,
+                "name": "One-Arm Pull-up Progressions",
+                "reps": "3x3 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 5
+                }
+            }
+        ]
+    },
+    {
+        "id": "pushup",
+        "name": "Push-up",
+        "muscle": "Chest / Triceps / Shoulders",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Knee Push-ups",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 2,
+                "name": "Push-ups",
+                "reps": "3x15",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 3,
+                "name": "Push-ups (High Volume)",
+                "reps": "3x25",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 30
+                }
+            },
+            {
+                "level": 4,
+                "name": "Diamond Push-ups",
+                "reps": "3x15",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 5,
+                "name": "Archer Push-ups",
+                "reps": "3x10 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 6,
+                "name": "Pike Push-ups",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 7,
+                "name": "Pseudo Planche Push-ups",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 8,
+                "name": "One-Arm Push-up Progressions",
+                "reps": "3x5 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 8
+                }
+            }
+        ]
+    },
+    {
+        "id": "dip",
+        "name": "Dip",
+        "muscle": "Chest / Triceps",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Bench Dips",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 2,
+                "name": "Parallel Bar Dips",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 3,
+                "name": "Dips (High Volume)",
+                "reps": "3x15",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 4,
+                "name": "Weighted Dips (+5kg)",
+                "reps": "3x8",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 5,
+                "name": "Korean Dips",
+                "reps": "3x8",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 6,
+                "name": "Russian Dips",
+                "reps": "3x6",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 8
+                }
+            }
+        ]
+    },
+    {
+        "id": "squat",
+        "name": "Squat",
+        "muscle": "Legs / Glutes",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Bodyweight Squat",
+                "reps": "3x15",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 2,
+                "name": "Pause Squat",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 3,
+                "name": "Bulgarian Split Squat",
+                "reps": "3x10 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 4,
+                "name": "Shrimp Squat Progressions",
+                "reps": "3x8 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 5,
+                "name": "Pistol Squat Progressions",
+                "reps": "3x6 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 8
+                }
+            },
+            {
+                "level": 6,
+                "name": "Pistol Squat",
+                "reps": "3x5 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 6
+                }
+            }
+        ]
+    },
+    {
+        "id": "row",
+        "name": "Inverted Row",
+        "muscle": "Back / Biceps",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Incline Inverted Row",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 2,
+                "name": "Inverted Row",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 3,
+                "name": "Inverted Row (Feet Elevated)",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 4,
+                "name": "Wide Grip Inverted Row",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 5,
+                "name": "Archer Row",
+                "reps": "3x8 each",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            }
+        ]
+    },
+    {
+        "id": "handstand",
+        "name": "Handstand Push-up",
+        "muscle": "Shoulders / Triceps",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Pike Push-ups",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 2,
+                "name": "Elevated Pike Push-ups",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 3,
+                "name": "Wall Handstand Hold",
+                "reps": "3x30s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 45
+                }
+            },
+            {
+                "level": 4,
+                "name": "Wall HSPU Negatives",
+                "reps": "3x5",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 6
+                }
+            },
+            {
+                "level": 5,
+                "name": "Wall HSPU",
+                "reps": "3x8",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 6,
+                "name": "Freestanding HSPU Progressions",
+                "reps": "3x5",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 6
+                }
+            }
+        ]
+    },
+    {
+        "id": "legraise",
+        "name": "Leg Raise",
+        "muscle": "Core / Hip Flexors",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Lying Knee Raise",
+                "reps": "3x15",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 2,
+                "name": "Lying Leg Raise",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 3,
+                "name": "Hanging Knee Raise",
+                "reps": "3x12",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 4,
+                "name": "Hanging Leg Raise",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 5,
+                "name": "Toes to Bar",
+                "reps": "3x10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 6,
+                "name": "L-Sit Progressions",
+                "reps": "3x20s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 30
+                }
+            },
+            {
+                "level": 7,
+                "name": "L-Sit",
+                "reps": "3x30s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 45
+                }
+            }
+        ]
+    },
+    {
+        "id": "planche",
+        "name": "Planche",
+        "muscle": "Chest / Shoulders / Core",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Planche Lean",
+                "reps": "3x20s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 30
+                }
+            },
+            {
+                "level": 2,
+                "name": "Tuck Planche",
+                "reps": "3x15s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 3,
+                "name": "Advanced Tuck Planche",
+                "reps": "3x12s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 4,
+                "name": "Straddle Planche",
+                "reps": "3x10s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 5,
+                "name": "Full Planche",
+                "reps": "3x5s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 8
+                }
+            }
+        ]
+    },
+    {
+        "id": "muscleup",
+        "name": "Muscle-up",
+        "muscle": "Back / Chest / Triceps",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Pull-ups + Dips (Superset)",
+                "reps": "3x10+10",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 2,
+                "name": "High Pull-ups (chest to bar)",
+                "reps": "3x8",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 3,
+                "name": "Muscle-up Negatives",
+                "reps": "3x5",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 6
+                }
+            },
+            {
+                "level": 4,
+                "name": "Kipping Muscle-up",
+                "reps": "3x5",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 6
+                }
+            },
+            {
+                "level": 5,
+                "name": "Strict Muscle-up",
+                "reps": "3x3",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 5
+                }
+            },
+            {
+                "level": 6,
+                "name": "Weighted Muscle-up",
+                "reps": "3x3",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 5
+                }
+            }
+        ]
+    },
+    {
+        "id": "frontlever",
+        "name": "Front Lever",
+        "muscle": "Back / Core",
+        "levels": [
+            {
+                "level": 1,
+                "name": "Dead Hang",
+                "reps": "3x30s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 45
+                }
+            },
+            {
+                "level": 2,
+                "name": "Tuck Front Lever",
+                "reps": "3x15s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 20
+                }
+            },
+            {
+                "level": 3,
+                "name": "Advanced Tuck Front Lever",
+                "reps": "3x12s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 15
+                }
+            },
+            {
+                "level": 4,
+                "name": "One Leg Front Lever",
+                "reps": "3x10s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 12
+                }
+            },
+            {
+                "level": 5,
+                "name": "Straddle Front Lever",
+                "reps": "3x8s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 10
+                }
+            },
+            {
+                "level": 6,
+                "name": "Full Front Lever",
+                "reps": "3x5s",
+                "topSet": {
+                    "sets": 3,
+                    "reps": 8
+                }
+            }
+        ]
+    }
+]
