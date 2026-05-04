@@ -10,7 +10,9 @@
     "carbs": 40,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi002",
@@ -23,7 +25,9 @@
     "carbs": 28,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi003",
@@ -36,7 +40,9 @@
     "carbs": 2,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi004",
@@ -49,7 +55,9 @@
     "carbs": 45,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi005",
@@ -62,7 +70,9 @@
     "carbs": 3,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi006",
@@ -75,7 +85,9 @@
     "carbs": 30,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi007",
@@ -88,7 +100,9 @@
     "carbs": 24,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi008",
@@ -101,7 +115,9 @@
     "carbs": 11,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi009",
@@ -114,7 +130,9 @@
     "carbs": 42,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi010",
@@ -127,7 +145,9 @@
     "carbs": 39,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi011",
@@ -140,7 +160,9 @@
     "carbs": 10,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi012",
@@ -153,7 +175,9 @@
     "carbs": 26,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi013",
@@ -166,7 +190,9 @@
     "carbs": 25,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi014",
@@ -179,7 +205,9 @@
     "carbs": 0,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi015",
@@ -192,7 +220,9 @@
     "carbs": 43,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi016",
@@ -205,7 +235,9 @@
     "carbs": 33,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi017",
@@ -218,7 +250,9 @@
     "carbs": 21,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi018",
@@ -231,7 +265,9 @@
     "carbs": 38,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi019",
@@ -244,7 +280,9 @@
     "carbs": 38,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi020",
@@ -257,7 +295,9 @@
     "carbs": 31,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi021",
@@ -270,7 +310,9 @@
     "carbs": 9,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi022",
@@ -283,7 +325,9 @@
     "carbs": 14,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi023",
@@ -296,7 +340,9 @@
     "carbs": 5,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi024",
@@ -309,7 +355,9 @@
     "carbs": 42,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi025",
@@ -322,7 +370,9 @@
     "carbs": 7,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi026",
@@ -335,7 +385,9 @@
     "carbs": 10,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi027",
@@ -348,7 +400,9 @@
     "carbs": 45,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi028",
@@ -361,7 +415,9 @@
     "carbs": 27,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi029",
@@ -374,7 +430,9 @@
     "carbs": 29,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi030",
@@ -387,7 +445,9 @@
     "carbs": 27,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi031",
@@ -400,7 +460,9 @@
     "carbs": 32,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi032",
@@ -413,7 +475,9 @@
     "carbs": 42,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi033",
@@ -426,7 +490,9 @@
     "carbs": 23,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi034",
@@ -439,7 +505,9 @@
     "carbs": 1,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi035",
@@ -452,7 +520,9 @@
     "carbs": 0,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi036",
@@ -465,7 +535,9 @@
     "carbs": 31,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi037",
@@ -478,7 +550,9 @@
     "carbs": 38,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi038",
@@ -491,7 +565,9 @@
     "carbs": 33,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi039",
@@ -504,7 +580,9 @@
     "carbs": 9,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi040",
@@ -517,7 +595,9 @@
     "carbs": 44,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi041",
@@ -530,7 +610,9 @@
     "carbs": 19,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi042",
@@ -543,7 +625,9 @@
     "carbs": 8,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi043",
@@ -556,7 +640,9 @@
     "carbs": 27,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi044",
@@ -569,7 +655,9 @@
     "carbs": 44,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi045",
@@ -582,7 +670,9 @@
     "carbs": 12,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi046",
@@ -595,7 +685,9 @@
     "carbs": 33,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi047",
@@ -608,7 +700,9 @@
     "carbs": 40,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi048",
@@ -621,7 +715,9 @@
     "carbs": 23,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi049",
@@ -634,7 +730,9 @@
     "carbs": 13,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi050",
@@ -647,7 +745,9 @@
     "carbs": 3,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi051",
@@ -660,7 +760,9 @@
     "carbs": 4,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi052",
@@ -673,7 +775,9 @@
     "carbs": 33,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi053",
@@ -686,7 +790,9 @@
     "carbs": 38,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi054",
@@ -699,7 +805,9 @@
     "carbs": 19,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi055",
@@ -712,7 +820,9 @@
     "carbs": 8,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi056",
@@ -725,7 +835,9 @@
     "carbs": 16,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi057",
@@ -738,7 +850,9 @@
     "carbs": 35,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi058",
@@ -751,7 +865,9 @@
     "carbs": 37,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi059",
@@ -764,7 +880,9 @@
     "carbs": 44,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi060",
@@ -777,7 +895,9 @@
     "carbs": 7,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi061",
@@ -790,7 +910,9 @@
     "carbs": 31,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi062",
@@ -803,7 +925,9 @@
     "carbs": 33,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi063",
@@ -816,7 +940,9 @@
     "carbs": 33,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi064",
@@ -829,7 +955,9 @@
     "carbs": 18,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi065",
@@ -842,7 +970,9 @@
     "carbs": 25,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi066",
@@ -855,7 +985,9 @@
     "carbs": 13,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi067",
@@ -868,7 +1000,9 @@
     "carbs": 9,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi068",
@@ -881,7 +1015,9 @@
     "carbs": 13,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi069",
@@ -894,7 +1030,9 @@
     "carbs": 23,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi070",
@@ -907,7 +1045,9 @@
     "carbs": 6,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi071",
@@ -920,7 +1060,9 @@
     "carbs": 31,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi072",
@@ -933,7 +1075,9 @@
     "carbs": 19,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi073",
@@ -946,7 +1090,9 @@
     "carbs": 34,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi074",
@@ -959,7 +1105,9 @@
     "carbs": 36,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi075",
@@ -972,7 +1120,9 @@
     "carbs": 21,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi076",
@@ -985,7 +1135,9 @@
     "carbs": 1,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi077",
@@ -998,7 +1150,9 @@
     "carbs": 2,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi078",
@@ -1011,7 +1165,9 @@
     "carbs": 3,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi079",
@@ -1024,7 +1180,9 @@
     "carbs": 15,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi080",
@@ -1037,7 +1195,9 @@
     "carbs": 27,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi081",
@@ -1050,7 +1210,9 @@
     "carbs": 11,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi082",
@@ -1063,7 +1225,9 @@
     "carbs": 15,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi083",
@@ -1076,7 +1240,9 @@
     "carbs": 24,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi084",
@@ -1089,7 +1255,9 @@
     "carbs": 5,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi085",
@@ -1102,7 +1270,9 @@
     "carbs": 32,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi086",
@@ -1115,7 +1285,9 @@
     "carbs": 5,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi087",
@@ -1128,7 +1300,9 @@
     "carbs": 18,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi088",
@@ -1141,7 +1315,9 @@
     "carbs": 22,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi089",
@@ -1154,7 +1330,9 @@
     "carbs": 25,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi090",
@@ -1167,7 +1345,9 @@
     "carbs": 28,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi091",
@@ -1180,7 +1360,9 @@
     "carbs": 36,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi092",
@@ -1193,7 +1375,9 @@
     "carbs": 24,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi093",
@@ -1206,7 +1390,9 @@
     "carbs": 40,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi094",
@@ -1219,7 +1405,9 @@
     "carbs": 24,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi095",
@@ -1232,7 +1420,9 @@
     "carbs": 12,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi096",
@@ -1245,7 +1435,9 @@
     "carbs": 14,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi097",
@@ -1258,7 +1450,9 @@
     "carbs": 7,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi098",
@@ -1271,7 +1465,9 @@
     "carbs": 27,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi099",
@@ -1284,7 +1480,9 @@
     "carbs": 40,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi100",
@@ -1297,7 +1495,9 @@
     "carbs": 35,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi101",
@@ -1310,7 +1510,9 @@
     "carbs": 22,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi102",
@@ -1323,7 +1525,9 @@
     "carbs": 43,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi103",
@@ -1336,7 +1540,9 @@
     "carbs": 28,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi104",
@@ -1349,7 +1555,9 @@
     "carbs": 16,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi105",
@@ -1362,7 +1570,9 @@
     "carbs": 25,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi106",
@@ -1375,7 +1585,9 @@
     "carbs": 45,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi107",
@@ -1388,7 +1600,9 @@
     "carbs": 7,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi108",
@@ -1401,7 +1615,9 @@
     "carbs": 6,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi109",
@@ -1414,7 +1630,9 @@
     "carbs": 7,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi110",
@@ -1427,7 +1645,9 @@
     "carbs": 45,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi111",
@@ -1440,7 +1660,9 @@
     "carbs": 39,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi112",
@@ -1453,7 +1675,9 @@
     "carbs": 6,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi113",
@@ -1466,7 +1690,9 @@
     "carbs": 14,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi114",
@@ -1479,7 +1705,9 @@
     "carbs": 23,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi115",
@@ -1492,7 +1720,9 @@
     "carbs": 39,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi116",
@@ -1505,7 +1735,9 @@
     "carbs": 36,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi117",
@@ -1518,7 +1750,9 @@
     "carbs": 0,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi118",
@@ -1531,7 +1765,9 @@
     "carbs": 8,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi119",
@@ -1544,7 +1780,9 @@
     "carbs": 27,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi120",
@@ -1557,7 +1795,9 @@
     "carbs": 28,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi121",
@@ -1570,7 +1810,9 @@
     "carbs": 35,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi122",
@@ -1583,7 +1825,9 @@
     "carbs": 4,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi123",
@@ -1596,7 +1840,9 @@
     "carbs": 36,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi124",
@@ -1609,7 +1855,9 @@
     "carbs": 3,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi125",
@@ -1622,7 +1870,9 @@
     "carbs": 36,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi126",
@@ -1635,7 +1885,9 @@
     "carbs": 38,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi127",
@@ -1648,7 +1900,9 @@
     "carbs": 24,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi128",
@@ -1661,7 +1915,9 @@
     "carbs": 28,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi129",
@@ -1674,7 +1930,9 @@
     "carbs": 18,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi130",
@@ -1687,7 +1945,9 @@
     "carbs": 21,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi131",
@@ -1700,7 +1960,9 @@
     "carbs": 6,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi132",
@@ -1713,7 +1975,9 @@
     "carbs": 31,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi133",
@@ -1726,7 +1990,9 @@
     "carbs": 20,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi134",
@@ -1739,7 +2005,9 @@
     "carbs": 23,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi135",
@@ -1752,7 +2020,9 @@
     "carbs": 5,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi136",
@@ -1765,7 +2035,9 @@
     "carbs": 25,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi137",
@@ -1778,7 +2050,9 @@
     "carbs": 25,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi138",
@@ -1791,7 +2065,9 @@
     "carbs": 28,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi139",
@@ -1804,7 +2080,9 @@
     "carbs": 6,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi140",
@@ -1817,7 +2095,9 @@
     "carbs": 35,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi141",
@@ -1830,7 +2110,9 @@
     "carbs": 10,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi142",
@@ -1843,7 +2125,9 @@
     "carbs": 23,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi143",
@@ -1856,7 +2140,9 @@
     "carbs": 39,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi144",
@@ -1869,7 +2155,9 @@
     "carbs": 26,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi145",
@@ -1882,7 +2170,9 @@
     "carbs": 21,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi146",
@@ -1895,7 +2185,9 @@
     "carbs": 7,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi147",
@@ -1908,7 +2200,9 @@
     "carbs": 44,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi148",
@@ -1921,7 +2215,9 @@
     "carbs": 37,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi149",
@@ -1934,7 +2230,9 @@
     "carbs": 7,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi150",
@@ -1947,7 +2245,9 @@
     "carbs": 20,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi151",
@@ -1960,7 +2260,9 @@
     "carbs": 33,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi152",
@@ -1973,7 +2275,9 @@
     "carbs": 6,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi153",
@@ -1986,7 +2290,9 @@
     "carbs": 42,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi154",
@@ -1999,7 +2305,9 @@
     "carbs": 15,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi155",
@@ -2012,7 +2320,9 @@
     "carbs": 3,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi156",
@@ -2025,7 +2335,9 @@
     "carbs": 31,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi157",
@@ -2038,7 +2350,9 @@
     "carbs": 30,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi158",
@@ -2051,7 +2365,9 @@
     "carbs": 28,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi159",
@@ -2064,7 +2380,9 @@
     "carbs": 37,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi160",
@@ -2077,7 +2395,9 @@
     "carbs": 31,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi161",
@@ -2090,7 +2410,9 @@
     "carbs": 35,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi162",
@@ -2103,7 +2425,9 @@
     "carbs": 11,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi163",
@@ -2116,7 +2440,9 @@
     "carbs": 42,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi164",
@@ -2129,7 +2455,9 @@
     "carbs": 31,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi165",
@@ -2142,7 +2470,9 @@
     "carbs": 0,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi166",
@@ -2155,7 +2485,9 @@
     "carbs": 14,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi167",
@@ -2168,7 +2500,9 @@
     "carbs": 9,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi168",
@@ -2181,7 +2515,9 @@
     "carbs": 0,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi169",
@@ -2194,7 +2530,9 @@
     "carbs": 22,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi170",
@@ -2207,7 +2545,9 @@
     "carbs": 19,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi171",
@@ -2220,7 +2560,9 @@
     "carbs": 15,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi172",
@@ -2233,7 +2575,9 @@
     "carbs": 41,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi173",
@@ -2246,7 +2590,9 @@
     "carbs": 13,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi174",
@@ -2259,7 +2605,9 @@
     "carbs": 29,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi175",
@@ -2272,7 +2620,9 @@
     "carbs": 42,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi176",
@@ -2285,7 +2635,9 @@
     "carbs": 16,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi177",
@@ -2298,7 +2650,9 @@
     "carbs": 12,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi178",
@@ -2311,7 +2665,9 @@
     "carbs": 45,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi179",
@@ -2324,7 +2680,9 @@
     "carbs": 4,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi180",
@@ -2337,7 +2695,9 @@
     "carbs": 42,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi181",
@@ -2350,7 +2710,9 @@
     "carbs": 32,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi182",
@@ -2363,7 +2725,9 @@
     "carbs": 38,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi183",
@@ -2376,7 +2740,9 @@
     "carbs": 42,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi184",
@@ -2389,7 +2755,9 @@
     "carbs": 9,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi185",
@@ -2402,7 +2770,9 @@
     "carbs": 31,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi186",
@@ -2415,7 +2785,9 @@
     "carbs": 16,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi187",
@@ -2428,7 +2800,9 @@
     "carbs": 16,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi188",
@@ -2441,7 +2815,9 @@
     "carbs": 1,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi189",
@@ -2454,7 +2830,9 @@
     "carbs": 28,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi190",
@@ -2467,7 +2845,9 @@
     "carbs": 42,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi191",
@@ -2480,7 +2860,9 @@
     "carbs": 2,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi192",
@@ -2493,7 +2875,9 @@
     "carbs": 24,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi193",
@@ -2506,7 +2890,9 @@
     "carbs": 38,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi194",
@@ -2519,7 +2905,9 @@
     "carbs": 6,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi195",
@@ -2532,7 +2920,9 @@
     "carbs": 7,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi196",
@@ -2545,7 +2935,9 @@
     "carbs": 42,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi197",
@@ -2558,7 +2950,9 @@
     "carbs": 41,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi198",
@@ -2571,7 +2965,9 @@
     "carbs": 44,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi199",
@@ -2584,7 +2980,9 @@
     "carbs": 32,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi200",
@@ -2597,7 +2995,9 @@
     "carbs": 28,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi201",
@@ -2610,7 +3010,9 @@
     "carbs": 41,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi202",
@@ -2623,7 +3025,9 @@
     "carbs": 38,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi203",
@@ -2636,7 +3040,9 @@
     "carbs": 34,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi204",
@@ -2649,7 +3055,9 @@
     "carbs": 21,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi205",
@@ -2662,7 +3070,9 @@
     "carbs": 1,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi206",
@@ -2675,7 +3085,9 @@
     "carbs": 43,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi207",
@@ -2688,7 +3100,9 @@
     "carbs": 11,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi208",
@@ -2701,7 +3115,9 @@
     "carbs": 7,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi209",
@@ -2714,7 +3130,9 @@
     "carbs": 28,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi210",
@@ -2727,7 +3145,9 @@
     "carbs": 4,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi211",
@@ -2740,7 +3160,9 @@
     "carbs": 16,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi212",
@@ -2753,7 +3175,9 @@
     "carbs": 1,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi213",
@@ -2766,7 +3190,9 @@
     "carbs": 33,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi214",
@@ -2779,7 +3205,9 @@
     "carbs": 7,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi215",
@@ -2792,7 +3220,9 @@
     "carbs": 23,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi216",
@@ -2805,7 +3235,9 @@
     "carbs": 0,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi217",
@@ -2818,7 +3250,9 @@
     "carbs": 6,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi218",
@@ -2831,7 +3265,9 @@
     "carbs": 12,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi219",
@@ -2844,7 +3280,9 @@
     "carbs": 31,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi220",
@@ -2857,7 +3295,9 @@
     "carbs": 27,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi221",
@@ -2870,7 +3310,9 @@
     "carbs": 32,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi222",
@@ -2883,7 +3325,9 @@
     "carbs": 28,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi223",
@@ -2896,7 +3340,9 @@
     "carbs": 22,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi224",
@@ -2909,7 +3355,9 @@
     "carbs": 5,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi225",
@@ -2922,7 +3370,9 @@
     "carbs": 10,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi226",
@@ -2935,7 +3385,9 @@
     "carbs": 9,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi227",
@@ -2948,7 +3400,9 @@
     "carbs": 15,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi228",
@@ -2961,7 +3415,9 @@
     "carbs": 9,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi229",
@@ -2974,7 +3430,9 @@
     "carbs": 7,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi230",
@@ -2987,7 +3445,9 @@
     "carbs": 41,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi231",
@@ -3000,7 +3460,9 @@
     "carbs": 24,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi232",
@@ -3013,7 +3475,9 @@
     "carbs": 12,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi233",
@@ -3026,7 +3490,9 @@
     "carbs": 25,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi234",
@@ -3039,7 +3505,9 @@
     "carbs": 6,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi235",
@@ -3052,7 +3520,9 @@
     "carbs": 44,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi236",
@@ -3065,7 +3535,9 @@
     "carbs": 9,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi237",
@@ -3078,7 +3550,9 @@
     "carbs": 45,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi238",
@@ -3091,7 +3565,9 @@
     "carbs": 38,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi239",
@@ -3104,7 +3580,9 @@
     "carbs": 30,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi240",
@@ -3117,7 +3595,9 @@
     "carbs": 20,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi241",
@@ -3130,7 +3610,9 @@
     "carbs": 36,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi242",
@@ -3143,7 +3625,9 @@
     "carbs": 27,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi243",
@@ -3156,7 +3640,9 @@
     "carbs": 28,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi244",
@@ -3169,7 +3655,9 @@
     "carbs": 33,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi245",
@@ -3182,7 +3670,9 @@
     "carbs": 7,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi246",
@@ -3195,7 +3685,9 @@
     "carbs": 20,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi247",
@@ -3208,7 +3700,9 @@
     "carbs": 0,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi248",
@@ -3221,7 +3715,9 @@
     "carbs": 18,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi249",
@@ -3234,7 +3730,9 @@
     "carbs": 36,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi250",
@@ -3247,7 +3745,9 @@
     "carbs": 14,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi251",
@@ -3260,7 +3760,9 @@
     "carbs": 11,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi252",
@@ -3273,7 +3775,9 @@
     "carbs": 5,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi253",
@@ -3286,7 +3790,9 @@
     "carbs": 0,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi254",
@@ -3299,7 +3805,9 @@
     "carbs": 16,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi255",
@@ -3312,7 +3820,9 @@
     "carbs": 25,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi256",
@@ -3325,7 +3835,9 @@
     "carbs": 29,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi257",
@@ -3338,7 +3850,9 @@
     "carbs": 32,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi258",
@@ -3351,7 +3865,9 @@
     "carbs": 3,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi259",
@@ -3364,7 +3880,9 @@
     "carbs": 31,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi260",
@@ -3377,7 +3895,9 @@
     "carbs": 40,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi261",
@@ -3390,7 +3910,9 @@
     "carbs": 21,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi262",
@@ -3403,7 +3925,9 @@
     "carbs": 23,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi263",
@@ -3416,7 +3940,9 @@
     "carbs": 20,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi264",
@@ -3429,7 +3955,9 @@
     "carbs": 15,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi265",
@@ -3442,7 +3970,9 @@
     "carbs": 33,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi266",
@@ -3455,7 +3985,9 @@
     "carbs": 27,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi267",
@@ -3468,7 +4000,9 @@
     "carbs": 6,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi268",
@@ -3481,7 +4015,9 @@
     "carbs": 6,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi269",
@@ -3494,7 +4030,9 @@
     "carbs": 45,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi270",
@@ -3507,7 +4045,9 @@
     "carbs": 32,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi271",
@@ -3520,7 +4060,9 @@
     "carbs": 32,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi272",
@@ -3533,7 +4075,9 @@
     "carbs": 21,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi273",
@@ -3546,7 +4090,9 @@
     "carbs": 41,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi274",
@@ -3559,7 +4105,9 @@
     "carbs": 18,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi275",
@@ -3572,7 +4120,9 @@
     "carbs": 40,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi276",
@@ -3585,7 +4135,9 @@
     "carbs": 21,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi277",
@@ -3598,7 +4150,9 @@
     "carbs": 3,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi278",
@@ -3611,7 +4165,9 @@
     "carbs": 34,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi279",
@@ -3624,7 +4180,9 @@
     "carbs": 8,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi280",
@@ -3637,7 +4195,9 @@
     "carbs": 44,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi281",
@@ -3650,7 +4210,9 @@
     "carbs": 17,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi282",
@@ -3663,7 +4225,9 @@
     "carbs": 42,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi283",
@@ -3676,7 +4240,9 @@
     "carbs": 31,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi284",
@@ -3689,7 +4255,9 @@
     "carbs": 1,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi285",
@@ -3702,7 +4270,9 @@
     "carbs": 10,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi286",
@@ -3715,7 +4285,9 @@
     "carbs": 32,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi287",
@@ -3728,7 +4300,9 @@
     "carbs": 31,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi288",
@@ -3741,7 +4315,9 @@
     "carbs": 0,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi289",
@@ -3754,7 +4330,9 @@
     "carbs": 14,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi290",
@@ -3767,7 +4345,9 @@
     "carbs": 23,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi291",
@@ -3780,7 +4360,9 @@
     "carbs": 24,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi292",
@@ -3793,7 +4375,9 @@
     "carbs": 43,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi293",
@@ -3806,7 +4390,9 @@
     "carbs": 4,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi294",
@@ -3819,7 +4405,9 @@
     "carbs": 16,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi295",
@@ -3832,7 +4420,9 @@
     "carbs": 22,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi296",
@@ -3845,7 +4435,9 @@
     "carbs": 34,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi297",
@@ -3858,7 +4450,9 @@
     "carbs": 44,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi298",
@@ -3871,7 +4465,9 @@
     "carbs": 33,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi299",
@@ -3884,7 +4480,9 @@
     "carbs": 5,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi300",
@@ -3897,7 +4495,9 @@
     "carbs": 33,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi301",
@@ -3910,7 +4510,9 @@
     "carbs": 21,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi302",
@@ -3923,7 +4525,9 @@
     "carbs": 11,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi303",
@@ -3936,7 +4540,9 @@
     "carbs": 2,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi304",
@@ -3949,7 +4555,9 @@
     "carbs": 7,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi305",
@@ -3962,7 +4570,9 @@
     "carbs": 17,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi306",
@@ -3975,7 +4585,9 @@
     "carbs": 34,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi307",
@@ -3988,7 +4600,9 @@
     "carbs": 38,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi308",
@@ -4001,7 +4615,9 @@
     "carbs": 45,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi309",
@@ -4014,7 +4630,9 @@
     "carbs": 30,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi310",
@@ -4027,7 +4645,9 @@
     "carbs": 19,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi311",
@@ -4040,7 +4660,9 @@
     "carbs": 45,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi312",
@@ -4053,7 +4675,9 @@
     "carbs": 44,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi313",
@@ -4066,7 +4690,9 @@
     "carbs": 5,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi314",
@@ -4079,7 +4705,9 @@
     "carbs": 1,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi315",
@@ -4092,7 +4720,9 @@
     "carbs": 5,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi316",
@@ -4105,7 +4735,9 @@
     "carbs": 38,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi317",
@@ -4118,7 +4750,9 @@
     "carbs": 41,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi318",
@@ -4131,7 +4765,9 @@
     "carbs": 27,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi319",
@@ -4144,7 +4780,9 @@
     "carbs": 4,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi320",
@@ -4157,7 +4795,9 @@
     "carbs": 19,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi321",
@@ -4170,7 +4810,9 @@
     "carbs": 22,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi322",
@@ -4183,7 +4825,9 @@
     "carbs": 29,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi323",
@@ -4196,7 +4840,9 @@
     "carbs": 29,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi324",
@@ -4209,7 +4855,9 @@
     "carbs": 37,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi325",
@@ -4222,7 +4870,9 @@
     "carbs": 13,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi326",
@@ -4235,7 +4885,9 @@
     "carbs": 34,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi327",
@@ -4248,7 +4900,9 @@
     "carbs": 17,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi328",
@@ -4261,7 +4915,9 @@
     "carbs": 25,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi329",
@@ -4274,7 +4930,9 @@
     "carbs": 38,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi330",
@@ -4287,7 +4945,9 @@
     "carbs": 39,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi331",
@@ -4300,7 +4960,9 @@
     "carbs": 4,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi332",
@@ -4313,7 +4975,9 @@
     "carbs": 0,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi333",
@@ -4326,7 +4990,9 @@
     "carbs": 13,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi334",
@@ -4339,7 +5005,9 @@
     "carbs": 39,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi335",
@@ -4352,7 +5020,9 @@
     "carbs": 23,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi336",
@@ -4365,7 +5035,9 @@
     "carbs": 8,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi337",
@@ -4378,7 +5050,9 @@
     "carbs": 26,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi338",
@@ -4391,7 +5065,9 @@
     "carbs": 37,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi339",
@@ -4404,7 +5080,9 @@
     "carbs": 34,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi340",
@@ -4417,7 +5095,9 @@
     "carbs": 2,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi341",
@@ -4430,7 +5110,9 @@
     "carbs": 2,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi342",
@@ -4443,7 +5125,9 @@
     "carbs": 45,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi343",
@@ -4456,7 +5140,9 @@
     "carbs": 21,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi344",
@@ -4469,7 +5155,9 @@
     "carbs": 30,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi345",
@@ -4482,7 +5170,9 @@
     "carbs": 38,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi346",
@@ -4495,7 +5185,9 @@
     "carbs": 17,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi347",
@@ -4508,7 +5200,9 @@
     "carbs": 27,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi348",
@@ -4521,7 +5215,9 @@
     "carbs": 37,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi349",
@@ -4534,7 +5230,9 @@
     "carbs": 35,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi350",
@@ -4547,7 +5245,9 @@
     "carbs": 24,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi351",
@@ -4560,7 +5260,9 @@
     "carbs": 28,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi352",
@@ -4573,7 +5275,9 @@
     "carbs": 44,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi353",
@@ -4586,7 +5290,9 @@
     "carbs": 30,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi354",
@@ -4599,7 +5305,9 @@
     "carbs": 25,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi355",
@@ -4612,7 +5320,9 @@
     "carbs": 31,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi356",
@@ -4625,7 +5335,9 @@
     "carbs": 22,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi357",
@@ -4638,7 +5350,9 @@
     "carbs": 5,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi358",
@@ -4651,7 +5365,9 @@
     "carbs": 41,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi359",
@@ -4664,7 +5380,9 @@
     "carbs": 12,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi360",
@@ -4677,7 +5395,9 @@
     "carbs": 0,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi361",
@@ -4690,7 +5410,9 @@
     "carbs": 7,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi362",
@@ -4703,7 +5425,9 @@
     "carbs": 26,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi363",
@@ -4716,7 +5440,9 @@
     "carbs": 42,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi364",
@@ -4729,7 +5455,9 @@
     "carbs": 27,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi365",
@@ -4742,7 +5470,9 @@
     "carbs": 41,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi366",
@@ -4755,7 +5485,9 @@
     "carbs": 2,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi367",
@@ -4768,7 +5500,9 @@
     "carbs": 17,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi368",
@@ -4781,7 +5515,9 @@
     "carbs": 28,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi369",
@@ -4794,7 +5530,9 @@
     "carbs": 6,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi370",
@@ -4807,7 +5545,9 @@
     "carbs": 25,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi371",
@@ -4820,7 +5560,9 @@
     "carbs": 24,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi372",
@@ -4833,7 +5575,9 @@
     "carbs": 41,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi373",
@@ -4846,7 +5590,9 @@
     "carbs": 26,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi374",
@@ -4859,7 +5605,9 @@
     "carbs": 12,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi375",
@@ -4872,7 +5620,9 @@
     "carbs": 36,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi376",
@@ -4885,7 +5635,9 @@
     "carbs": 33,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi377",
@@ -4898,7 +5650,9 @@
     "carbs": 38,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi378",
@@ -4911,7 +5665,9 @@
     "carbs": 41,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi379",
@@ -4924,7 +5680,9 @@
     "carbs": 2,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi380",
@@ -4937,7 +5695,9 @@
     "carbs": 45,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi381",
@@ -4950,7 +5710,9 @@
     "carbs": 19,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi382",
@@ -4963,7 +5725,9 @@
     "carbs": 7,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi383",
@@ -4976,7 +5740,9 @@
     "carbs": 27,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi384",
@@ -4989,7 +5755,9 @@
     "carbs": 2,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi385",
@@ -5002,7 +5770,9 @@
     "carbs": 8,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi386",
@@ -5015,7 +5785,9 @@
     "carbs": 8,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi387",
@@ -5028,7 +5800,9 @@
     "carbs": 18,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi388",
@@ -5041,7 +5815,9 @@
     "carbs": 24,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi389",
@@ -5054,7 +5830,9 @@
     "carbs": 20,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi390",
@@ -5067,7 +5845,9 @@
     "carbs": 28,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi391",
@@ -5080,7 +5860,9 @@
     "carbs": 6,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi392",
@@ -5093,7 +5875,9 @@
     "carbs": 17,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi393",
@@ -5106,7 +5890,9 @@
     "carbs": 28,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi394",
@@ -5119,7 +5905,9 @@
     "carbs": 15,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi395",
@@ -5132,7 +5920,9 @@
     "carbs": 39,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi396",
@@ -5145,7 +5935,9 @@
     "carbs": 24,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi397",
@@ -5158,7 +5950,9 @@
     "carbs": 21,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi398",
@@ -5171,7 +5965,9 @@
     "carbs": 34,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi399",
@@ -5184,7 +5980,9 @@
     "carbs": 41,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi400",
@@ -5197,7 +5995,9 @@
     "carbs": 5,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi401",
@@ -5210,7 +6010,9 @@
     "carbs": 42,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi402",
@@ -5223,7 +6025,9 @@
     "carbs": 6,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi403",
@@ -5236,7 +6040,9 @@
     "carbs": 44,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi404",
@@ -5249,7 +6055,9 @@
     "carbs": 23,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi405",
@@ -5262,7 +6070,9 @@
     "carbs": 24,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi406",
@@ -5275,7 +6085,9 @@
     "carbs": 31,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi407",
@@ -5288,7 +6100,9 @@
     "carbs": 37,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi408",
@@ -5301,7 +6115,9 @@
     "carbs": 39,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi409",
@@ -5314,7 +6130,9 @@
     "carbs": 21,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi410",
@@ -5327,7 +6145,9 @@
     "carbs": 45,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi411",
@@ -5340,7 +6160,9 @@
     "carbs": 40,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi412",
@@ -5353,7 +6175,9 @@
     "carbs": 34,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi413",
@@ -5366,7 +6190,9 @@
     "carbs": 23,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi414",
@@ -5379,7 +6205,9 @@
     "carbs": 43,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi415",
@@ -5392,7 +6220,9 @@
     "carbs": 25,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi416",
@@ -5405,7 +6235,9 @@
     "carbs": 43,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi417",
@@ -5418,7 +6250,9 @@
     "carbs": 42,
     "fats": 13,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi418",
@@ -5431,7 +6265,9 @@
     "carbs": 36,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi419",
@@ -5444,7 +6280,9 @@
     "carbs": 35,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi420",
@@ -5457,7 +6295,9 @@
     "carbs": 39,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi421",
@@ -5470,7 +6310,9 @@
     "carbs": 41,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi422",
@@ -5483,7 +6325,9 @@
     "carbs": 18,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi423",
@@ -5496,7 +6340,9 @@
     "carbs": 18,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi424",
@@ -5509,7 +6355,9 @@
     "carbs": 15,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi425",
@@ -5522,7 +6370,9 @@
     "carbs": 32,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi426",
@@ -5535,7 +6385,9 @@
     "carbs": 23,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi427",
@@ -5548,7 +6400,9 @@
     "carbs": 17,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi428",
@@ -5561,7 +6415,9 @@
     "carbs": 34,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi429",
@@ -5574,7 +6430,9 @@
     "carbs": 14,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi430",
@@ -5587,7 +6445,9 @@
     "carbs": 10,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi431",
@@ -5600,7 +6460,9 @@
     "carbs": 14,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi432",
@@ -5613,7 +6475,9 @@
     "carbs": 26,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi433",
@@ -5626,7 +6490,9 @@
     "carbs": 20,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi434",
@@ -5639,7 +6505,9 @@
     "carbs": 40,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi435",
@@ -5652,7 +6520,9 @@
     "carbs": 7,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi436",
@@ -5665,7 +6535,9 @@
     "carbs": 26,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi437",
@@ -5678,7 +6550,9 @@
     "carbs": 18,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi438",
@@ -5691,7 +6565,9 @@
     "carbs": 1,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi439",
@@ -5704,7 +6580,9 @@
     "carbs": 38,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi440",
@@ -5717,7 +6595,9 @@
     "carbs": 22,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi441",
@@ -5730,7 +6610,9 @@
     "carbs": 37,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi442",
@@ -5743,7 +6625,9 @@
     "carbs": 4,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi443",
@@ -5756,7 +6640,9 @@
     "carbs": 16,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi444",
@@ -5769,7 +6655,9 @@
     "carbs": 41,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi445",
@@ -5782,7 +6670,9 @@
     "carbs": 29,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi446",
@@ -5795,7 +6685,9 @@
     "carbs": 31,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi447",
@@ -5808,7 +6700,9 @@
     "carbs": 42,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi448",
@@ -5821,7 +6715,9 @@
     "carbs": 13,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi449",
@@ -5834,7 +6730,9 @@
     "carbs": 7,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi450",
@@ -5847,7 +6745,9 @@
     "carbs": 27,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi451",
@@ -5860,7 +6760,9 @@
     "carbs": 16,
     "fats": 12,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi452",
@@ -5873,7 +6775,9 @@
     "carbs": 24,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi453",
@@ -5886,7 +6790,9 @@
     "carbs": 21,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi454",
@@ -5899,7 +6805,9 @@
     "carbs": 5,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi455",
@@ -5912,7 +6820,9 @@
     "carbs": 24,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi456",
@@ -5925,7 +6835,9 @@
     "carbs": 3,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi457",
@@ -5938,7 +6850,9 @@
     "carbs": 31,
     "fats": 8,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi458",
@@ -5951,7 +6865,9 @@
     "carbs": 37,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi459",
@@ -5964,7 +6880,9 @@
     "carbs": 15,
     "fats": 10,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi460",
@@ -5977,7 +6895,9 @@
     "carbs": 37,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi461",
@@ -5990,7 +6910,9 @@
     "carbs": 8,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi462",
@@ -6003,7 +6925,9 @@
     "carbs": 15,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi463",
@@ -6016,7 +6940,9 @@
     "carbs": 44,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi464",
@@ -6029,7 +6955,9 @@
     "carbs": 44,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi465",
@@ -6042,7 +6970,9 @@
     "carbs": 11,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi466",
@@ -6055,7 +6985,9 @@
     "carbs": 40,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi467",
@@ -6068,7 +7000,9 @@
     "carbs": 10,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi468",
@@ -6081,7 +7015,9 @@
     "carbs": 30,
     "fats": 6,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi469",
@@ -6094,7 +7030,9 @@
     "carbs": 28,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi470",
@@ -6107,7 +7045,9 @@
     "carbs": 45,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi471",
@@ -6120,7 +7060,9 @@
     "carbs": 5,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi472",
@@ -6133,7 +7075,9 @@
     "carbs": 13,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi473",
@@ -6146,7 +7090,9 @@
     "carbs": 31,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi474",
@@ -6159,7 +7105,9 @@
     "carbs": 35,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi475",
@@ -6172,7 +7120,9 @@
     "carbs": 18,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi476",
@@ -6185,7 +7135,9 @@
     "carbs": 15,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi477",
@@ -6198,7 +7150,9 @@
     "carbs": 21,
     "fats": 15,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi478",
@@ -6211,7 +7165,9 @@
     "carbs": 7,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi479",
@@ -6224,7 +7180,9 @@
     "carbs": 8,
     "fats": 14,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi480",
@@ -6237,7 +7195,9 @@
     "carbs": 13,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi481",
@@ -6250,7 +7210,9 @@
     "carbs": 27,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi482",
@@ -6263,7 +7225,9 @@
     "carbs": 1,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi483",
@@ -6276,7 +7240,9 @@
     "carbs": 26,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi484",
@@ -6289,7 +7255,9 @@
     "carbs": 31,
     "fats": 11,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi485",
@@ -6302,7 +7270,9 @@
     "carbs": 12,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi486",
@@ -6315,7 +7285,9 @@
     "carbs": 10,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi487",
@@ -6328,7 +7300,9 @@
     "carbs": 12,
     "fats": 9,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi488",
@@ -6341,7 +7315,9 @@
     "carbs": 21,
     "fats": 3,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi489",
@@ -6354,7 +7330,9 @@
     "carbs": 12,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi490",
@@ -6367,7 +7345,9 @@
     "carbs": 45,
     "fats": 1,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi491",
@@ -6380,7 +7360,9 @@
     "carbs": 26,
     "fats": 17,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi492",
@@ -6393,7 +7375,9 @@
     "carbs": 39,
     "fats": 0,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi493",
@@ -6406,7 +7390,9 @@
     "carbs": 23,
     "fats": 4,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi494",
@@ -6419,7 +7405,9 @@
     "carbs": 34,
     "fats": 16,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi495",
@@ -6432,7 +7420,9 @@
     "carbs": 35,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi496",
@@ -6445,7 +7435,9 @@
     "carbs": 10,
     "fats": 2,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi497",
@@ -6458,7 +7450,9 @@
     "carbs": 32,
     "fats": 7,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi498",
@@ -6471,7 +7465,9 @@
     "carbs": 1,
     "fats": 18,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi499",
@@ -6484,7 +7480,9 @@
     "carbs": 33,
     "fats": 5,
     "consumedAmount": 1,
-    "consumedUnit": "serving"
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
   },
   {
     "id": "bi500",
@@ -6497,6 +7495,1671 @@
     "carbs": 22,
     "fats": 12,
     "consumedAmount": 1,
+    "consumedUnit": "serving",
+    "fiber": 0,
+    "sodium": 0
+  },
+  {
+    "id": "bi501",
+    "name": "Thums Up 250ml Can",
+    "brand": "Thums Up",
+    "aliases": [
+      "thumbs up cola",
+      "thums up can"
+    ],
+    "category": "Soft Drinks",
+    "calories": 113,
+    "protein": 0,
+    "carbs": 29,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 30,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi502",
+    "name": "Thums Up per 100ml",
+    "brand": "Thums Up",
+    "aliases": [
+      "thums up cola 100ml"
+    ],
+    "category": "Soft Drinks",
+    "calories": 45,
+    "protein": 0,
+    "carbs": 11.6,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 12,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi503",
+    "name": "Coca-Cola 300ml Can",
+    "brand": "Coca-Cola",
+    "aliases": [
+      "coke can",
+      "coca cola"
+    ],
+    "category": "Soft Drinks",
+    "calories": 129,
+    "protein": 0,
+    "carbs": 32,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 40,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi504",
+    "name": "Coca-Cola per 100ml",
+    "brand": "Coca-Cola",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 43,
+    "protein": 0,
+    "carbs": 10.6,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 13,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi505",
+    "name": "Sprite 300ml Can",
+    "brand": "Sprite",
+    "aliases": [
+      "sprite lemon",
+      "sprite can"
+    ],
+    "category": "Soft Drinks",
+    "calories": 126,
+    "protein": 0,
+    "carbs": 31.5,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 45,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi506",
+    "name": "Sprite per 100ml",
+    "brand": "Sprite",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 42,
+    "protein": 0,
+    "carbs": 10.5,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 15,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi507",
+    "name": "Limca 300ml Can",
+    "brand": "Limca",
+    "aliases": [
+      "limca lemon lime"
+    ],
+    "category": "Soft Drinks",
+    "calories": 132,
+    "protein": 0,
+    "carbs": 33,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 30,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi508",
+    "name": "Limca per 100ml",
+    "brand": "Limca",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 44,
+    "protein": 0,
+    "carbs": 11,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 10,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi509",
+    "name": "Maaza Mango 250ml",
+    "brand": "Maaza",
+    "aliases": [
+      "maaza mango drink"
+    ],
+    "category": "Soft Drinks",
+    "calories": 143,
+    "protein": 0,
+    "carbs": 36,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 20,
+    "consumedAmount": 1,
+    "consumedUnit": "bottle"
+  },
+  {
+    "id": "bi510",
+    "name": "Maaza Mango per 100ml",
+    "brand": "Maaza",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 57,
+    "protein": 0,
+    "carbs": 14.4,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 8,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi511",
+    "name": "Appy Fizz 250ml",
+    "brand": "Appy Fizz",
+    "aliases": [
+      "appy fizz apple drink"
+    ],
+    "category": "Soft Drinks",
+    "calories": 115,
+    "protein": 0,
+    "carbs": 28,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 25,
+    "consumedAmount": 1,
+    "consumedUnit": "bottle"
+  },
+  {
+    "id": "bi512",
+    "name": "Appy Fizz per 100ml",
+    "brand": "Appy Fizz",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 46,
+    "protein": 0,
+    "carbs": 11.2,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 10,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi513",
+    "name": "Frooti Mango 200ml Tetra",
+    "brand": "Frooti",
+    "aliases": [
+      "frooti mango juice"
+    ],
+    "category": "Soft Drinks",
+    "calories": 90,
+    "protein": 0,
+    "carbs": 22,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 15,
+    "consumedAmount": 1,
+    "consumedUnit": "tetra"
+  },
+  {
+    "id": "bi514",
+    "name": "Frooti per 100ml",
+    "brand": "Frooti",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 45,
+    "protein": 0,
+    "carbs": 11,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 8,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi515",
+    "name": "Pepsi 300ml Can",
+    "brand": "Pepsi",
+    "aliases": [
+      "pepsi cola can"
+    ],
+    "category": "Soft Drinks",
+    "calories": 132,
+    "protein": 0,
+    "carbs": 33,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 40,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi516",
+    "name": "Pepsi per 100ml",
+    "brand": "Pepsi",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 44,
+    "protein": 0,
+    "carbs": 11,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 13,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi517",
+    "name": "Mountain Dew 300ml Can",
+    "brand": "Mountain Dew",
+    "aliases": [
+      "mtn dew",
+      "dew"
+    ],
+    "category": "Soft Drinks",
+    "calories": 165,
+    "protein": 0,
+    "carbs": 41,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 60,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi518",
+    "name": "Mountain Dew per 100ml",
+    "brand": "Mountain Dew",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 55,
+    "protein": 0,
+    "carbs": 13.7,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 20,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi519",
+    "name": "7UP 300ml Can",
+    "brand": "7UP",
+    "aliases": [
+      "seven up"
+    ],
+    "category": "Soft Drinks",
+    "calories": 117,
+    "protein": 0,
+    "carbs": 29,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 40,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi520",
+    "name": "7UP per 100ml",
+    "brand": "7UP",
+    "aliases": [],
+    "category": "Soft Drinks",
+    "calories": 39,
+    "protein": 0,
+    "carbs": 9.7,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 13,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi521",
+    "name": "Red Bull 250ml Can",
+    "brand": "Red Bull",
+    "aliases": [
+      "redbull energy drink"
+    ],
+    "category": "Energy Drinks",
+    "calories": 113,
+    "protein": 1,
+    "carbs": 27,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 105,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi522",
+    "name": "Red Bull per 100ml",
+    "brand": "Red Bull",
+    "aliases": [],
+    "category": "Energy Drinks",
+    "calories": 45,
+    "protein": 0.4,
+    "carbs": 10.8,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 42,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi523",
+    "name": "Monster Energy 500ml Can",
+    "brand": "Monster",
+    "aliases": [
+      "monster energy drink"
+    ],
+    "category": "Energy Drinks",
+    "calories": 230,
+    "protein": 0,
+    "carbs": 54,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 370,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi524",
+    "name": "Monster Energy per 100ml",
+    "brand": "Monster",
+    "aliases": [],
+    "category": "Energy Drinks",
+    "calories": 46,
+    "protein": 0,
+    "carbs": 10.8,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 74,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi525",
+    "name": "Sting Energy 250ml Bottle",
+    "brand": "Sting",
+    "aliases": [
+      "sting energy",
+      "sting"
+    ],
+    "category": "Energy Drinks",
+    "calories": 113,
+    "protein": 0,
+    "carbs": 27,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 90,
+    "consumedAmount": 1,
+    "consumedUnit": "bottle"
+  },
+  {
+    "id": "bi526",
+    "name": "Sting Energy per 100ml",
+    "brand": "Sting",
+    "aliases": [],
+    "category": "Energy Drinks",
+    "calories": 45,
+    "protein": 0,
+    "carbs": 10.8,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 36,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi527",
+    "name": "Hell Energy 250ml Can",
+    "brand": "Hell",
+    "aliases": [
+      "hell energy drink"
+    ],
+    "category": "Energy Drinks",
+    "calories": 110,
+    "protein": 0,
+    "carbs": 27,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 80,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi528",
+    "name": "Hell Energy per 100ml",
+    "brand": "Hell",
+    "aliases": [],
+    "category": "Energy Drinks",
+    "calories": 44,
+    "protein": 0,
+    "carbs": 10.8,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 32,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi529",
+    "name": "Charged+ by Thums Up 250ml",
+    "brand": "Charged+",
+    "aliases": [
+      "charged energy drink",
+      "charged thums up"
+    ],
+    "category": "Energy Drinks",
+    "calories": 120,
+    "protein": 0,
+    "carbs": 30,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 100,
+    "consumedAmount": 1,
+    "consumedUnit": "can"
+  },
+  {
+    "id": "bi530",
+    "name": "Charged+ per 100ml",
+    "brand": "Charged+",
+    "aliases": [],
+    "category": "Energy Drinks",
+    "calories": 48,
+    "protein": 0,
+    "carbs": 12,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 40,
+    "consumedAmount": 100,
+    "consumedUnit": "ml"
+  },
+  {
+    "id": "bi531",
+    "name": "Optimum Nutrition Gold Standard Whey 30g Scoop",
+    "brand": "Optimum Nutrition",
+    "aliases": [
+      "ON gold standard whey",
+      "on whey"
+    ],
+    "category": "Supplements",
+    "calories": 120,
+    "protein": 24,
+    "carbs": 3,
+    "fats": 1.5,
+    "fiber": 0,
+    "sodium": 130,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi532",
+    "name": "Optimum Nutrition Gold Standard Whey per 100g",
+    "brand": "Optimum Nutrition",
+    "aliases": [],
+    "category": "Supplements",
+    "calories": 400,
+    "protein": 80,
+    "carbs": 10,
+    "fats": 5,
+    "fiber": 0,
+    "sodium": 433,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi533",
+    "name": "Dymatize ISO100 30g Scoop",
+    "brand": "Dymatize",
+    "aliases": [
+      "iso 100 whey",
+      "dymatize isolate"
+    ],
+    "category": "Supplements",
+    "calories": 120,
+    "protein": 25,
+    "carbs": 2,
+    "fats": 0.5,
+    "fiber": 0,
+    "sodium": 190,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi534",
+    "name": "Dymatize ISO100 per 100g",
+    "brand": "Dymatize",
+    "aliases": [],
+    "category": "Supplements",
+    "calories": 390,
+    "protein": 83,
+    "carbs": 6,
+    "fats": 1.5,
+    "fiber": 0,
+    "sodium": 633,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi535",
+    "name": "Myprotein Impact Whey 25g Scoop",
+    "brand": "Myprotein",
+    "aliases": [
+      "my protein whey",
+      "myprotein impact"
+    ],
+    "category": "Supplements",
+    "calories": 103,
+    "protein": 21,
+    "carbs": 1,
+    "fats": 1.9,
+    "fiber": 0,
+    "sodium": 80,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi536",
+    "name": "Myprotein Impact Whey per 100g",
+    "brand": "Myprotein",
+    "aliases": [],
+    "category": "Supplements",
+    "calories": 412,
+    "protein": 84,
+    "carbs": 4,
+    "fats": 7.6,
+    "fiber": 0,
+    "sodium": 320,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi537",
+    "name": "Nakpro Perform Whey 30g Scoop",
+    "brand": "Nakpro",
+    "aliases": [
+      "nakpro whey",
+      "nakpro protein"
+    ],
+    "category": "Supplements",
+    "calories": 118,
+    "protein": 23,
+    "carbs": 3.5,
+    "fats": 1.5,
+    "fiber": 0,
+    "sodium": 120,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi538",
+    "name": "Nakpro Perform Whey per 100g",
+    "brand": "Nakpro",
+    "aliases": [],
+    "category": "Supplements",
+    "calories": 390,
+    "protein": 77,
+    "carbs": 12,
+    "fats": 5,
+    "fiber": 0,
+    "sodium": 400,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi539",
+    "name": "GNC Pro Performance Whey 34g Scoop",
+    "brand": "GNC",
+    "aliases": [
+      "gnc whey",
+      "gnc pro performance"
+    ],
+    "category": "Supplements",
+    "calories": 130,
+    "protein": 24,
+    "carbs": 4,
+    "fats": 2,
+    "fiber": 0,
+    "sodium": 150,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi540",
+    "name": "GNC Pro Performance Whey per 100g",
+    "brand": "GNC",
+    "aliases": [],
+    "category": "Supplements",
+    "calories": 382,
+    "protein": 71,
+    "carbs": 12,
+    "fats": 6,
+    "fiber": 0,
+    "sodium": 441,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi541",
+    "name": "MuscleBlaze Creatine Monohydrate 5g Scoop",
+    "brand": "MuscleBlaze",
+    "aliases": [
+      "mb creatine",
+      "muscleblaze creatine"
+    ],
+    "category": "Supplements",
+    "calories": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 0,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi542",
+    "name": "AS-IT-IS Creatine Monohydrate 5g",
+    "brand": "AS-IT-IS",
+    "aliases": [
+      "as it is creatine"
+    ],
+    "category": "Supplements",
+    "calories": 0,
+    "protein": 0,
+    "carbs": 0,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 0,
+    "consumedAmount": 5,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi543",
+    "name": "MuscleBlaze Mass Gainer XXL 75g Scoop",
+    "brand": "MuscleBlaze",
+    "aliases": [
+      "mb mass gainer",
+      "muscleblaze mass gainer xxl"
+    ],
+    "category": "Supplements",
+    "calories": 280,
+    "protein": 11,
+    "carbs": 55,
+    "fats": 2.5,
+    "fiber": 0.5,
+    "sodium": 180,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi544",
+    "name": "MuscleBlaze Mass Gainer XXL per 100g",
+    "brand": "MuscleBlaze",
+    "aliases": [],
+    "category": "Supplements",
+    "calories": 373,
+    "protein": 14.6,
+    "carbs": 73.3,
+    "fats": 3.3,
+    "fiber": 0.7,
+    "sodium": 240,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi545",
+    "name": "Fast&Up BCAA 10g Scoop",
+    "brand": "Fast&Up",
+    "aliases": [
+      "fastup bcaa",
+      "fast and up bcaa"
+    ],
+    "category": "Supplements",
+    "calories": 20,
+    "protein": 5,
+    "carbs": 0,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 50,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi546",
+    "name": "MuscleBlaze Pre-Workout 200 10g Scoop",
+    "brand": "MuscleBlaze",
+    "aliases": [
+      "mb pre workout",
+      "muscleblaze preworkout"
+    ],
+    "category": "Supplements",
+    "calories": 38,
+    "protein": 0,
+    "carbs": 9.5,
+    "fats": 0,
+    "fiber": 0,
+    "sodium": 110,
+    "consumedAmount": 1,
+    "consumedUnit": "scoop"
+  },
+  {
+    "id": "bi547",
+    "name": "The Whole Truth Protein Bar Choco Almond",
+    "brand": "The Whole Truth",
+    "aliases": [
+      "whole truth bar",
+      "twt bar"
+    ],
+    "category": "Snacks",
+    "calories": 200,
+    "protein": 20,
+    "carbs": 15,
+    "fats": 8,
+    "fiber": 3,
+    "sodium": 140,
+    "consumedAmount": 1,
+    "consumedUnit": "bar"
+  },
+  {
+    "id": "bi548",
+    "name": "The Whole Truth Protein Bar per 100g",
+    "brand": "The Whole Truth",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 400,
+    "protein": 40,
+    "carbs": 30,
+    "fats": 16,
+    "fiber": 6,
+    "sodium": 280,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi549",
+    "name": "RiteBite Max Protein Bar 67g",
+    "brand": "RiteBite",
+    "aliases": [
+      "ritebite max protein",
+      "rite bite bar"
+    ],
+    "category": "Snacks",
+    "calories": 210,
+    "protein": 20,
+    "carbs": 23,
+    "fats": 5,
+    "fiber": 2,
+    "sodium": 200,
+    "consumedAmount": 1,
+    "consumedUnit": "bar"
+  },
+  {
+    "id": "bi550",
+    "name": "RiteBite Max Protein Bar per 100g",
+    "brand": "RiteBite",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 313,
+    "protein": 30,
+    "carbs": 34,
+    "fats": 7.5,
+    "fiber": 3,
+    "sodium": 298,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi551",
+    "name": "Yoga Bar Protein Bar Choco Fudge 50g",
+    "brand": "YogaBar",
+    "aliases": [
+      "yogabar protein bar",
+      "yoga bar bar"
+    ],
+    "category": "Snacks",
+    "calories": 185,
+    "protein": 10,
+    "carbs": 20,
+    "fats": 7,
+    "fiber": 3,
+    "sodium": 120,
+    "consumedAmount": 1,
+    "consumedUnit": "bar"
+  },
+  {
+    "id": "bi552",
+    "name": "Yoga Bar Protein Bar per 100g",
+    "brand": "YogaBar",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 370,
+    "protein": 20,
+    "carbs": 40,
+    "fats": 14,
+    "fiber": 6,
+    "sodium": 240,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi553",
+    "name": "Mojo Bar Choco Almond 35g",
+    "brand": "Mojo",
+    "aliases": [
+      "mojo protein bar",
+      "mojo snack bar"
+    ],
+    "category": "Snacks",
+    "calories": 147,
+    "protein": 4,
+    "carbs": 18,
+    "fats": 6,
+    "fiber": 2,
+    "sodium": 90,
+    "consumedAmount": 1,
+    "consumedUnit": "bar"
+  },
+  {
+    "id": "bi554",
+    "name": "Quest Bar Chocolate Chip Cookie 60g",
+    "brand": "Quest",
+    "aliases": [
+      "quest protein bar",
+      "quest bar"
+    ],
+    "category": "Snacks",
+    "calories": 200,
+    "protein": 21,
+    "carbs": 21,
+    "fats": 8,
+    "fiber": 14,
+    "sodium": 260,
+    "consumedAmount": 1,
+    "consumedUnit": "bar"
+  },
+  {
+    "id": "bi555",
+    "name": "Quest Bar per 100g",
+    "brand": "Quest",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 333,
+    "protein": 35,
+    "carbs": 35,
+    "fats": 13,
+    "fiber": 23,
+    "sodium": 433,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi556",
+    "name": "Maggi 2-Minute Noodles 70g Pack",
+    "brand": "Maggi",
+    "aliases": [
+      "maggi noodles",
+      "maggi masala"
+    ],
+    "category": "Packaged Foods",
+    "calories": 307,
+    "protein": 7,
+    "carbs": 44,
+    "fats": 11.5,
+    "fiber": 1.5,
+    "sodium": 820,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi557",
+    "name": "Maggi 2-Minute Noodles per 100g",
+    "brand": "Maggi",
+    "aliases": [],
+    "category": "Packaged Foods",
+    "calories": 438,
+    "protein": 10,
+    "carbs": 62.5,
+    "fats": 16.5,
+    "fiber": 2.1,
+    "sodium": 1171,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi558",
+    "name": "Britannia Marie Gold Biscuits 100g",
+    "brand": "Britannia",
+    "aliases": [
+      "marie gold",
+      "marie biscuit"
+    ],
+    "category": "Snacks",
+    "calories": 432,
+    "protein": 8,
+    "carbs": 74,
+    "fats": 12,
+    "fiber": 1,
+    "sodium": 300,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi559",
+    "name": "Britannia Marie Gold per 100g",
+    "brand": "Britannia",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 432,
+    "protein": 8,
+    "carbs": 74,
+    "fats": 12,
+    "fiber": 1,
+    "sodium": 300,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi560",
+    "name": "Britannia NutriChoice Digestive 100g",
+    "brand": "Britannia",
+    "aliases": [
+      "nutrichoice digestive",
+      "nutri choice biscuit"
+    ],
+    "category": "Snacks",
+    "calories": 461,
+    "protein": 8.5,
+    "carbs": 64,
+    "fats": 18,
+    "fiber": 5,
+    "sodium": 330,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi561",
+    "name": "Britannia NutriChoice Digestive per 100g",
+    "brand": "Britannia",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 461,
+    "protein": 8.5,
+    "carbs": 64,
+    "fats": 18,
+    "fiber": 5,
+    "sodium": 330,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi562",
+    "name": "Britannia 50-50 Biscuit 1 piece",
+    "brand": "Britannia",
+    "aliases": [
+      "fifty fifty",
+      "5050 biscuit"
+    ],
+    "category": "Snacks",
+    "calories": 30,
+    "protein": 0.5,
+    "carbs": 4,
+    "fats": 1.2,
+    "fiber": 0.1,
+    "sodium": 40,
+    "consumedAmount": 1,
+    "consumedUnit": "piece"
+  },
+  {
+    "id": "bi563",
+    "name": "Parle-G Biscuit 1 piece",
+    "brand": "Parle",
+    "aliases": [
+      "parle g",
+      "parle glucose biscuit"
+    ],
+    "category": "Snacks",
+    "calories": 16,
+    "protein": 0.3,
+    "carbs": 2.8,
+    "fats": 0.4,
+    "fiber": 0,
+    "sodium": 20,
+    "consumedAmount": 1,
+    "consumedUnit": "piece"
+  },
+  {
+    "id": "bi564",
+    "name": "Parle-G Biscuit per 100g",
+    "brand": "Parle",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 451,
+    "protein": 6.7,
+    "carbs": 76.6,
+    "fats": 11.6,
+    "fiber": 0.5,
+    "sodium": 550,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi565",
+    "name": "Parle Hide & Seek Chocolate Chip 100g",
+    "brand": "Parle",
+    "aliases": [
+      "hide and seek",
+      "hide seek biscuit"
+    ],
+    "category": "Snacks",
+    "calories": 517,
+    "protein": 6,
+    "carbs": 66,
+    "fats": 24,
+    "fiber": 1,
+    "sodium": 280,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi566",
+    "name": "Haldiram's Bhujia 50g",
+    "brand": "Haldiram's",
+    "aliases": [
+      "haldirams bhujia",
+      "bhujia"
+    ],
+    "category": "Snacks",
+    "calories": 270,
+    "protein": 6.5,
+    "carbs": 30,
+    "fats": 14,
+    "fiber": 2,
+    "sodium": 600,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi567",
+    "name": "Haldiram's Bhujia per 100g",
+    "brand": "Haldiram's",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 541,
+    "protein": 13,
+    "carbs": 60,
+    "fats": 28,
+    "fiber": 4,
+    "sodium": 1200,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi568",
+    "name": "Haldiram's Aloo Bhujia 50g",
+    "brand": "Haldiram's",
+    "aliases": [
+      "aloo bhujia",
+      "potato bhujia"
+    ],
+    "category": "Snacks",
+    "calories": 255,
+    "protein": 5,
+    "carbs": 32,
+    "fats": 13,
+    "fiber": 2,
+    "sodium": 550,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi569",
+    "name": "Haldiram's Moong Dal 50g",
+    "brand": "Haldiram's",
+    "aliases": [
+      "moong dal",
+      "haldirams moong dal"
+    ],
+    "category": "Snacks",
+    "calories": 235,
+    "protein": 10,
+    "carbs": 27,
+    "fats": 10,
+    "fiber": 3,
+    "sodium": 400,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi570",
+    "name": "Lay's Classic Salted 26g",
+    "brand": "Lay's",
+    "aliases": [
+      "lays chips",
+      "lays salted"
+    ],
+    "category": "Snacks",
+    "calories": 130,
+    "protein": 2,
+    "carbs": 16,
+    "fats": 6.5,
+    "fiber": 1,
+    "sodium": 150,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi571",
+    "name": "Lay's Classic Salted per 100g",
+    "brand": "Lay's",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 500,
+    "protein": 7.7,
+    "carbs": 61.5,
+    "fats": 25,
+    "fiber": 3.8,
+    "sodium": 577,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi572",
+    "name": "Kurkure Masala Munch 50g",
+    "brand": "Kurkure",
+    "aliases": [
+      "kurkure",
+      "kurkure masala"
+    ],
+    "category": "Snacks",
+    "calories": 258,
+    "protein": 3,
+    "carbs": 34,
+    "fats": 12,
+    "fiber": 1,
+    "sodium": 500,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi573",
+    "name": "Kurkure Masala Munch per 100g",
+    "brand": "Kurkure",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 516,
+    "protein": 6,
+    "carbs": 68,
+    "fats": 24,
+    "fiber": 2,
+    "sodium": 1000,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi574",
+    "name": "MTR Upma Ready to Eat 300g",
+    "brand": "MTR",
+    "aliases": [
+      "mtr upma",
+      "ready to eat upma"
+    ],
+    "category": "Packaged Foods",
+    "calories": 330,
+    "protein": 8,
+    "carbs": 54,
+    "fats": 9,
+    "fiber": 3,
+    "sodium": 750,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi575",
+    "name": "MTR Upma per 100g",
+    "brand": "MTR",
+    "aliases": [],
+    "category": "Packaged Foods",
+    "calories": 110,
+    "protein": 2.7,
+    "carbs": 18,
+    "fats": 3,
+    "fiber": 1,
+    "sodium": 250,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi576",
+    "name": "MTR Poha Ready to Eat 300g",
+    "brand": "MTR",
+    "aliases": [
+      "mtr poha",
+      "ready to eat poha"
+    ],
+    "category": "Packaged Foods",
+    "calories": 312,
+    "protein": 6,
+    "carbs": 57,
+    "fats": 6,
+    "fiber": 2,
+    "sodium": 700,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi577",
+    "name": "Saffola Masala Oats Classic Masala 40g",
+    "brand": "Saffola",
+    "aliases": [
+      "saffola masala oats",
+      "saffola oats"
+    ],
+    "category": "Breakfast",
+    "calories": 151,
+    "protein": 5,
+    "carbs": 25,
+    "fats": 3.5,
+    "fiber": 2.5,
+    "sodium": 380,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi578",
+    "name": "Saffola Masala Oats per 100g",
+    "brand": "Saffola",
+    "aliases": [],
+    "category": "Breakfast",
+    "calories": 378,
+    "protein": 12.5,
+    "carbs": 62.5,
+    "fats": 8.8,
+    "fiber": 6.3,
+    "sodium": 950,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi579",
+    "name": "Horlicks Original 27g Serving",
+    "brand": "Horlicks",
+    "aliases": [
+      "horlicks malt",
+      "horlicks drink"
+    ],
+    "category": "Beverage",
+    "calories": 100,
+    "protein": 4,
+    "carbs": 17,
+    "fats": 1.5,
+    "fiber": 0,
+    "sodium": 70,
+    "consumedAmount": 1,
     "consumedUnit": "serving"
+  },
+  {
+    "id": "bi580",
+    "name": "Horlicks Original per 100g",
+    "brand": "Horlicks",
+    "aliases": [],
+    "category": "Beverage",
+    "calories": 370,
+    "protein": 14.8,
+    "carbs": 63,
+    "fats": 5.5,
+    "fiber": 0,
+    "sodium": 259,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi581",
+    "name": "Complan Chocolate 33g Serving",
+    "brand": "Complan",
+    "aliases": [
+      "complan choco",
+      "complan drink"
+    ],
+    "category": "Beverage",
+    "calories": 130,
+    "protein": 5.3,
+    "carbs": 18,
+    "fats": 3.7,
+    "fiber": 0,
+    "sodium": 95,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
+  },
+  {
+    "id": "bi582",
+    "name": "Complan per 100g",
+    "brand": "Complan",
+    "aliases": [],
+    "category": "Beverage",
+    "calories": 393,
+    "protein": 16,
+    "carbs": 54.5,
+    "fats": 11.2,
+    "fiber": 0,
+    "sodium": 288,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi583",
+    "name": "Bournvita 20g Serving",
+    "brand": "Bournvita",
+    "aliases": [
+      "bournvita choco",
+      "cadbury bournvita"
+    ],
+    "category": "Beverage",
+    "calories": 77,
+    "protein": 1.4,
+    "carbs": 16.5,
+    "fats": 0.5,
+    "fiber": 0.2,
+    "sodium": 50,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
+  },
+  {
+    "id": "bi584",
+    "name": "Bournvita per 100g",
+    "brand": "Bournvita",
+    "aliases": [],
+    "category": "Beverage",
+    "calories": 383,
+    "protein": 7,
+    "carbs": 82.5,
+    "fats": 2.5,
+    "fiber": 1,
+    "sodium": 250,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi585",
+    "name": "Amul Kool Milkshake Chocolate 200ml",
+    "brand": "Amul",
+    "aliases": [
+      "amul kool choco",
+      "amul milkshake"
+    ],
+    "category": "Beverage",
+    "calories": 136,
+    "protein": 4.4,
+    "carbs": 22,
+    "fats": 3.2,
+    "fiber": 0,
+    "sodium": 80,
+    "consumedAmount": 1,
+    "consumedUnit": "bottle"
+  },
+  {
+    "id": "bi586",
+    "name": "Amul Lassi Mango 200ml",
+    "brand": "Amul",
+    "aliases": [
+      "amul mango lassi",
+      "amul lassi"
+    ],
+    "category": "Beverage",
+    "calories": 148,
+    "protein": 3.6,
+    "carbs": 25.6,
+    "fats": 3,
+    "fiber": 0,
+    "sodium": 75,
+    "consumedAmount": 1,
+    "consumedUnit": "bottle"
+  },
+  {
+    "id": "bi587",
+    "name": "Amul Buttermilk 200ml",
+    "brand": "Amul",
+    "aliases": [
+      "amul chaas",
+      "amul butter milk"
+    ],
+    "category": "Beverage",
+    "calories": 34,
+    "protein": 1.6,
+    "carbs": 4.4,
+    "fats": 0.8,
+    "fiber": 0,
+    "sodium": 250,
+    "consumedAmount": 1,
+    "consumedUnit": "bottle"
+  },
+  {
+    "id": "bi588",
+    "name": "Act II Microwave Popcorn Butter 99g",
+    "brand": "Act II",
+    "aliases": [
+      "act 2 popcorn",
+      "act ii butter popcorn"
+    ],
+    "category": "Snacks",
+    "calories": 430,
+    "protein": 9,
+    "carbs": 56,
+    "fats": 18,
+    "fiber": 10,
+    "sodium": 780,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi589",
+    "name": "Act II Popcorn per 100g",
+    "brand": "Act II",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 434,
+    "protein": 9.1,
+    "carbs": 56.6,
+    "fats": 18.2,
+    "fiber": 10.1,
+    "sodium": 787,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi590",
+    "name": "Too Yumm Multigrain Chips 30g",
+    "brand": "Too Yumm",
+    "aliases": [
+      "too yum chips",
+      "tooyumm baked chips"
+    ],
+    "category": "Snacks",
+    "calories": 126,
+    "protein": 2,
+    "carbs": 21,
+    "fats": 3.5,
+    "fiber": 1.5,
+    "sodium": 260,
+    "consumedAmount": 1,
+    "consumedUnit": "pack"
+  },
+  {
+    "id": "bi591",
+    "name": "Too Yumm Multigrain per 100g",
+    "brand": "Too Yumm",
+    "aliases": [],
+    "category": "Snacks",
+    "calories": 420,
+    "protein": 6.7,
+    "carbs": 70,
+    "fats": 11.7,
+    "fiber": 5,
+    "sodium": 867,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi592",
+    "name": "Kellogg's Chocos 30g Serving",
+    "brand": "Kellogg's",
+    "aliases": [
+      "kellog chocos",
+      "chocolate cereal"
+    ],
+    "category": "Breakfast",
+    "calories": 114,
+    "protein": 2.6,
+    "carbs": 23.5,
+    "fats": 1.4,
+    "fiber": 0.8,
+    "sodium": 130,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
+  },
+  {
+    "id": "bi593",
+    "name": "Kellogg's Chocos per 100g",
+    "brand": "Kellogg's",
+    "aliases": [],
+    "category": "Breakfast",
+    "calories": 380,
+    "protein": 8.7,
+    "carbs": 78.3,
+    "fats": 4.7,
+    "fiber": 2.7,
+    "sodium": 433,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi594",
+    "name": "Kellogg's Special K 30g Serving",
+    "brand": "Kellogg's",
+    "aliases": [
+      "special k cereal",
+      "kellog special k"
+    ],
+    "category": "Breakfast",
+    "calories": 113,
+    "protein": 3.9,
+    "carbs": 22,
+    "fats": 0.6,
+    "fiber": 0.6,
+    "sodium": 175,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
+  },
+  {
+    "id": "bi595",
+    "name": "Kellogg's Special K per 100g",
+    "brand": "Kellogg's",
+    "aliases": [],
+    "category": "Breakfast",
+    "calories": 376,
+    "protein": 13,
+    "carbs": 73.3,
+    "fats": 2,
+    "fiber": 2,
+    "sodium": 583,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi596",
+    "name": "Ritebite Max Protein Daily Choco 50g",
+    "brand": "RiteBite",
+    "aliases": [
+      "ritebite daily",
+      "ritebite choco bar"
+    ],
+    "category": "Snacks",
+    "calories": 196,
+    "protein": 15,
+    "carbs": 22,
+    "fats": 5,
+    "fiber": 3,
+    "sodium": 180,
+    "consumedAmount": 1,
+    "consumedUnit": "bar"
+  },
+  {
+    "id": "bi597",
+    "name": "Yoga Bar Muesli Fruit & Nut 40g",
+    "brand": "YogaBar",
+    "aliases": [
+      "yogabar muesli",
+      "yoga bar muesli"
+    ],
+    "category": "Breakfast",
+    "calories": 152,
+    "protein": 4.2,
+    "carbs": 24,
+    "fats": 4.5,
+    "fiber": 3.2,
+    "sodium": 30,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
+  },
+  {
+    "id": "bi598",
+    "name": "YogaBar Muesli per 100g",
+    "brand": "YogaBar",
+    "aliases": [],
+    "category": "Breakfast",
+    "calories": 380,
+    "protein": 10.5,
+    "carbs": 60,
+    "fats": 11.3,
+    "fiber": 8,
+    "sodium": 75,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
+  },
+  {
+    "id": "bi599",
+    "name": "Slurrp Farm Millet Muesli 40g",
+    "brand": "Slurrp Farm",
+    "aliases": [
+      "slurp farm muesli",
+      "millet muesli"
+    ],
+    "category": "Breakfast",
+    "calories": 148,
+    "protein": 3.5,
+    "carbs": 25,
+    "fats": 3.8,
+    "fiber": 4,
+    "sodium": 20,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
+  },
+  {
+    "id": "bi600",
+    "name": "Slurrp Farm Millet Muesli per 100g",
+    "brand": "Slurrp Farm",
+    "aliases": [],
+    "category": "Breakfast",
+    "calories": 370,
+    "protein": 8.8,
+    "carbs": 62.5,
+    "fats": 9.5,
+    "fiber": 10,
+    "sodium": 50,
+    "consumedAmount": 100,
+    "consumedUnit": "g"
   }
 ]

@@ -12,9 +12,14 @@ class FoodSearchResult {
   const FoodSearchResult(this.foods, this.source);
 }
 
-enum FoodSource { favorites, recents, custom, commonDb, off, usda, gemini, none }
+enum FoodSource { favorites, recents, custom, commonDb, off, usda, gemini, command, none }
 
-// ── Alias map ─────────────────────────────────────────────────────────────────
+class ParsedCustomMeal {
+  final FoodItem summary;
+  final List<MealItem> ingredients;
+  ParsedCustomMeal(this.summary, this.ingredients);
+}
+
 const Map<String, List<String>> _aliases = {
   'chapati':         ['roti'],
   'chapatti':        ['roti'],
@@ -69,15 +74,12 @@ const Map<String, List<String>> _aliases = {
   'kadhi':           ['kadhi'],
 };
 
-/// A food item detected by the natural language parser, with a quantity.
 class MealItem {
   final FoodItem food;
-  final double quantity; // detected quantity (e.g. 3 for "3 rotis")
+  final double quantity;
   const MealItem(this.food, this.quantity);
 }
 
-// ── Plural normaliser ────────────────────────────────────────────────────────
-// Maps common plural forms (and Hindi alternates) to the canonical singular.
 const Map<String, String> _plurals = {
   'rotis':     'roti',
   'chapatis':  'chapati',
@@ -99,9 +101,24 @@ const Map<String, String> _plurals = {
   'cups':      'cup',
   'katoris':   'katori',
   'scoops':    'scoop',
+  'bars':      'bar',
+  'tbsps':     'tbsp',
+  'tablespoon':'tbsp',
+  'tablespoons':'tbsp',
+  'teaspoon':  'tsp',
+  'teaspoons': 'tsp',
+  'tsps':      'tsp',
+  'grams':     'g',
+  'gram':      'g',
+  'kilograms': 'kg',
+  'kilogram':  'kg',
+  'milliliters':'ml',
+  'millilitres':'ml',
+  'liters':    'l',
+  'litres':    'l',
+  'glasses':   'glass',
 };
 
-// ── Quantity word map ─────────────────────────────────────────────────────────
 const Map<String, double> _wordNumbers = {
   'one':    1, 'ek':    1,
   'two':    2, 'do':    2,
@@ -118,16 +135,10 @@ const Map<String, double> _wordNumbers = {
 class FoodSearchService {
   static String get _usdaKey => dotenv.env['USDA_API_KEY'] ?? '';
 
-  // ─────────────────────────────────────────
-  // BARCODE LOOKUP  (returns single FoodItem? — used by BarcodeScannerScreen)
-  // Flow: OpenFoodFacts (2s) → if name but no macros → USDA by name (2s)
-  // Total guaranteed ≤ 4 seconds.
-  // ─────────────────────────────────────────
   static Future<FoodItem?> lookupBarcode(String barcode) async {
     debugPrint('[FoodSearch] barcode: $barcode');
     String? productName;
 
-    // Step 1: OpenFoodFacts (2 s)
     try {
       final uri = Uri.parse(
           'https://world.openfoodfacts.org/api/v2/product/$barcode.json'
@@ -164,7 +175,6 @@ class FoodSearchService {
       debugPrint('[FoodSearch] OFF: $e');
     }
 
-    // Step 2: USDA by product name (2 s) — only if OFF returned a name
     if (productName != null) {
       try {
         final usdaR = await _searchUsda(productName, pageSize: 1)
@@ -182,27 +192,55 @@ class FoodSearchService {
     return null;
   }
 
-  /// Legacy wrapper — kept for any remaining call sites.
   static Future<List<FoodItem>> searchByBarcode(String barcode) async {
     final food = await lookupBarcode(barcode);
     return food == null ? [] : [food];
   }
 
-  static Future<List<FoodItem>> _geminiBarcode(String productName) async {
-    try {
-      return await GeminiService.parseFoodFromBarcode(productName)
-          .timeout(const Duration(seconds: 6));
-    } catch (e) {
-      debugPrint('[FoodSearch] Gemini barcode fallback: $e');
-      return [];
+  static ParsedCustomMeal? parseCustomMealCommand({
+    required String text,
+    required List<FoodItem> recents,
+    required List<FoodItem> customMeals,
+    required List<FoodItem> commonFoods,
+  }) {
+    final match = RegExp(r'^/custommeal\s+"([^"]+)"\s+(.+)$', caseSensitive: false).firstMatch(text.trim());
+    if (match == null) return null;
+    
+    final name = match.group(1)!;
+    final ingredients = match.group(2)!;
+
+    final mealItems = parseNaturalMeal(
+      text: ingredients,
+      recents: recents,
+      customMeals: customMeals,
+      commonFoods: commonFoods,
+    );
+
+    if (mealItems.isEmpty) return null;
+
+    int cals = 0, pro = 0, carbs = 0, fats = 0;
+    for (final m in mealItems) {
+      cals += m.food.calories;
+      pro += m.food.protein;
+      carbs += m.food.carbs;
+      fats += m.food.fats;
     }
+
+    final summary = FoodItem(
+      id: 'cmd_${DateTime.now().millisecondsSinceEpoch}',
+      name: name,
+      calories: cals,
+      protein: pro,
+      carbs: carbs,
+      fats: fats,
+      consumedAmount: 1,
+      consumedUnit: 'serving',
+      isAiLogged: false, 
+    );
+
+    return ParsedCustomMeal(summary, mealItems);
   }
 
-  // ─────────────────────────────────────────
-  // LOG SHEET SEARCH
-  // Local-first: favorites → recents → customs → commonDb
-  // Remote only if local has no results: USDA → Gemini (both silently handled)
-  // ─────────────────────────────────────────
   static Future<FoodSearchResult> logSheetSearch({
     required String query,
     required List<FoodItem> favorites,
@@ -214,36 +252,59 @@ class FoodSearchService {
 
     final expanded = _expandQuery(query);
 
-    final favR = _fuzzyList(expanded, favorites);
-    if (favR.isNotEmpty) return FoodSearchResult(favR, FoodSource.favorites);
+    // ── Score local sources synchronously ────────────
+    final localScored = <_ScoredItem>[];
 
-    final recR = _fuzzyList(expanded, recents);
-    if (recR.isNotEmpty) return FoodSearchResult(recR, FoodSource.recents);
+    void scoreList(List<FoodItem> items, double sourceBias) {
+      for (final f in items) {
+        final s = _score(expanded, _tokenize(f.name));
+        if (s > 0) localScored.add(_ScoredItem(f, s + sourceBias));
+      }
+    }
 
-    final cusR = _fuzzyList(expanded, customMeals);
-    if (cusR.isNotEmpty) return FoodSearchResult(cusR, FoodSource.custom);
+    // Small bias so local favorites/recents beat equal-scoring remote results
+    scoreList(favorites,   0.15);
+    scoreList(recents,     0.10);
+    scoreList(customMeals, 0.08);
+    scoreList(commonFoods, 0.03);
 
-    final comR = _fuzzyList(expanded, commonFoods);
-    if (comR.isNotEmpty) return FoodSearchResult(comR, FoodSource.commonDb);
+    // ── Fetch remote sources in parallel ─────────────
+    final futures = await Future.wait([
+      _safeOff(query),
+      _safeUsda(query),
+    ]);
 
-    // Remote fallbacks — all wrapped with silent error handling
-    final offR = await _safeOff(query);
-    if (offR.isNotEmpty) return FoodSearchResult(offR, FoodSource.off);
+    final offR  = futures[0];
+    final usdaR = futures[1];
 
-    final usdaR = await _safeUsda(query);
-    if (usdaR.isNotEmpty) return FoodSearchResult(usdaR, FoodSource.usda);
+    // Remote items get scored too — no fixed bias
+    for (final f in offR) {
+      final s = _score(expanded, _tokenize(f.name));
+      localScored.add(_ScoredItem(f, s));
+    }
+    for (final f in usdaR) {
+      final s = _score(expanded, _tokenize(f.name));
+      localScored.add(_ScoredItem(f, s));
+    }
 
-    final gemR = await _safeGemini(query);
-    if (gemR.isNotEmpty) return FoodSearchResult(gemR, FoodSource.gemini);
+    // ── Global sort by score descending ──────────────
+    localScored.sort((a, b) => b.score.compareTo(a.score));
 
-    return const FoodSearchResult([], FoodSource.none);
+    // ── Deduplicate by name, cap at 15 ───────────────
+    final seen = <String>{};
+    final merged = <FoodItem>[];
+
+    for (final si in localScored) {
+      final key = si.food.name.toLowerCase().trim();
+      if (!seen.contains(key)) {
+        seen.add(key);
+        merged.add(si.food);
+        if (merged.length >= 15) break;
+      }
+    }
+    return FoodSearchResult(merged, FoodSource.none);
   }
 
-  // ─────────────────────────────────────────
-  // NATURAL MEAL PARSER
-  // Splits a sentence like "3 roti with dal and paneer" into:
-  //   [MealItem(Roti, 3), MealItem(Dal, 1), MealItem(Paneer, 1)]
-  // ─────────────────────────────────────────
   static List<MealItem> parseNaturalMeal({
     required String text,
     required List<FoodItem> recents,
@@ -253,18 +314,27 @@ class FoodSearchService {
     final all = [...recents, ...customMeals, ...commonFoods];
     if (all.isEmpty || text.trim().isEmpty) return [];
 
-    // 1. Tokenise, keeping original word order
-    final rawTokens = text
-        .toLowerCase()
-        .replaceAll(RegExp(r'[,.]'), ' ')
+    // Replace commas with ' and ' so the token segmenter splits correctly
+    final rawText = text.toLowerCase().replaceAll(',', ' and ').replaceAll('.', ' ');
+    final rawTokens = rawText
         .split(RegExp(r'\s+'))
         .where((w) => w.isNotEmpty)
         .toList();
 
-    // 2. Replace plural forms with singulars
-    final tokens = rawTokens.map((w) => _plurals[w] ?? w).toList();
+    final tokens = <String>[];
+    for (final raw in rawTokens) {
+      final attached = RegExp(
+          r'^(\d+(?:\.\d+)?)(ml|l|g|kg|tbsp|tsp|scoop|slice|bar|bowl|cup|katori|glass|piece|serving)$',
+          caseSensitive: false,
+      ).firstMatch(raw);
+      if (attached != null) {
+        tokens.add(attached.group(1)!);
+        tokens.add(attached.group(2)!.toLowerCase());
+      } else {
+        tokens.add(_plurals[raw] ?? raw);
+      }
+    }
 
-    // 3. Build segments split by conjunctions (and, with, aur, ke, plus)
     const conjunctions = {'and', 'with', 'aur', 'ke', 'plus', 'or', 'n'};
     final segments = <List<String>>[];
     var current = <String>[];
@@ -278,16 +348,22 @@ class FoodSearchService {
     }
     if (current.isNotEmpty) segments.add(current);
 
-    // 4. For each segment, detect quantity + food phrase
     final results = <MealItem>[];
-    final seen = <String>{}; // prevent duplicate food ids
+    final seen = <String>{};
 
     for (final seg in segments) {
       if (seg.isEmpty) continue;
 
-      // Extract numeric / word quantity from the segment
       double qty = 1;
+      String? detectedUnit;
       final foodTokens = <String>[];
+
+      const unitWords = {
+        'ml', 'l', 'g', 'kg',
+        'tbsp', 'tsp', 'scoop', 'slice', 'bar',
+        'bowl', 'plate', 'cup', 'katori', 'glass',
+        'piece', 'serving',
+      };
 
       for (final tok in seg) {
         final num = double.tryParse(tok);
@@ -300,34 +376,46 @@ class FoodSearchService {
           qty = wordNum;
           continue;
         }
-        // Skip unit words attached to quantities
-        if (const {'bowl', 'plate', 'cup', 'katori', 'glass', 'piece',
-              'slice', 'scoop', 'bar', 'serving', 'tbsp', 'tsp'}
-            .contains(tok)) continue;
+        if (unitWords.contains(tok)) {
+          detectedUnit ??= tok;
+          continue;
+        }
         foodTokens.add(tok);
       }
 
       if (foodTokens.isEmpty) continue;
 
-      // Expand aliases on food tokens
       final expanded = _expandQueryFromTokens(foodTokens);
-
-      // Fuzzy match against entire food DB
       final match = _fuzzyMatchList(expanded, all);
+      
       if (match != null && !seen.contains(match.id)) {
         seen.add(match.id);
-        // Return a copy with the detected quantity
-        results.add(MealItem(
-          match.copyWith(consumedAmount: qty),
-          qty,
-        ));
+
+        final finalUnit = detectedUnit ?? match.consumedUnit;
+        FoodItem result = match.copyWith(consumedAmount: qty, consumedUnit: finalUnit);
+        
+        if (detectedUnit != null &&
+            const {'g', 'kg', 'ml', 'l'}.contains(detectedUnit) &&
+            const {'g', 'kg', 'ml', 'l'}.contains(match.consumedUnit)) {
+          final baseAmt = match.consumedAmount == 0 ? 1.0 : match.consumedAmount;
+          double inBaseUnits = qty;
+          
+          if (detectedUnit == 'kg' && match.consumedUnit == 'g') inBaseUnits = qty * 1000;
+          if (detectedUnit == 'l'  && match.consumedUnit == 'ml') inBaseUnits = qty * 1000;
+          if (detectedUnit == 'g'  && match.consumedUnit == 'kg') inBaseUnits = qty / 1000;
+          if (detectedUnit == 'ml' && match.consumedUnit == 'l')  inBaseUnits = qty / 1000;
+          
+          result = match.scaleToAmount(inBaseUnits / baseAmt * match.consumedAmount)
+              .copyWith(consumedAmount: qty, consumedUnit: finalUnit);
+        }
+
+        results.add(MealItem(result, qty));
       }
     }
 
     return results;
   }
 
-  // Helper: expand alias tokens without running full _expandQuery
   static List<String> _expandQueryFromTokens(List<String> tokens) {
     final extra = <String>[];
     for (final tok in tokens) {
@@ -337,7 +425,6 @@ class FoodSearchService {
     return {...tokens, ...extra}.toList();
   }
 
-  // fuzzyMatchList returns the best single match from a list
   static FoodItem? _fuzzyMatchList(List<String> qTokens, List<FoodItem> list) {
     if (qTokens.isEmpty || list.isEmpty) return null;
     FoodItem? best; double bestScore = 0;
@@ -348,10 +435,6 @@ class FoodSearchService {
     return best;
   }
 
-  // ─────────────────────────────────────────
-  // SMART LOGGER SEARCH  (local only, fast)
-  // Gemini is called separately by the sheet itself.
-  // ─────────────────────────────────────────
   static Future<FoodSearchResult> smartLoggerSearch({
     required String query,
     required List<FoodItem> recents,
@@ -369,16 +452,12 @@ class FoodSearchService {
     final cusR = _fuzzyMatch(expanded, customMeals);
     if (cusR != null) return FoodSearchResult([cusR], FoodSource.custom);
 
-    // Search common foods list (lowered threshold for better Indian food matching)
     final comR = _fuzzyList(expanded, commonFoods, threshold: 0.3);
     if (comR.isNotEmpty) return FoodSearchResult(comR, FoodSource.commonDb);
 
     return const FoodSearchResult([], FoodSource.none);
   }
 
-  // ─────────────────────────────────────────
-  // LOAD COMMON FOODS JSON  (common_foods + brands_india merged)
-  // ─────────────────────────────────────────
   static Future<List<FoodItem>> loadCommonFoods() async {
     try {
       final commonStr = await rootBundle.loadString('assets/common_foods.json');
@@ -390,14 +469,17 @@ class FoodSearchService {
       final merged = [...commonData, ...brandData];
 
       return merged.map((item) => FoodItem(
-        id:             item['id'],
-        name:           item['name'],
-        calories:       item['calories'],
-        protein:        item['protein'],
-        carbs:          item['carbs'],
-        fats:           item['fats'],
-        consumedAmount: (item['consumedAmount'] ?? 1).toDouble(),
-        consumedUnit:   item['consumedUnit'] ?? 'serving',
+        id:                 item['id'],
+        name:               item['name'],
+        calories:           item['calories'],
+        protein:            item['protein'],
+        carbs:              item['carbs'],
+        fats:               item['fats'],
+        consumedAmount:     (item['consumedAmount'] ?? 1).toDouble(),
+        consumedUnit:       item['consumedUnit'] ?? 'serving',
+        servingWeightGrams: item['servingWeightGrams'] != null ? (item['servingWeightGrams'] as num).toDouble() : null,
+        totalServings:      item['totalServings'] != null ? (item['totalServings'] as num).toInt() : null,
+        servingDescription: item['servingDescription'] as String?,
       )).toList();
     } catch (e) {
       debugPrint('[FoodSearch] loadCommonFoods: $e');
@@ -405,10 +487,6 @@ class FoodSearchService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // OFF — Open Food Facts text search
-  // Used as fallback between commonDb and USDA
-  // ─────────────────────────────────────────
   static Future<List<FoodItem>> _safeOff(String query) async {
     try {
       final uri = Uri.parse(
@@ -450,9 +528,6 @@ class FoodSearchService {
     }
   }
 
-  // ─────────────────────────────────────────
-  // USDA (safe wrapper)
-  // ─────────────────────────────────────────
   static Future<List<FoodItem>> _safeUsda(String query) async {
     try {
       return await _searchUsda(query);
@@ -486,22 +561,16 @@ class FoodSearchService {
     }).where((f) => f.calories > 0).take(8).toList();
   }
 
-  // ─────────────────────────────────────────
-  // Gemini (safe wrapper with 8s timeout)
-  // ─────────────────────────────────────────
   static Future<List<FoodItem>> _safeGemini(String query) async {
     try {
       return await GeminiService.parseFood(query)
-          .timeout(const Duration(seconds: 8));
+          .timeout(const Duration(seconds: 15));
     } catch (e) {
       debugPrint('[FoodSearch] Gemini silent: $e');
       return [];
     }
   }
 
-  // ─────────────────────────────────────────
-  // QUERY EXPANSION
-  // ─────────────────────────────────────────
   static List<String> _expandQuery(String query) {
     final base  = _tokenize(query);
     final extra = <String>[];
@@ -517,9 +586,6 @@ class FoodSearchService {
     return {...base, ...extra}.toList();
   }
 
-  // ─────────────────────────────────────────
-  // FUZZY MATCHING
-  // ─────────────────────────────────────────
   static FoodItem? _exactMatch(List<String> qTokens, List<FoodItem> list) {
     final q = qTokens.join(' ');
     for (final f in list) {
@@ -545,7 +611,6 @@ class FoodSearchService {
     final joined = qTokens.join(' ');
     for (final f in list) {
       double s = _score(qTokens, _tokenize(f.name));
-      // Brand priority boost: exact substring match in food name
       if (f.name.toLowerCase().contains(joined)) {
         s += 0.15;
       }
@@ -625,4 +690,11 @@ class FoodSearchService {
 
   static String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+}
+// Add this at the bottom of food_search_service.dart, outside FoodSearchService class
+
+class _ScoredItem {
+  final FoodItem food;
+  final double score;
+  const _ScoredItem(this.food, this.score);
 }

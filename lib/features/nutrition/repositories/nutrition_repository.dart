@@ -37,6 +37,13 @@ class NutritionRepository {
     await _saveToRecents(food);
   }
 
+  /// Like [addLog] but skips the recents side-effect.
+  /// Use this for recipe-sourced logs so they go to `logs` (for stats/home)
+  /// without appearing in the Recents tab (they live in Customs instead).
+  Future<void> addLogOnly(FoodItem food) async {
+    await _logs.doc(food.id).set(food.toMap());
+  }
+
   Future<void> updateLog(FoodItem food) async {
     await _logs.doc(food.id).update(food.toMap());
   }

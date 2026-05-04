@@ -46,3 +46,17 @@ app.*.map.json
 
 # Environment variables
 .env
+
+# Sensitive/Local configuration files
+android/app/google-services.json
+android/local.properties
+ios/Runner/GoogleService-Info.plist
+macos/Runner/GoogleService-Info.plist
+ios/Flutter/Generated.xcconfig
+ios/Flutter/flutter_export_environment.sh
+macos/Flutter/Generated.xcconfig
+macos/Flutter/ephemeral/
+*.jks
+*.keystore
+signing.properties
+

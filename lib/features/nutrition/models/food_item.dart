@@ -14,6 +14,8 @@ class FoodItem {
   final double? servingWeightGrams;
   final int? totalServings;
   final String? servingDescription;
+  // Populated when the item originates from a recipe — persisted in custom_meals.
+  final List<String>? ingredients;
 
   FoodItem({
     required this.id,
@@ -31,6 +33,7 @@ class FoodItem {
     this.servingWeightGrams,
     this.totalServings,
     this.servingDescription,
+    this.ingredients,
   })  : dateString = dateString ?? _today(),
         timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
@@ -60,6 +63,7 @@ class FoodItem {
       'servingWeightGrams': servingWeightGrams,
       'totalServings': totalServings,
       'servingDescription': servingDescription,
+      if (ingredients != null) 'ingredients': ingredients,
     };
   }
 
@@ -80,6 +84,7 @@ class FoodItem {
       servingWeightGrams: map['servingWeightGrams'] != null ? (map['servingWeightGrams'] as num).toDouble() : null,
       totalServings: map['totalServings'] != null ? (map['totalServings'] as num).toInt() : null,
       servingDescription: map['servingDescription'] as String?,
+      ingredients: (map['ingredients'] as List<dynamic>?)?.cast<String>(),
     );
   }
 
@@ -99,6 +104,7 @@ class FoodItem {
     double? servingWeightGrams,
     int? totalServings,
     String? servingDescription,
+    List<String>? ingredients,
   }) {
     return FoodItem(
       id: id ?? this.id,
@@ -116,6 +122,7 @@ class FoodItem {
       servingWeightGrams: servingWeightGrams ?? this.servingWeightGrams,
       totalServings: totalServings ?? this.totalServings,
       servingDescription: servingDescription ?? this.servingDescription,
+      ingredients: ingredients ?? this.ingredients,
     );
   }
 

@@ -5,6 +5,7 @@ import '../models/food_item.dart';
 import '../repositories/nutrition_repository.dart';
 import '../services/food_search_service.dart';
 import '../../dashboard/providers/user_provider.dart';
+import '../../recipes/models/recipe_model.dart';
 
 final _repo = NutritionRepository();
 
@@ -72,6 +73,23 @@ class FoodActions {
     await _repo.addLog(food);
     // Invalidate recents so they refresh
     _ref.invalidate(recentsProvider);
+  }
+
+  /// Log a recipe: writes to `logs` (stats/home) and upserts to `custom_meals`
+  /// (so it appears in the Customs tab with its full ingredient list).
+  /// Does NOT write to recents — recipes are reused from Customs, not Recents.
+  Future<void> logRecipe(RecipeModel recipe) async {
+    final logEntry = recipe.toFoodItem(); // unique ID tied to this log event
+    final customTemplate = recipe.toCustomMealTemplate(); // stable ID for customs
+
+    // Write to logs collection so home screen / stats see it immediately
+    await _repo.addLogOnly(logEntry);
+
+    // Upsert into custom_meals so user can re-log with ingredients visible
+    await _repo.saveCustomMeal(customTemplate);
+
+    // Refresh the customs tab
+    _ref.invalidate(customMealsProvider);
   }
 
   Future<void> deleteFood(String id) async {

@@ -17,6 +17,10 @@ import '../services/food_search_service.dart';
 import '../screens/quantity_selection_screen.dart';
 import '../../dashboard/providers/user_provider.dart';
 
+import '../models/custom_meal_ingredient.dart';
+import '../services/custom_meal_service.dart';
+import 'custom_meal_form.dart';
+
 class SmartLoggerSheet extends ConsumerStatefulWidget {
   const SmartLoggerSheet({super.key});
 
@@ -43,12 +47,10 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   bool _isListening    = false;
   bool _isSearching    = false;
 
-  // Search state
   List<FoodItem> _searchResults = [];
   bool _hasSearched = false;
   Timer? _searchDebounce;
 
-  // Speech
   final _speech = stt.SpeechToText();
   bool _speechAvailable = false;
 
@@ -101,8 +103,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
   bool get _limitReached => _logsUsed >= 10;
 
-  // ── Text send ─────────────────────────────────────────────────────────────
-
   Future<void> _sendMessage() async {
     final text = _inputController.text.trim();
     if (text.isEmpty || _isLoading || _limitReached) return;
@@ -117,7 +117,64 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     final recents     = ref.read(recentsProvider).value ?? [];
     final customs     = ref.read(customMealsProvider).value ?? [];
 
-    // 1) NLP multi-food parser — handles "3 roti with dal and paneer"
+    final lowerText = text.toLowerCase();
+
+    if (lowerText.startsWith('/aionly ')) {
+      final aiQuery = text.substring(8).trim();
+      if (aiQuery.isEmpty) {
+        setState(() {
+          _isLoading = false;
+          _messages.add(_ChatMessage.error("Please provide a food description after /aionly."));
+        });
+        _saveHistory();
+        _scrollToBottom();
+        return;
+      }
+      await _runGemini(() => GeminiService.parseFoodSafe(aiQuery));
+      return;
+    }
+
+    if (lowerText.startsWith('/custommeal ')) {
+      final parsedMeal = FoodSearchService.parseCustomMealCommand(
+          text: text, recents: recents, customMeals: customs, commonFoods: commonFoods);
+      
+      setState(() => _isLoading = false);
+
+      if (parsedMeal != null) {
+        final draftIngs = parsedMeal.ingredients.map((m) => CustomMealIngredient(
+          foodId: m.food.id,
+          name: m.food.name,
+          amount: m.food.consumedAmount,
+          unit: m.food.consumedUnit,
+          calories: m.food.calories,
+          protein: m.food.protein,
+          carbs: m.food.carbs,
+          fats: m.food.fats,
+          baseAmount: m.food.consumedAmount,
+          baseCal: m.food.calories,
+          basePro: m.food.protein,
+          baseCarb: m.food.carbs,
+          baseFat: m.food.fats,
+        )).toList();
+
+        setState(() {
+          _messages.add(_ChatMessage.foodCard(
+            parsedMeal.summary, 
+            noAiUsed: true, 
+            isCustomMealDraft: true, 
+            draftIngredients: draftIngs,
+          ));
+        });
+      } else {
+        setState(() {
+          _messages.add(_ChatMessage.error("Could not parse custom meal. Ensure format: /custommeal \"Name\" ingredients..."));
+        });
+      }
+      _saveHistory();
+      _scrollToBottom();
+      return;
+    }
+
     final parsed = FoodSearchService.parseNaturalMeal(
       text: text,
       recents: recents,
@@ -136,12 +193,8 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       return;
     }
 
-    // 2) Fallback to Gemini (safe — never throws)
     await _runGemini(() => GeminiService.parseFoodSafe(text));
   }
-
-
-  // ── Photo logging ─────────────────────────────────────────────────────────
 
   Future<void> _pickPhoto() async {
     if (_isLoading || _limitReached) return;
@@ -192,8 +245,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     );
   }
 
-  // ── Voice logging ─────────────────────────────────────────────────────────
-
   Future<void> _toggleVoice() async {
     if (_isLoading || _limitReached) return;
 
@@ -224,18 +275,15 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           }
 
           _inputController.text = transcript;
-          // Give user a moment to see what was transcribed, then send
           await Future.delayed(const Duration(milliseconds: 400));
           await _sendMessage();
         }
       },
       listenFor: const Duration(seconds: 15),
       pauseFor: const Duration(seconds: 3),
-      localeId: 'en_IN', // Indian English for better Hindi food name recognition
+      localeId: 'en_IN', 
     );
   }
-
-  // ── Common Gemini runner ──────────────────────────────────────────────────
 
   Future<void> _runGemini(Future<List<FoodItem>> Function() fn) async {
     List<FoodItem> foods = [];
@@ -243,7 +291,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       foods = await fn();
     } catch (e) {
       debugPrint('[SmartLogger] error: $e');
-      // parseFoodSafe should never reach here, but just in case
     }
 
     if (!mounted) return;
@@ -264,8 +311,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     _scrollToBottom();
   }
 
-  // ── Search bar logic ──────────────────────────────────────────────────────
-
   Future<void> _onSearchChanged(String query) async {
     _searchDebounce?.cancel();
     if (query.trim().isEmpty) {
@@ -278,7 +323,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       final customs     = ref.read(customMealsProvider).value ?? [];
       final commonFoods = ref.read(commonFoodsProvider).value ?? [];
 
-      // Use local-only smartLoggerSearch (instant, no network)
       final result = await FoodSearchService.smartLoggerSearch(
         query: query,
         recents: recents,
@@ -303,14 +347,18 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
   }
 
-  // ── Food card actions ─────────────────────────────────────────────────────
-
-
+  void _checkPop() {
+    final pendingCount = _messages
+        .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
+        .length;
+    if (pendingCount == 0 && mounted) {
+      Navigator.pop(context);
+    }
+  }
 
   Future<void> _acceptFood(FoodItem food, {String? originalId}) async {
     HapticFeedback.mediumImpact();
     try {
-      // Resolve the source message to read noAiUsed before logging.
       int msgIndex = -1;
       if (originalId != null) {
         msgIndex = _messages.indexWhere((m) => m.food?.id == originalId);
@@ -326,30 +374,52 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         );
       }
 
-      // Strip the AI-logged flag when no AI was used, so wand never appears
-      // in Recents/Favorites for locally-resolved foods.
-      final bool aiWasUsed = msgIndex != -1 ? !_messages[msgIndex].noAiUsed : true;
-      final FoodItem toLog = food.copyWith(isAiLogged: aiWasUsed);
+      if (msgIndex != -1) {
+        final msg = _messages[msgIndex];
+        final bool aiWasUsed = !msg.noAiUsed;
+        
+        if (msg.isCustomMealDraft && msg.draftIngredients != null) {
+          final customs = ref.read(customMealsProvider).value ?? [];
+          String finalName = food.name;
+          int counter = 1;
+          while (customs.any((c) => c.name.toLowerCase() == finalName.toLowerCase())) {
+             finalName = '${food.name} ($counter)';
+             counter++;
+          }
 
-      await ref.read(foodActionsProvider).logFood(toLog);
-
-      if (!mounted) return;
-      setState(() {
-        if (msgIndex != -1) {
-          _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
+          final toLog = food.copyWith(name: finalName, isAiLogged: aiWasUsed);
+          await ref.read(foodActionsProvider).logFood(toLog);
+          
+          final draft = CustomMealDraft(
+            name: finalName,
+            servings: 1,
+            ingredients: msg.draftIngredients!,
+            notes: '',
+          );
+          await CustomMealService.create(draft);
+          _showSnackbar('Meal "$finalName" Logged & Saved! ✓');
+          
+          if (mounted) {
+            setState(() {
+              _messages[msgIndex] = _messages[msgIndex].copyAccepted(true, newFood: toLog);
+            });
+          }
+        } else {
+          final toLog = food.copyWith(isAiLogged: aiWasUsed);
+          await ref.read(foodActionsProvider).logFood(toLog);
+          if (mounted) {
+            setState(() {
+              _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
+            });
+          }
         }
-      });
-      _saveHistory();
+      }
 
+      _saveHistory();
       ref.invalidate(nutritionProvider);
       ref.invalidate(dailyTotalsProvider);
+      _checkPop();
 
-      final pendingCount = _messages
-          .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
-          .length;
-      if (pendingCount == 0 && mounted) {
-        Navigator.pop(context);
-      }
     } catch (e) {
       if (mounted) {
         _showSnackbar('Failed to log ${food.name}: $e', error: true);
@@ -359,6 +429,26 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
   void _editFood(FoodItem food) {
     HapticFeedback.lightImpact();
+
+    final msgIndex = _messages.indexWhere((m) => m.food?.id == food.id);
+    final msg = msgIndex != -1 ? _messages[msgIndex] : null;
+
+    if (msg != null && msg.isCustomMealDraft && msg.draftIngredients != null) {
+      CustomMealFormScreen.push(
+        context, 
+        draftName: food.name, 
+        draftIngredients: msg.draftIngredients
+      ).then((wasSaved) {
+        if (!mounted || wasSaved != true) return;
+        setState(() {
+          if (msgIndex != -1) _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
+        });
+        _saveHistory();
+        _checkPop();
+      });
+      return;
+    }
+
     Navigator.push(
       context,
       MaterialPageRoute(
@@ -370,17 +460,10 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     ).then((wasLogged) {
       if (!mounted || wasLogged != true) return;
       setState(() {
-        final i = _messages.indexWhere((m) => m.food?.id == food.id);
-        if (i != -1) _messages[i] = _messages[i].copyAccepted(true);
+        if (msgIndex != -1) _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
       });
       _saveHistory();
-      
-      final pendingCount = _messages
-          .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
-          .length;
-      if (pendingCount == 0) {
-        Navigator.pop(context);
-      }
+      _checkPop();
     });
   }
 
@@ -399,11 +482,14 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         m.type == _MsgType.foodCard && m.accepted == null).toList();
     for (final msg in pending) {
       if (msg.food != null) {
-        // Only mark isAiLogged when AI was actually used for this card.
-        final food = msg.noAiUsed
-            ? msg.food!.copyWith(isAiLogged: false)
-            : msg.food!.copyWith(isAiLogged: true);
-        ref.read(foodActionsProvider).logFood(food);
+        if (msg.isCustomMealDraft && msg.draftIngredients != null) {
+           _acceptFood(msg.food!, originalId: msg.food!.id);
+        } else {
+          final food = msg.noAiUsed
+              ? msg.food!.copyWith(isAiLogged: false)
+              : msg.food!.copyWith(isAiLogged: true);
+          ref.read(foodActionsProvider).logFood(food);
+        }
       }
     }
     setState(() {
@@ -426,13 +512,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       if (i != -1) _messages[i] = _messages[i].copyAccepted(false);
     });
     _saveHistory();
-    
-    final pendingCount = _messages
-        .where((m) => m.type == _MsgType.foodCard && m.accepted == null)
-        .length;
-    if (pendingCount == 0) {
-      Navigator.pop(context);
-    }
+    _checkPop();
   }
 
   void _scrollToBottom() {
@@ -471,14 +551,12 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       ),
       child: Column(
         children: [
-          // ── Handle ─────────────────────────────────────────────────────
           const SizedBox(height: 12),
           Container(width: 40, height: 4,
               decoration: BoxDecoration(color: AppTheme.surface,
                   borderRadius: BorderRadius.circular(2))),
           const SizedBox(height: 12),
 
-          // ── Header: title + usage counter ──────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Row(
@@ -506,7 +584,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           ),
           const SizedBox(height: 12),
 
-          // ── Search bar (below smart logger header) ─────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: TextField(
@@ -551,7 +628,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           const SizedBox(height: 4),
           const Divider(color: AppTheme.surface, height: 16),
 
-          // ── Content: search results OR chat ──────────────────────────
           Expanded(
             child: Builder(builder: (_) {
               final pendingCount = _messages
@@ -591,6 +667,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                             accepted: msg.accepted,
                             isFavorite: isFav,
                             noAiUsed: msg.noAiUsed,
+                            isCustomMealDraft: msg.isCustomMealDraft,
                             onAccept: (food) => _acceptFood(food, originalId: msg.food!.id),
                             onEdit:   () => _editFood(msg.food!),
                             onFav:    () => _favFood(msg.food!),
@@ -600,7 +677,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                         return const SizedBox();
                       },
                     ),
-                  // Log All FAB
                   if (!isSearchActive && pendingCount >= 2)
                     Positioned(
                       bottom: 8, left: 40, right: 40,
@@ -624,7 +700,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           ),
 
 
-          // ── Input bar ──────────────────────────────────────────────────
           Container(
             padding: EdgeInsets.fromLTRB(
                 16, 8, 16, bottomInset > 0 ? bottomInset : 24),
@@ -648,7 +723,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                           decoration: InputDecoration(
                             hintText: _isListening
                                 ? '🎤 Listening…'
-                                : 'e.g. "3 rotis with dal and sabzi"',
+                                : 'e.g. "3 rotis with dal and sabzi" or /custommeal',
                             hintStyle: TextStyle(
                                 color: _isListening
                                     ? AppTheme.accent
@@ -669,14 +744,12 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                             suffixIcon: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                // Camera
                                 IconButton(
                                   icon: const Icon(Icons.camera_alt_outlined,
                                       color: AppTheme.textSecondary),
                                   onPressed: _pickPhoto,
                                   tooltip: 'Log from photo',
                                 ),
-                                // Mic
                                 IconButton(
                                   icon: Icon(
                                     _isListening
@@ -718,9 +791,6 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   }
 }
 
-// ─────────────────────────────────────────────
-// SEARCH RESULTS
-// ─────────────────────────────────────────────
 class _SearchResultsList extends StatelessWidget {
   final List<FoodItem> results;
   final bool isLoading;
@@ -769,9 +839,6 @@ class _SearchResultsList extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────
-// USAGE CHIP
-// ─────────────────────────────────────────────
 class _UsageChip extends StatelessWidget {
   final int used;
   final bool limitReached;
@@ -799,9 +866,6 @@ class _UsageChip extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────
-// LIMIT BANNER
-// ─────────────────────────────────────────────
 class _LimitBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Container(
@@ -823,9 +887,6 @@ class _LimitBanner extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────
-// CHAT MESSAGE MODEL
-// ─────────────────────────────────────────────
 enum _MsgType { user, foodCard, error }
 
 class _ChatMessage {
@@ -835,6 +896,8 @@ class _ChatMessage {
   final bool?    accepted;
   final DateTime timestamp;
   final bool noAiUsed;
+  final bool isCustomMealDraft;
+  final List<CustomMealIngredient>? draftIngredients;
 
   const _ChatMessage({
     required this.type,
@@ -843,17 +906,37 @@ class _ChatMessage {
     this.accepted,
     required this.timestamp,
     this.noAiUsed = false,
+    this.isCustomMealDraft = false,
+    this.draftIngredients,
   });
 
   factory _ChatMessage.user(String t) =>
       _ChatMessage(type: _MsgType.user, text: t, timestamp: DateTime.now());
-  factory _ChatMessage.foodCard(FoodItem f, {bool noAiUsed = false}) =>
-      _ChatMessage(type: _MsgType.foodCard, food: f, timestamp: DateTime.now(), noAiUsed: noAiUsed);
+      
+  factory _ChatMessage.foodCard(FoodItem f, {bool noAiUsed = false, bool isCustomMealDraft = false, List<CustomMealIngredient>? draftIngredients}) =>
+      _ChatMessage(
+        type: _MsgType.foodCard, 
+        food: f, 
+        timestamp: DateTime.now(), 
+        noAiUsed: noAiUsed, 
+        isCustomMealDraft: isCustomMealDraft, 
+        draftIngredients: draftIngredients
+      );
+      
   factory _ChatMessage.error(String t) =>
       _ChatMessage(type: _MsgType.error, text: t, timestamp: DateTime.now());
 
-  _ChatMessage copyAccepted(bool v) =>
-      _ChatMessage(type: type, text: text, food: food, accepted: v, timestamp: timestamp, noAiUsed: noAiUsed);
+  _ChatMessage copyAccepted(bool v, {FoodItem? newFood}) =>
+      _ChatMessage(
+        type: type, 
+        text: text, 
+        food: newFood ?? food, 
+        accepted: v, 
+        timestamp: timestamp, 
+        noAiUsed: noAiUsed,
+        isCustomMealDraft: isCustomMealDraft,
+        draftIngredients: draftIngredients,
+      );
 
   Map<String, dynamic> toMap() {
     return {
@@ -863,6 +946,22 @@ class _ChatMessage {
       'accepted': accepted,
       'timestamp': timestamp.millisecondsSinceEpoch,
       'noAiUsed': noAiUsed,
+      'isCustomMealDraft': isCustomMealDraft,
+      'draftIngredients': draftIngredients?.map((x) => {
+        'foodId': x.foodId,
+        'name': x.name,
+        'amount': x.amount,
+        'unit': x.unit,
+        'calories': x.calories,
+        'protein': x.protein,
+        'carbs': x.carbs,
+        'fats': x.fats,
+        'baseAmount': x.baseAmount,
+        'baseCal': x.baseCal,
+        'basePro': x.basePro,
+        'baseCarb': x.baseCarb,
+        'baseFat': x.baseFat,
+      }).toList(),
     };
   }
 
@@ -874,6 +973,24 @@ class _ChatMessage {
       accepted: map['accepted'],
       timestamp: DateTime.fromMillisecondsSinceEpoch(map['timestamp']),
       noAiUsed: map['noAiUsed'] ?? false,
+      isCustomMealDraft: map['isCustomMealDraft'] ?? false,
+      draftIngredients: map['draftIngredients'] != null
+        ? (map['draftIngredients'] as List).map((x) => CustomMealIngredient(
+            foodId: x['foodId'],
+            name: x['name'],
+            amount: (x['amount'] as num).toDouble(),
+            unit: x['unit'],
+            calories: (x['calories'] as num).toInt(),
+            protein: (x['protein'] as num).toInt(),
+            carbs: (x['carbs'] as num).toInt(),
+            fats: (x['fats'] as num).toInt(),
+            baseAmount: (x['baseAmount'] as num).toDouble(),
+            baseCal: (x['baseCal'] as num).toInt(),
+            basePro: (x['basePro'] as num).toInt(),
+            baseCarb: (x['baseCarb'] as num).toInt(),
+            baseFat: (x['baseFat'] as num).toInt(),
+          )).toList()
+        : null,
     );
   }
 }
@@ -908,9 +1025,6 @@ class _SmartLoggerHistory {
   }
 }
 
-// ─────────────────────────────────────────────
-// BUBBLES & CARDS (unchanged from original)
-// ─────────────────────────────────────────────
 class _UserBubble extends StatelessWidget {
   final String text;
   const _UserBubble({required this.text});
@@ -960,6 +1074,7 @@ class _FoodCardMsg extends ConsumerStatefulWidget {
   final bool? accepted;
   final bool isFavorite;
   final bool noAiUsed;
+  final bool isCustomMealDraft;
   final ValueChanged<FoodItem> onAccept;
   final VoidCallback onEdit;
   final VoidCallback onFav;
@@ -970,6 +1085,7 @@ class _FoodCardMsg extends ConsumerStatefulWidget {
     required this.accepted,
     this.isFavorite = false,
     this.noAiUsed = false,
+    this.isCustomMealDraft = false,
     required this.onAccept,
     required this.onEdit,
     required this.onFav,
@@ -1038,19 +1154,28 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(children: [
-              if (!widget.noAiUsed)
+              if (!widget.noAiUsed && !widget.isCustomMealDraft)
                 const Text('🪄 ', style: TextStyle(fontSize: 13)),
               Expanded(child: Text(food.name,
                   style: const TextStyle(color: Colors.white,
                       fontWeight: FontWeight.bold))),
-              // Serving hint
               Text(
                 '${food.consumedAmount % 1 == 0 ? food.consumedAmount.toInt() : food.consumedAmount} ${food.consumedUnit}',
                 style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
               ),
             ]),
 
-            if (widget.noAiUsed) ...[
+            if (widget.isCustomMealDraft) ...[
+               const SizedBox(height: 4),
+               Container(
+                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                 decoration: BoxDecoration(
+                   color: AppTheme.accent.withOpacity(0.15),
+                   borderRadius: BorderRadius.circular(4),
+                 ),
+                 child: const Text('CUSTOM MEAL PREVIEW', style: TextStyle(color: AppTheme.accent, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.8)),
+               ),
+            ] else if (widget.noAiUsed) ...[
               const SizedBox(height: 4),
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -1086,9 +1211,7 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
             ),
             if (widget.accepted == null) ...[
               const SizedBox(height: 12),
-              // 4-action row
               Row(children: [
-                // Edit qty
                 _SmallBtn(
                   icon: Icons.edit_rounded,
                   label: 'Edit',
@@ -1096,7 +1219,6 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
                   onTap: widget.onEdit,
                 ),
                 const SizedBox(width: 6),
-                // Favourite
                 _SmallBtn(
                   icon: widget.isFavorite
                       ? Icons.favorite_rounded
@@ -1106,7 +1228,6 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
                   onTap: widget.onFav,
                 ),
                 const Spacer(),
-                // Dismiss
                 _SmallBtn(
                   icon: Icons.close_rounded,
                   label: 'Deny',
@@ -1114,7 +1235,6 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
                   onTap: widget.onDeny,
                 ),
                 const SizedBox(width: 6),
-                // Accept → opens QuantitySelectionScreen with adjusted food
                 ElevatedButton.icon(
                   onPressed: () => widget.onAccept(_adjustedFood),
                   icon: const Icon(Icons.check_rounded, size: 16),
@@ -1138,7 +1258,7 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
                     color: widget.accepted! ? AppTheme.accent : Colors.redAccent,
                     size: 16),
                 const SizedBox(width: 6),
-                Text(widget.accepted! ? 'Logged' : 'Dismissed',
+                Text(widget.accepted! ? 'Logged / Saved' : 'Dismissed',
                     style: TextStyle(
                         color: widget.accepted! ? AppTheme.accent : Colors.redAccent,
                         fontSize: 12, fontWeight: FontWeight.bold)),
@@ -1189,7 +1309,6 @@ class _SmallBtn extends StatelessWidget {
       );
 }
 
-
 class _EmptyChat extends StatelessWidget {
   const _EmptyChat();
   @override
@@ -1204,9 +1323,9 @@ class _EmptyChat extends StatelessWidget {
             SizedBox(height: 6),
             Text('"3 rotis with dal and sabzi"',
                 style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-            Text('"Large biryani from Behrouz"',
+            Text('"/aionly large biryani from Behrouz"',
                 style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-            Text('"Idli sambar breakfast"',
+            Text('"/custommeal \"W Shake\" 2 banana, 250ml milk"',
                 style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
           ],
         ),

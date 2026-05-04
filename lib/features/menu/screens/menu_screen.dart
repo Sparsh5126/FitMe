@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../dashboard/providers/user_provider.dart';
+import '../../auth/screens/login_screen.dart';
+import '../../integrations/screens/integrations_screen.dart';
 import 'settings_screen.dart';
 
 class MenuScreen extends ConsumerWidget {
@@ -47,6 +49,13 @@ class MenuScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                )
+              else
+                _MenuTile(
+                  icon: Icons.login_rounded,
+                  label: 'Sign In / Create Account',
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const LoginScreen())),
                 ),
 
               const SizedBox(height: 24),
@@ -66,18 +75,11 @@ class MenuScreen extends ConsumerWidget {
               const _GroupLabel('Connected Apps'),
               const SizedBox(height: 10),
               _MenuTile(
-                icon: Icons.favorite_rounded,
-                label: 'Apple Health',
-                trailing: _ComingSoonBadge(),
-                onTap: () {},
+                  icon: Icons.monitor_heart_rounded,
+                  label: 'Health & Activity',
+                  onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const IntegrationsScreen())),
               ),
-              _MenuTile(
-                icon: Icons.monitor_heart_rounded,
-                label: 'Google Fit',
-                trailing: _ComingSoonBadge(),
-                onTap: () {},
-              ),
-
               const SizedBox(height: 20),
 
               // ── Features ──────────────────────────

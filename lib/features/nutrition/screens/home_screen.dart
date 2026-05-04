@@ -13,6 +13,9 @@ import '../../nutrition/screens/macro_detail_screen.dart';
 import '../../nutrition/screens/quantity_selection_screen.dart';
 import '../../streak/screens/streak_screen.dart';
 import '../models/food_item.dart';
+import '../../insights/screens/diet_analysis_screen.dart';
+import '../../insights/screens/diet_plan_screen.dart';
+import '../../recipes/screens/recipes_screen.dart';
 
 class _DismissedMealsNotifier extends Notifier<Set<String>> {
   @override
@@ -504,23 +507,48 @@ class _FoodPage extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       _ActionIcon(
-                          icon: Icons.restaurant_menu_rounded,
-                          label: 'Diet Plan',
-                          onTap: () {}),
+                        icon: Icons.restaurant_menu_rounded,
+                        label: 'Diet Plan',
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const DietPlanScreen(),
+                            ),
+                          );
+                        },
+                      ),
                       _ActionIcon(
-                          icon: Icons.analytics_rounded,
-                          label: 'Analyse Diet',
-                          onTap: () {}),
+                        icon: Icons.analytics_rounded,
+                        label: 'Analyse Diet',
+                        onTap: () {
+                          HapticFeedback.lightImpact();
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const DietAnalysisScreen(),
+                            ),
+                          );
+                        },
+                      ),
                       _ActionIcon(
-                          icon: Icons.menu_book_rounded,
-                          label: 'Recipes',
-                          onTap: () {}),
+                        icon: Icons.menu_book_rounded,
+                        label: 'Recipes',
+                        onTap: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RecipesScreen(),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
               ],
             ),
           ),
+
           const SizedBox(height: 8),
           const Center(
               child: Text('← Explore More! →',

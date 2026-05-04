@@ -6,7 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../core/models/user_profile.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/goal_pace_slider.dart';
-import '../dashboard/dashboard_screen.dart';
+import '../nutrition/screens/home_screen.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -142,7 +142,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => DashboardScreen()),
+          MaterialPageRoute(builder: (_) => const HomeScreen()),
         );
       }
     } catch (e) {

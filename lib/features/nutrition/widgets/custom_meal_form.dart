@@ -12,13 +12,21 @@ import 'barcode_scanner_screen.dart';
 
 class CustomMealFormScreen extends ConsumerStatefulWidget {
   final FoodItem? existing;
-  const CustomMealFormScreen({super.key, this.existing});
+  final String? draftName;
+  final List<CustomMealIngredient>? draftIngredients;
 
-  static Future<void> push(BuildContext context, {FoodItem? existing}) =>
-      Navigator.push(
+  const CustomMealFormScreen({
+    super.key, 
+    this.existing, 
+    this.draftName, 
+    this.draftIngredients
+  });
+
+  static Future<bool?> push(BuildContext context, {FoodItem? existing, String? draftName, List<CustomMealIngredient>? draftIngredients}) =>
+      Navigator.push<bool>(
         context,
         MaterialPageRoute(
-          builder: (_) => CustomMealFormScreen(existing: existing),
+          builder: (_) => CustomMealFormScreen(existing: existing, draftName: draftName, draftIngredients: draftIngredients),
           fullscreenDialog: true,
         ),
       );
@@ -63,6 +71,9 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
     if (widget.existing != null) {
       _nameCtrl.text = widget.existing!.name;
       _loadIngredients();
+    } else if (widget.draftName != null && widget.draftIngredients != null) {
+      _nameCtrl.text = widget.draftName!;
+      _ingredients = List.from(widget.draftIngredients!);
     }
     _servingsCtrl.addListener(() => setState(() {}));
   }
@@ -131,7 +142,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
     HapticFeedback.lightImpact();
     final food = await BarcodeScannerScreen.scan(context);
     if (!mounted || food == null) return;
-    // Scanner already did the lookup — pass food directly to quantity picker.
     _showQuantityPicker(food);
   }
 
@@ -158,7 +168,8 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
   }
 
   Future<void> _save() async {
-    if (_nameCtrl.text.trim().isEmpty) {
+    String baseName = _nameCtrl.text.trim();
+    if (baseName.isEmpty) {
       _snack('Please enter a meal name');
       return;
     }
@@ -166,20 +177,34 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
       _snack('Add at least one ingredient');
       return;
     }
+    
     setState(() => _saving = true);
+    
+    final customs = ref.read(customMealsProvider).value ?? [];
+    String finalName = baseName;
+    
+    if (!_isEdit || widget.existing!.name.toLowerCase() != baseName.toLowerCase()) {
+      int counter = 1;
+      while (customs.any((c) => c.name.toLowerCase() == finalName.toLowerCase())) {
+        finalName = '$baseName ($counter)';
+        counter++;
+      }
+    }
+
     final draft = CustomMealDraft(
-      name: _nameCtrl.text.trim(),
+      name: finalName,
       servings: _servings,
       ingredients: _ingredients,
       notes: _notesCtrl.text.trim(),
     );
+    
     try {
       if (_isEdit) {
         await CustomMealService.update(widget.existing!.id, draft);
       } else {
         await CustomMealService.create(draft);
       }
-      if (mounted) Navigator.pop(context);
+      if (mounted) Navigator.pop(context, true); 
     } catch (e) {
       setState(() => _saving = false);
       _snack('Error: $e', error: true);
@@ -210,7 +235,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
     );
     if (ok != true || !mounted) return;
     await CustomMealService.delete(widget.existing!.id);
-    if (mounted) Navigator.pop(context);
+    if (mounted) Navigator.pop(context, true);
   }
 
   void _snack(String msg, {bool error = false}) {
@@ -260,12 +285,10 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
           physics: const BouncingScrollPhysics(),
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 40),
           children: [
-            // ── Meal name ──────────────────────────────────────────────
             _Label('Meal Name'),
             _textField(_nameCtrl, 'e.g. Mum\'s Dal Tadka'),
             const SizedBox(height: 24),
 
-            // ── Macro summary card ──────────────────────────────────────
             if (_ingredients.isNotEmpty) ...[
               _MacroCard(
                 totalCal: _totalCal,
@@ -278,7 +301,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
               const SizedBox(height: 20),
             ],
 
-            // ── Servings ───────────────────────────────────────────────
             _Label('Recipe makes (servings)'),
             Row(children: [
               SizedBox(
@@ -297,7 +319,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
             ]),
             const SizedBox(height: 24),
 
-            // ── Ingredient search ──────────────────────────────────────
             _Label('Ingredients'),
             TextField(
               controller: _searchCtrl,
@@ -330,7 +351,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
             ),
             const SizedBox(height: 8),
 
-            // Search result dropdown
             if (_searchActive && _searchResults.isNotEmpty)
               _SearchDropdown(
                   results: _searchResults, onTap: _addFromSearch),
@@ -347,7 +367,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
 
             const SizedBox(height: 12),
 
-            // ── Ingredient list ────────────────────────────────────────
             if (_ingredients.isEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(vertical: 28),
@@ -391,7 +410,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
 
             const SizedBox(height: 24),
 
-            // ── Notes ──────────────────────────────────────────────────
             _Label('Notes (optional)'),
             _textField(_notesCtrl, 'Cooking tips, source, etc.',
                 maxLines: 3),
@@ -428,9 +446,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Macro summary card
-// ─────────────────────────────────────────────────────────────────────────────
 class _MacroCard extends StatelessWidget {
   final int totalCal, calPerServing, proPerServing, carbPerServing,
       fatPerServing, servings;
@@ -501,9 +516,6 @@ class _MacroChip extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Search dropdown
-// ─────────────────────────────────────────────────────────────────────────────
 class _SearchDropdown extends StatelessWidget {
   final List<FoodItem> results;
   final ValueChanged<FoodItem> onTap;
@@ -536,9 +548,6 @@ class _SearchDropdown extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Ingredient tile
-// ─────────────────────────────────────────────────────────────────────────────
 class _IngredientTile extends StatelessWidget {
   final CustomMealIngredient ingredient;
   final VoidCallback onEdit;
@@ -590,9 +599,6 @@ class _IngredientTile extends StatelessWidget {
   }
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Quantity picker bottom sheet
-// ─────────────────────────────────────────────────────────────────────────────
 class _QuantityPickerSheet extends StatefulWidget {
   final FoodItem food;
   final CustomMealIngredient? existing;
@@ -735,7 +741,6 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
                   color: AppTheme.textSecondary, fontSize: 13)),
           const SizedBox(height: 20),
 
-          // Amount row
           Row(
             children: [
               _CircleBtn(Icons.remove_rounded, () => _adjust(-_step)),
@@ -774,7 +779,6 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
 
           const SizedBox(height: 16),
 
-          // Macro preview card
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
@@ -856,9 +860,6 @@ class _MiniMacro extends StatelessWidget {
       );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Section label
-// ─────────────────────────────────────────────────────────────────────────────
 class _Label extends StatelessWidget {
   final String text;
   const _Label(this.text);
