@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="health_rationale">FitMe needs access to your health data to sync steps, calories, and weight to your dashboard.</string>
+</resources>

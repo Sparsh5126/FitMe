@@ -1,3 +1,5 @@
+import 'custom_meal_ingredient.dart';
+
 class FoodItem {
   final String id;
   final String name;
@@ -14,8 +16,9 @@ class FoodItem {
   final double? servingWeightGrams;
   final int? totalServings;
   final String? servingDescription;
-  // Populated when the item originates from a recipe — persisted in custom_meals.
+  // Populated when the item originates from a recipe or custom meal
   final List<String>? ingredients;
+  final List<CustomMealIngredient>? ingredientItems;
 
   FoodItem({
     required this.id,
@@ -34,6 +37,7 @@ class FoodItem {
     this.totalServings,
     this.servingDescription,
     this.ingredients,
+    this.ingredientItems,
   })  : dateString = dateString ?? _today(),
         timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
@@ -64,6 +68,8 @@ class FoodItem {
       'totalServings': totalServings,
       'servingDescription': servingDescription,
       if (ingredients != null) 'ingredients': ingredients,
+      if (ingredientItems != null)
+        'ingredientItems': ingredientItems!.map((e) => e.toMap()).toList(),
     };
   }
 
@@ -85,6 +91,11 @@ class FoodItem {
       totalServings: map['totalServings'] != null ? (map['totalServings'] as num).toInt() : null,
       servingDescription: map['servingDescription'] as String?,
       ingredients: (map['ingredients'] as List<dynamic>?)?.cast<String>(),
+      ingredientItems: map['ingredientItems'] != null
+          ? (map['ingredientItems'] as List<dynamic>)
+              .map((e) => CustomMealIngredient.fromMap(Map<String, dynamic>.from(e)))
+              .toList()
+          : null,
     );
   }
 
@@ -105,6 +116,7 @@ class FoodItem {
     int? totalServings,
     String? servingDescription,
     List<String>? ingredients,
+    List<CustomMealIngredient>? ingredientItems,
   }) {
     return FoodItem(
       id: id ?? this.id,
@@ -123,6 +135,7 @@ class FoodItem {
       totalServings: totalServings ?? this.totalServings,
       servingDescription: servingDescription ?? this.servingDescription,
       ingredients: ingredients ?? this.ingredients,
+      ingredientItems: ingredientItems ?? this.ingredientItems,
     );
   }
 

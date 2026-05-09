@@ -32,7 +32,7 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final isLoggedIn = ref.watch(isLoggedInProvider);
+    final isLoggedIn = ref.watch(authNotifierProvider).value != null;
 
     return Scaffold(
       backgroundColor: AppTheme.background,

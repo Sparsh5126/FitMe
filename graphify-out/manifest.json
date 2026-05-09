@@ -16,15 +16,15 @@
     "hash": "441b276ec2dcbad37498c9ecaf1f4880"
   },
   "D:\\fitme\\android\\app\\src\\main\\java\\io\\flutter\\plugins\\GeneratedPluginRegistrant.java": {
-    "mtime": 1777661563.310424,
-    "hash": "4730272ab71d10208233bfd389a664b3"
+    "mtime": 1778234839.468964,
+    "hash": "3df01b2461429553da25a02ed5a6c4a4"
   },
   "D:\\fitme\\android\\app\\src\\main\\kotlin\\com\\example\\fitme\\MainActivity.kt": {
-    "mtime": 1772284707.4405496,
-    "hash": "6750c487f5601b82dcda1e3a1b739c42"
+    "mtime": 1778238779.6731145,
+    "hash": "f38e6563da3de19fdf6980211f7009f0"
   },
   "D:\\fitme\\ios\\Flutter\\ephemeral\\flutter_lldb_helper.py": {
-    "mtime": 1777659823.0446863,
+    "mtime": 1778241179.0753515,
     "hash": "98fc75412162af387e2e3461e4e58094"
   },
   "D:\\fitme\\ios\\Runner\\AppDelegate.swift": {
@@ -36,8 +36,8 @@
     "hash": "decb9041b5e91a07e66f4664e5dac408"
   },
   "D:\\fitme\\ios\\Runner\\GeneratedPluginRegistrant.m": {
-    "mtime": 1777661563.322407,
-    "hash": "f05f1e806ec152e6691581174b56e220"
+    "mtime": 1778234839.4809744,
+    "hash": "3e66cb99d9ae1de662d95ffbd74713f0"
   },
   "D:\\fitme\\ios\\Runner\\Runner-Bridging-Header.h": {
     "mtime": 1769003512.701932,
@@ -52,16 +52,16 @@
     "hash": "f656fc4b0e1214580f1ae8b63a75486a"
   },
   "D:\\fitme\\lib\\main.dart": {
-    "mtime": 1777573413.940555,
-    "hash": "42ce06af7baace37d6110991732cca9d"
+    "mtime": 1778248934.8909516,
+    "hash": "a809616c197895b99148c3f29c4173a7"
   },
   "D:\\fitme\\lib\\core\\models\\exercise.dart": {
     "mtime": 1777573413.9074514,
     "hash": "b4e6e52765b5e5033c3b129f06c72855"
   },
   "D:\\fitme\\lib\\core\\models\\user_profile.dart": {
-    "mtime": 1777573413.907971,
-    "hash": "c8411ac270869f11a2ad8d58510d9157"
+    "mtime": 1778349391.416183,
+    "hash": "69e0fd9ee94bd436422cdf9349f5d78b"
   },
   "D:\\fitme\\lib\\core\\models\\workout.dart": {
     "mtime": 1777573413.9084816,
@@ -76,64 +76,104 @@
     "hash": "6e36e0f01389c2438cd5b1ea43ff0291"
   },
   "D:\\fitme\\lib\\core\\widgets\\oil_level_selector.dart": {
-    "mtime": 1777573413.9106522,
-    "hash": "40ed0eb61c2ade7c059641b98d9eed54"
+    "mtime": 1778235088.408065,
+    "hash": "51ba77705e0f52c9ccb2ba0e5b06f26b"
   },
   "D:\\fitme\\lib\\features\\app_shell.dart": {
-    "mtime": 1777573413.911189,
+    "mtime": 1778237652.3807185,
     "hash": "376c628c6b9426fbab4ebcf8bdab8183"
   },
   "D:\\fitme\\lib\\features\\auth\\providers\\auth_provider.dart": {
-    "mtime": 1777661370.8526378,
-    "hash": "564038e2a496cbfba91cf090df0344b0"
+    "mtime": 1778349273.233102,
+    "hash": "19adfeae00a7cba69a7b0d3714f003f6"
   },
   "D:\\fitme\\lib\\features\\auth\\screens\\login_screen.dart": {
-    "mtime": 1777641802.5854366,
-    "hash": "e9ba5e5c018ab5c7b570567ffff2e7c7"
+    "mtime": 1778244643.4300444,
+    "hash": "fee6efcb54d64be739827e6863a792fb"
   },
   "D:\\fitme\\lib\\features\\auth\\screens\\signup_screen.dart": {
-    "mtime": 1777641823.4089973,
-    "hash": "2bd130ee2ed492c44e2dd7e0e1634613"
+    "mtime": 1778241088.0401433,
+    "hash": "f6564734491ecc0e4d561949df0f9548"
   },
   "D:\\fitme\\lib\\features\\auth\\services\\auth_service.dart": {
-    "mtime": 1777641740.0106952,
-    "hash": "03a2bbc7cfca2e10a7e003d9982970a7"
+    "mtime": 1778244855.5336208,
+    "hash": "b61c1b900603cbca507aa7f9b82da01a"
+  },
+  "D:\\fitme\\lib\\features\\auth\\services\\auth_session_cleanup_service.dart": {
+    "mtime": 1778349247.4937851,
+    "hash": "f667b70c9047af7c099229671c6d77c0"
+  },
+  "D:\\fitme\\lib\\features\\auth\\widgets\\migration_dialog.dart": {
+    "mtime": 1778248828.9795122,
+    "hash": "2337383e9bc39b8ac69b9ad7409902cc"
   },
   "D:\\fitme\\lib\\features\\backup\\screens\\backup_settings_screen.dart": {
-    "mtime": 1777642181.201414,
-    "hash": "9d76563b11d42ccb1b0b8de87b3f02ed"
+    "mtime": 1778248846.9122834,
+    "hash": "30d688b15fe5372cb4eec66e895fa7c4"
   },
   "D:\\fitme\\lib\\features\\backup\\services\\backup_service.dart": {
-    "mtime": 1777642141.4289298,
-    "hash": "15d8559d17127c7d843d815050c50450"
+    "mtime": 1778237211.6369927,
+    "hash": "9a55852bdaa6f972646e4bfdb5416fa6"
   },
   "D:\\fitme\\lib\\features\\dashboard\\providers\\user_provider.dart": {
-    "mtime": 1777573413.912782,
-    "hash": "b41fe0a6edf5fb85d8fc66447c5c75dd"
+    "mtime": 1778335515.2898166,
+    "hash": "8711ded709641875d00436cd9270dd12"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\fitpoints.dart": {
+    "mtime": 1778349532.2990074,
+    "hash": "a0e8cde10b1f61edda8ae893e0c68b3d"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\models\\fitpoints_models.dart": {
+    "mtime": 1778349463.5265057,
+    "hash": "4e33c45f76f1633097e6bbda56ea9230"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\providers\\fitpoints_provider.dart": {
+    "mtime": 1778350019.2999506,
+    "hash": "24716a0d118b37d560666ab328833a91"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\services\\challenge_service.dart": {
+    "mtime": 1778349541.8239837,
+    "hash": "27f811c66d9438128e6f4880fd4573cb"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\services\\consistency_engine.dart": {
+    "mtime": 1778349541.826307,
+    "hash": "f41a300c3362e62bca72bb256627d900"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\services\\fitpoints_service.dart": {
+    "mtime": 1778349983.7535315,
+    "hash": "9db4d9cfdd43e702142822cd6b0327e0"
+  },
+  "D:\\fitme\\lib\\features\\fitpoints\\services\\momentum_service.dart": {
+    "mtime": 1778349541.831751,
+    "hash": "25cbff58f20a4b8f6d764c90980e08e9"
   },
   "D:\\fitme\\lib\\features\\gamification\\screens\\wrapped_screen.dart": {
     "mtime": 1777573413.9133132,
     "hash": "4a18872300e06d8b45773828228f6ebc"
   },
-  "D:\\fitme\\lib\\features\\gamification\\services\\fitpoints_service.dart": {
-    "mtime": 1777573413.9143553,
-    "hash": "c966f61a6d7c74f9259ea6fded0f2f0d"
+  "D:\\fitme\\lib\\features\\gamification\\services\\insights_aggregation_service.dart": {
+    "mtime": 1778350048.4948804,
+    "hash": "fbb1e752172e4e1e91b01aa1a33a8051"
   },
   "D:\\fitme\\lib\\features\\gamification\\services\\streak_service.dart": {
-    "mtime": 1777573413.91536,
-    "hash": "7f09ffb4822dc8f9a972256847b0a26d"
+    "mtime": 1778335813.306026,
+    "hash": "e9a99a29507927ade9bedc4a9be0f984"
   },
   "D:\\fitme\\lib\\features\\insights\\screens\\diet_analysis_screen.dart": {
-    "mtime": 1777627770.811571,
-    "hash": "5495ef08188e3b8bf52a9275e1c59bd1"
+    "mtime": 1778350078.194704,
+    "hash": "8f194fcfc52503445321d3ab27ece470"
   },
   "D:\\fitme\\lib\\features\\insights\\screens\\diet_plan_screen.dart": {
-    "mtime": 1777628055.190758,
-    "hash": "62c7599e46b95bcdba5bd4110096b31f"
+    "mtime": 1778350087.125335,
+    "hash": "cf959f692e73a0310f56c391ea44f6e6"
   },
   "D:\\fitme\\lib\\features\\insights\\screens\\insights_screen.dart": {
-    "mtime": 1777573413.9163618,
-    "hash": "dca196d76d89f7c1e1b6fccf5ff878be"
+    "mtime": 1778350377.6188798,
+    "hash": "0e7d234caffef4bef47ab9ed3fbd111c"
+  },
+  "D:\\fitme\\lib\\features\\insights\\services\\ai_usage_service.dart": {
+    "mtime": 1778332432.3025482,
+    "hash": "00dd381471b2eea001e97f182770bf17"
   },
   "D:\\fitme\\lib\\features\\insights\\services\\diet_analysis_service.dart": {
     "mtime": 1777628526.88275,
@@ -148,20 +188,20 @@
     "hash": "92fef71b36bd0ad62bca8cfbc9c12da5"
   },
   "D:\\fitme\\lib\\features\\integrations\\screens\\integrations_screen.dart": {
-    "mtime": 1777661384.4630864,
-    "hash": "d74731b7966f91eb8fc6aaefda2e2c60"
+    "mtime": 1778349236.0597417,
+    "hash": "88764db844d6a1f41a8637fb67d6a5a2"
   },
   "D:\\fitme\\lib\\features\\integrations\\services\\health_sync_service.dart": {
-    "mtime": 1777661611.2384398,
-    "hash": "a401a02dd3fd09a8cdaf0100ceb567b8"
+    "mtime": 1778238171.6975951,
+    "hash": "006ceb2642ee46efdad8538fb6edde6a"
   },
   "D:\\fitme\\lib\\features\\menu\\screens\\menu_screen.dart": {
-    "mtime": 1777660422.328329,
-    "hash": "250be44fecf1c3ac374a49091b7f8d48"
+    "mtime": 1778335635.0322108,
+    "hash": "93a56191d5c8361f299fcc3c9f840e22"
   },
   "D:\\fitme\\lib\\features\\menu\\screens\\settings_screen.dart": {
-    "mtime": 1777573413.9173608,
-    "hash": "3f708a3ae6174e569c78fa2517607d0d"
+    "mtime": 1778335598.3310559,
+    "hash": "96c57b3b73bfaf0370ee27ba082e1229"
   },
   "D:\\fitme\\lib\\features\\notifications\\notification_service.dart": {
     "mtime": 1777573413.918621,
@@ -172,20 +212,24 @@
     "hash": "347528cca95b2a6f507152dc66ae672d"
   },
   "D:\\fitme\\lib\\features\\nutrition\\models\\food_item.dart": {
-    "mtime": 1777906403.7418523,
-    "hash": "f9a60e55edc812c83a08c6aaa8f61490"
+    "mtime": 1778248767.033713,
+    "hash": "c53bc9a96bd5aa2ca3d9555262a04956"
+  },
+  "D:\\fitme\\lib\\features\\nutrition\\models\\parsed_meal.dart": {
+    "mtime": 1778247789.020128,
+    "hash": "1be8730a4378b4f4c556b50f71ec153a"
   },
   "D:\\fitme\\lib\\features\\nutrition\\providers\\nutrition_provider.dart": {
-    "mtime": 1777906457.4970517,
-    "hash": "ed29d08297f9397757575d024cc492b7"
+    "mtime": 1778350070.3105254,
+    "hash": "7c156ddb4de929a13d300b1756bb5654"
   },
   "D:\\fitme\\lib\\features\\nutrition\\providers\\oil_level_provider.dart": {
     "mtime": 1777573413.922701,
     "hash": "37231f946cb6a9c4a2c6c0bc92bac596"
   },
   "D:\\fitme\\lib\\features\\nutrition\\repositories\\nutrition_repository.dart": {
-    "mtime": 1777906432.720445,
-    "hash": "3da58719a496398a6154b6fa9396f6f5"
+    "mtime": 1778245466.107284,
+    "hash": "b741f1ace21843b0ca2c6184f6144ec5"
   },
   "D:\\fitme\\lib\\features\\nutrition\\screens\\favorites_screen.dart": {
     "mtime": 1777573413.923701,
@@ -196,7 +240,7 @@
     "hash": "d47071d14bf0dab70f9456f6f6c26d93"
   },
   "D:\\fitme\\lib\\features\\nutrition\\screens\\home_screen.dart": {
-    "mtime": 1777662570.0150669,
+    "mtime": 1778237652.383782,
     "hash": "400d185b355879b7c29e401d02a2a556"
   },
   "D:\\fitme\\lib\\features\\nutrition\\screens\\macro_detail_screen.dart": {
@@ -211,16 +255,28 @@
     "mtime": 1777573413.9292612,
     "hash": "da1f5a67ebec138eeb2bd975358ee1ee"
   },
+  "D:\\fitme\\lib\\features\\nutrition\\services\\food_knowledge_resolver.dart": {
+    "mtime": 1778248000.4696765,
+    "hash": "c77d2c9fad7a3b5e4d20c8bcdf9a7921"
+  },
   "D:\\fitme\\lib\\features\\nutrition\\services\\food_search_service.dart": {
-    "mtime": 1777659495.060695,
-    "hash": "269896f9c1b854fad0e482888b08ef22"
+    "mtime": 1778271432.7832975,
+    "hash": "6abe5fc09564d4b2df1a522ff65fe1dd"
   },
   "D:\\fitme\\lib\\features\\nutrition\\services\\gemini_service.dart": {
-    "mtime": 1777573413.9302657,
-    "hash": "4173b47815ce7ccae163f1b43d3da03e"
+    "mtime": 1778248055.0477865,
+    "hash": "f0944e58a7b6b7be387341b3a5ed46ad"
+  },
+  "D:\\fitme\\lib\\features\\nutrition\\services\\local_nutrition_service.dart": {
+    "mtime": 1778349976.5048382,
+    "hash": "a060590575d43ca114a5ac87be75616e"
+  },
+  "D:\\fitme\\lib\\features\\nutrition\\services\\migration_service.dart": {
+    "mtime": 1778248864.1533978,
+    "hash": "c41920bd4b3b7fd0f57a2b9bb92f56b6"
   },
   "D:\\fitme\\lib\\features\\nutrition\\widgets\\barcode_scanner_screen.dart": {
-    "mtime": 1777573413.9312627,
+    "mtime": 1778237652.383782,
     "hash": "66abae183e225406325d96fb88cb74a1"
   },
   "D:\\fitme\\lib\\features\\nutrition\\widgets\\custom_meal_form.dart": {
@@ -236,28 +292,28 @@
     "hash": "8274c810869a480daddf102f094220b3"
   },
   "D:\\fitme\\lib\\features\\nutrition\\widgets\\smart_logger_sheet.dart": {
-    "mtime": 1777627573.4120755,
-    "hash": "d61a43c0cbd124fa2af8c96facd757b1"
+    "mtime": 1778349228.485407,
+    "hash": "31dee34bb03dbb8ba0be41cc32503e81"
   },
   "D:\\fitme\\lib\\features\\onboarding\\onboarding_screen.dart": {
-    "mtime": 1777715371.8641725,
-    "hash": "954ea7465f6b129ef9612c958ee4a462"
+    "mtime": 1778245491.8072708,
+    "hash": "1aebdcda3a6aec8f6f7d3f0a2711e960"
   },
   "D:\\fitme\\lib\\features\\profile\\screens\\profile_screen.dart": {
-    "mtime": 1777573413.9362614,
-    "hash": "976b379ab47007d0e60d6ce0438c8842"
+    "mtime": 1778335568.4717832,
+    "hash": "ee1d74950f2a5c2152c6ad3367f455e7"
   },
   "D:\\fitme\\lib\\features\\rebalancer\\services\\rebalancer_service.dart": {
     "mtime": 1777573413.9362614,
     "hash": "1546530bfb5d6ed7aa4d5a2b80f22cf4"
   },
   "D:\\fitme\\lib\\features\\recipes\\data\\recipes_data.dart": {
-    "mtime": 1777641093.8258069,
-    "hash": "3a79381cb84216e88070d38db516320b"
+    "mtime": 1778244589.753122,
+    "hash": "bf3f4804d474dacc7544266139862f0b"
   },
   "D:\\fitme\\lib\\features\\recipes\\models\\recipe_model.dart": {
-    "mtime": 1777906421.0562694,
-    "hash": "f17771650a848e06577ad4ab11c71c26"
+    "mtime": 1778244566.82427,
+    "hash": "e209c695675f58aafc3792bd480433ae"
   },
   "D:\\fitme\\lib\\features\\recipes\\providers\\recipes_provider.dart": {
     "mtime": 1777906521.3993728,
@@ -268,16 +324,16 @@
     "hash": "3d404c573dae1e75a25dbb5ebccccc58"
   },
   "D:\\fitme\\lib\\features\\recipes\\screens\\recipe_detail_screen.dart": {
-    "mtime": 1777906483.2696126,
-    "hash": "973823166b6a4023457433acc0111a83"
+    "mtime": 1778248913.3514075,
+    "hash": "e5ece38603840136a213874d49bd4765"
   },
   "D:\\fitme\\lib\\features\\streak\\screens\\streak_screen.dart": {
-    "mtime": 1777573413.937771,
-    "hash": "1350fe574cf92924f54aa272e633fbc0"
+    "mtime": 1778248575.030738,
+    "hash": "db4ab01760b44c4f38e6bbcc8229d3fe"
   },
   "D:\\fitme\\lib\\features\\workout\\providers\\workout_provider.dart": {
-    "mtime": 1777573413.937771,
-    "hash": "bee11b7d8df137147f30fb24e77882d7"
+    "mtime": 1778350061.577938,
+    "hash": "864bf27e332a3fb2e157d389475ce16e"
   },
   "D:\\fitme\\lib\\features\\workout\\repositories\\workout_repository.dart": {
     "mtime": 1777573413.938779,
@@ -304,8 +360,8 @@
     "hash": "ffa1a7c0a2ad45a2c14a921596516ff8"
   },
   "D:\\fitme\\macos\\Flutter\\GeneratedPluginRegistrant.swift": {
-    "mtime": 1777661563.3244054,
-    "hash": "b296c9218cbee47071448a7253d52dbe"
+    "mtime": 1778234839.482041,
+    "hash": "ce9a1db0149420058f7afcd941bce588"
   },
   "D:\\fitme\\macos\\Runner\\AppDelegate.swift": {
     "mtime": 1769003513.2055929,
@@ -372,8 +428,8 @@
     "hash": "d48a0f1700937fbca03afc64e7e7c459"
   },
   "D:\\fitme\\analyze_output.txt": {
-    "mtime": 1777055225.4072554,
-    "hash": "55b815d13d89834c52d31d931a872489"
+    "mtime": 1778332690.9617763,
+    "hash": "48b476f498622a0b882b3da2bf7a23cd"
   },
   "D:\\fitme\\analyze_output2.txt": {
     "mtime": 1777055479.94235,
@@ -387,9 +443,13 @@
     "mtime": 1777117437.7138557,
     "hash": "8514a6a64c1657dbc8349363b495083f"
   },
+  "D:\\fitme\\fitme_critical_fixes_and_smartlogger_redesign.md": {
+    "mtime": 1778334691.2891057,
+    "hash": "a4a1259c7e2310d6fc4670147009c865"
+  },
   "D:\\fitme\\pubspec.yaml": {
-    "mtime": 1777661821.0881124,
-    "hash": "bba71f447600bd9a9e6abf346a7919be"
+    "mtime": 1778349773.987114,
+    "hash": "a5e2769a01e202132106c6fdb7ed86ee"
   },
   "D:\\fitme\\pub_deps.txt": {
     "mtime": 1777659932.398547,

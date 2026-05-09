@@ -24,26 +24,40 @@ Return ONLY a valid JSON array (no markdown, no explanation, no code fences) wit
     "calories": 300,
     "protein": 20,
     "carbs": 35,
-    "fats": 8
+    "fats": 8,
+    "consumedAmount": 1,
+    "consumedUnit": "serving"
   }
 ]
 Rules:
-- Split multi-item meals into separate objects (e.g. "roti and dal" → 2 objects).
-- Use realistic Indian and global nutrition data. MUST use these accurate values:
+- Split multi-item meals into SEPARATE objects (e.g. "roti and dal" → 2 objects, "oats banana" → 2 objects).
+- Extract ALL food entities from the input — never ignore any mentioned food.
+- Detect quantities: "50g oats" → consumedAmount:50, consumedUnit:"g". "2 bananas" → consumedAmount:2, consumedUnit:"piece".
+- Default consumedAmount:1 consumedUnit:"serving" if no quantity given.
+- Use realistic Indian and global nutrition data. MUST use accurate values:
   roti/chapati≈104kcal/piece(3P,18C,3F), paratha≈200kcal/piece, aloo paratha≈260kcal
-  dal/lentils≈150kcal/katori(9P,22C,3F), moong dal≈147kcal/katori, chana dal≈200kcal/katori
-  rice/chawal≈206kcal/katori(4P,45C,0F), dal chawal≈350kcal/plate
-  paneer≈265kcal/100g(18P,3C,20F), paneer butter masala≈280kcal/katori
+  dal≈150kcal/katori(9P,22C,3F), moong dal≈147kcal/katori, chana dal≈200kcal/katori
+  rice≈206kcal/katori(4P,45C,0F), paneer≈265kcal/100g(18P,3C,20F)
   chicken breast≈165kcal/100g(31P,0C,4F), chicken curry≈280kcal/katori
   biryani≈490kcal/plate, butter chicken≈320kcal/katori
-  sabzi/vegetable curry≈120kcal/katori, aloo gobi≈170kcal/katori
-  dosa≈168kcal/piece, idli≈58kcal/piece, sambar≈90kcal/katori
-  egg≈78kcal/piece(6P,1C,5F), omelette≈154kcal
-  milk≈150kcal/glass, curd/dahi≈98kcal/katori
-- All values must be integers.
+  sabzi≈120kcal/katori, aloo gobi≈170kcal/katori
+  dosa≈168kcal/piece, idli≈58kcal/piece, egg≈78kcal/piece(6P,1C,5F)
+  milk≈150kcal/glass, curd≈98kcal/katori
+  oats≈150kcal/40g(5P,27C,3F), banana≈89kcal/piece(1P,23C,0F)
+  peanut butter≈190kcal/2tbsp(8P,6C,16F)
+  whey protein≈120kcal/scoop(25P,3C,2F)
+  apple≈80kcal/piece, mango≈60kcal/100g
+  Diet Coke/Coke Zero≈1kcal/355ml(0P,0C,0F)
+  Pepsi≈150kcal/355ml(0P,41C,0F)
+  Bournvita≈38kcal/tsp(1P,8C,0F)
+  Horlicks≈35kcal/tsp(1P,7C,0F)
+  Fairlife milk≈80kcal/cup(13P,6C,2F)
+  protein bar≈200kcal/bar(20P,20C,7F)
+- All macro values must be integers.
 - If you cannot identify any food, return exactly: []
 - Do NOT return markdown, prose, or anything other than the JSON array.
 ''';
+
 
   // ── Text logging ──────────────────────────────────────────────────────────
 
@@ -58,7 +72,7 @@ Rules:
           ]
         }
       ],
-      'generationConfig': {'temperature': 0.1, 'maxOutputTokens': 512},
+      'generationConfig': {'temperature': 0.1, 'maxOutputTokens': 1024},
     });
     final raw = await _post(_textUrl, body);
     return _parseResponse(raw);
@@ -99,7 +113,7 @@ Rules:
           ]
         }
       ],
-      'generationConfig': {'temperature': 0.1, 'maxOutputTokens': 512},
+      'generationConfig': {'temperature': 0.1, 'maxOutputTokens': 1024},
     });
 
     final raw = await _post(_visionUrl, body);
@@ -184,8 +198,10 @@ Rules:
         protein: _toInt(item['protein']),
         carbs: _toInt(item['carbs']),
         fats: _toInt(item['fats']),
-        consumedAmount: 1,
-        consumedUnit: 'serving',
+        consumedAmount: item['consumedAmount'] != null
+            ? (item['consumedAmount'] as num).toDouble()
+            : 1.0,
+        consumedUnit: item['consumedUnit'] as String? ?? 'serving',
         isAiLogged: true,
       );
     }).where((f) => f.calories > 0).toList();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../../../features/nutrition/providers/oil_level_provider.dart';
-import '../theme/app_theme.dart';
+import 'package:fitme/features/nutrition/providers/oil_level_provider.dart';
+import 'package:fitme/core/theme/app_theme.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // FULL SLIDER VARIANT  (used on quantity_selection & food_details screens)

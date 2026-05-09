@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/screens/login_screen.dart';
 import '../../dashboard/providers/user_provider.dart';
+import '../services/ai_usage_service.dart';
 import '../services/diet_plan_service.dart';
+import '../../fitpoints/services/fitpoints_service.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../fitpoints/models/fitpoints_models.dart';
 
 class DietPlanNotifier extends Notifier<AsyncValue<List<DietMealPlan>?>> {
   @override
@@ -13,6 +19,12 @@ class DietPlanNotifier extends Notifier<AsyncValue<List<DietMealPlan>?>> {
     try {
       final profile = ref.read(userProfileProvider).value;
       if (profile == null) throw Exception('Profile not loaded.');
+
+      // Consume one AI credit (shared 10/day counter)
+      final allowed = await AiUsageService.consume();
+      if (!allowed) {
+        throw Exception('Daily AI limit reached ($kAiDailyLimit/day). Try again tomorrow.');
+      }
 
       final plan = await DietPlanService.generatePlan(
         profile: profile,
@@ -26,6 +38,22 @@ class DietPlanNotifier extends Notifier<AsyncValue<List<DietMealPlan>?>> {
       }
 
       state = AsyncValue.data(plan);
+
+      // Award FitPoints for generating a diet plan
+      final service = ref.read(fitPointsServiceProvider);
+      final fpRecord = await service.getRecord(profile.uid, false);
+      
+      final award = service.awardPoints(
+        userId: profile.uid,
+        action: FitPointAction.createRecipe, // Reusing createRecipe for plan generation
+        record: fpRecord,
+        todayTransactions: [],
+      );
+
+      if (award.awarded) {
+        final updatedRecord = service.applyAward(record: fpRecord, result: award);
+        await service.saveRecord(updatedRecord);
+      }
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
@@ -54,6 +82,7 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isGuest  = ref.watch(isGuestProvider);
     final planState = ref.watch(dietPlanProvider);
 
     return Scaffold(
@@ -71,14 +100,16 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
             )
         ],
       ),
-      body: planState.when(
-        loading: () => const _LoadingView(),
-        error: (e, _) => _ErrorView(error: e.toString()),
-        data: (plan) {
-          if (plan == null) return _buildConfigurationForm();
-          return _buildGeneratedPlan(plan);
-        },
-      ),
+      body: isGuest
+          ? const _GuestLockView()
+          : planState.when(
+              loading: () => const _LoadingView(),
+              error: (e, _) => _ErrorView(error: e.toString()),
+              data: (plan) {
+                if (plan == null) return _buildConfigurationForm();
+                return _buildGeneratedPlan(plan);
+              },
+            ),
     );
   }
 
@@ -90,7 +121,10 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
         const Text('Design Your Plan', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         const Text('Customize your AI-generated meal plan based on your preferences, schedule, and budget.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
-        const SizedBox(height: 32),
+        const SizedBox(height: 16),
+        // AI usage counter
+        _AiUsageChip(),
+        const SizedBox(height: 24),
 
         _SectionTitle('Plan Type'),
         Wrap(
@@ -316,3 +350,109 @@ class _ErrorView extends ConsumerWidget {
     ),
   );
 }
+
+// ─────────────────────────────────────────────
+// AI USAGE CHIP
+// ─────────────────────────────────────────────
+class _AiUsageChip extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<int>(
+      future: AiUsageService.getRemainingUses(),
+      builder: (context, snap) {
+        final remaining = snap.data ?? kAiDailyLimit;
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.auto_awesome_rounded, color: AppTheme.accent, size: 14),
+              const SizedBox(width: 6),
+              Text(
+                '$remaining/$kAiDailyLimit AI uses remaining today',
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+// ─────────────────────────────────────────────
+// GUEST LOCK VIEW
+// ─────────────────────────────────────────────
+class _GuestLockView extends StatelessWidget {
+  const _GuestLockView();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
+              ),
+              child: Column(
+                children: [
+                  const Icon(Icons.lock_rounded, color: AppTheme.accent, size: 48),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Smart Diet Planner requires an account',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  const Text(
+                    'Sign in or create a free account to unlock AI-powered meal planning.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14, height: 1.5),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const LoginScreen()),
+                      ),
+                      icon: const Icon(Icons.login_rounded),
+                      label: const Text('Sign In / Create Account',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accent,
+                        foregroundColor: AppTheme.background,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14)),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

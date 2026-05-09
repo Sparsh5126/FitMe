@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/food_item.dart';
@@ -6,6 +7,11 @@ import '../repositories/nutrition_repository.dart';
 import '../services/food_search_service.dart';
 import '../../dashboard/providers/user_provider.dart';
 import '../../recipes/models/recipe_model.dart';
+import '../../gamification/services/streak_service.dart';
+import '../../gamification/services/insights_aggregation_service.dart';
+import '../../fitpoints/services/fitpoints_service.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../fitpoints/models/fitpoints_models.dart';
 
 final _repo = NutritionRepository();
 
@@ -70,15 +76,48 @@ class FoodActions {
   FoodActions(this._ref);
 
   Future<void> logFood(FoodItem food) async {
+    debugPrint('[NutritionProvider] Logging food: ${food.name} (${food.calories} cals)');
     await _repo.addLog(food);
+    
+    // Award FitPoints for logging food
+    final service = _ref.read(fitPointsServiceProvider);
+    final profile = _ref.read(userProfileProvider).value;
+    final fpRecord = await service.getRecord(profile?.uid ?? '', profile == null);
+    
+    final award = service.awardPoints(
+      userId: profile?.uid ?? '',
+      action: FitPointAction.logMeal,
+      record: fpRecord,
+      todayTransactions: [], // Service handles caps internally if needed
+      targetMeal: MealLogEntry(
+        id: food.id,
+        userId: profile?.uid ?? '',
+        mealName: food.name,
+        ingredients: [food.name], // Simple ingredient for duplicate detection
+        calories: food.calories.toDouble(),
+        proteinGrams: food.protein.toDouble(),
+        carbGrams: food.carbs.toDouble(),
+        fatGrams: food.fats.toDouble(),
+        loggedAt: DateTime.now(),
+      ),
+    );
+
+    if (award.awarded) {
+      debugPrint('[NutritionProvider] FitPoints awarded: ${award.pointsEarned}');
+      final updatedRecord = service.applyAward(record: fpRecord, result: award);
+      await service.saveRecord(updatedRecord);
+    }
+
     // Invalidate recents so they refresh
     _ref.invalidate(recentsProvider);
+    _triggerAggregates();
   }
 
   /// Log a recipe: writes to `logs` (stats/home) and upserts to `custom_meals`
   /// (so it appears in the Customs tab with its full ingredient list).
   /// Does NOT write to recents — recipes are reused from Customs, not Recents.
   Future<void> logRecipe(RecipeModel recipe) async {
+    debugPrint('[NutritionProvider] Logging recipe: ${recipe.title}');
     final logEntry = recipe.toFoodItem(); // unique ID tied to this log event
     final customTemplate = recipe.toCustomMealTemplate(); // stable ID for customs
 
@@ -90,18 +129,25 @@ class FoodActions {
 
     // Refresh the customs tab
     _ref.invalidate(customMealsProvider);
+    _triggerAggregates();
   }
 
   Future<void> deleteFood(String id) async {
+    debugPrint('[NutritionProvider] Deleting food: $id');
     await _repo.deleteLog(id);
+    _triggerAggregates();
   }
 
   Future<void> updateFood(FoodItem food) async {
+    debugPrint('[NutritionProvider] Updating food: ${food.name} (${food.calories} cals), dateString=${food.dateString}');
     await _repo.updateLog(food);
+    _triggerAggregates();
   }
 
   Future<void> copyYesterdayMeals() async {
+    debugPrint('[NutritionProvider] Copying yesterday meals to today');
     await _repo.copyYesterdayLogs();
+    _triggerAggregates();
   }
 
   Future<void> addFavorite(FoodItem food) async {
@@ -147,6 +193,16 @@ class FoodActions {
     });
 
     _ref.invalidate(userProfileProvider);
+  }
+
+  void _triggerAggregates() {
+    // Invalidate the unified consistency snapshot provider
+    // This will trigger re-calculation across all screens (Home, Streak, Insights)
+    debugPrint('[NutritionProvider] ✓ Invalidating consistency snapshot (triggers full streak/fp recalc)');
+    _ref.invalidate(consistencySnapshotProvider);
+    
+    // Also refresh insights charts
+    InsightsAggregationService.refresh(_ref);
   }
 }
 

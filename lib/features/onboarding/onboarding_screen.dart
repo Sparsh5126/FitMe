@@ -3,9 +3,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../../core/models/user_profile.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/goal_pace_slider.dart';
+import 'package:fitme/core/models/user_profile.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/widgets/goal_pace_slider.dart';
+import 'package:fitme/features/app_shell.dart';
+import '../auth/providers/auth_provider.dart';
+import '../nutrition/services/local_nutrition_service.dart';
 import '../nutrition/screens/home_screen.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -116,10 +119,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+
   Future<void> _finish() async {
     setState(() => _isSaving = true);
     try {
       final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+      final isGuest = ref.read(isGuestProvider);
+
       final profile = UserProfile.fromOnboarding(
         uid: uid,
         name: _nameController.text.trim(),
@@ -135,14 +141,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         goalPace: _goalPace,
       );
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .set(profile.toMap());
+      if (isGuest) {
+        await LocalNutritionService.saveProfile(profile);
+      } else {
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(uid)
+            .set(profile.toMap());
+      }
 
       if (mounted) {
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const HomeScreen()),
+          MaterialPageRoute(builder: (_) => const AppShell()),
         );
       }
     } catch (e) {

@@ -6,7 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/models/user_profile.dart';
 import '../../dashboard/providers/user_provider.dart';
-
+import '../../auth/providers/auth_provider.dart';
+import '../../nutrition/services/local_nutrition_service.dart';
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -166,18 +167,32 @@ class SettingsScreen extends ConsumerWidget {
       streakAlertsEnabled: streakAlertsEnabled,
       rebalancerUpdatesEnabled: rebalancerUpdatesEnabled,
     );
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(profile.uid)
-        .update(updated.toMap());
+    final isGuest = ref.read(isGuestProvider);
+    if (isGuest) {
+      await LocalNutritionService.saveProfile(updated);
+    } else {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(profile.uid)
+          .update(updated.toMap());
+    }
     ref.invalidate(userProfileProvider);
   }
 
   Future<void> _resetSmartLogger(WidgetRef ref, UserProfile profile) async {
-    await FirebaseFirestore.instance.collection('users').doc(profile.uid).update({
-      'smartLoggerUsedToday': 0,
-      'smartLoggerLastResetDate': '',
-    });
+    final isGuest = ref.read(isGuestProvider);
+    if (isGuest) {
+      final updated = profile.copyWith(
+        smartLoggerUsedToday: 0,
+        smartLoggerLastResetDate: '',
+      );
+      await LocalNutritionService.saveProfile(updated);
+    } else {
+      await FirebaseFirestore.instance.collection('users').doc(profile.uid).update({
+        'smartLoggerUsedToday': 0,
+        'smartLoggerLastResetDate': '',
+      });
+    }
     ref.invalidate(userProfileProvider);
   }
 }

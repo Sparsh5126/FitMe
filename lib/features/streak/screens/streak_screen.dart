@@ -1,3 +1,4 @@
+import 'dart:developer' as dev;
 import 'dart:math' as math;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -6,6 +7,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
 import '../../nutrition/models/food_item.dart';
+import '../../nutrition/services/local_nutrition_service.dart';
+import '../../auth/providers/auth_provider.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../gamification/services/streak_service.dart';
 
 // ── GLOBAL DEBUG PROVIDER (Riverpod 3.0 Safe) ────────────────────────
 class DebugStreakLevelNotifier extends Notifier<int?> {
@@ -25,11 +30,9 @@ class DebugStreakLevelNotifier extends Notifier<int?> {
 
 final debugStreakLevelProvider = NotifierProvider<DebugStreakLevelNotifier, int?>(DebugStreakLevelNotifier.new);
 
-final streakProvider = FutureProvider<StreakData>((ref) async {
-  // Re-calculate whenever today's meals change so the home screen badge
-  // and streak screen update immediately after logging food.
-  ref.watch(nutritionProvider);
-  return StreakService.calculate(ref);
+final streakProvider = Provider<bool>((ref) {
+  // Legacy stub - do not use
+  return true;
 });
 
 class StreakScreen extends ConsumerWidget {
@@ -37,7 +40,7 @@ class StreakScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final streakAsync = ref.watch(streakProvider);
+    final snapshotAsync = ref.watch(consistencySnapshotProvider);
     final debugLevel = ref.watch(debugStreakLevelProvider);
 
     return Scaffold(
@@ -82,11 +85,11 @@ class StreakScreen extends ConsumerWidget {
                 ),
               ),
             Expanded(
-              child: streakAsync.when(
+              child: snapshotAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.accent)),
                 error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.red))),
-                data: (streak) {
-                  final displayLevel = debugLevel ?? streak.level;
+                data: (snap) {
+                  final displayLevel = debugLevel ?? _calculateLevel(snap.currentStreak);
                   
                   return SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
@@ -109,32 +112,33 @@ class StreakScreen extends ConsumerWidget {
                         Text(StreakService._labels[displayLevel],
                             style: const TextStyle(color: AppTheme.accent, fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5)),
                         const SizedBox(height: 8),
-                        Text('${streak.currentStreak}',
+                        Text('${snap.currentStreak}',
                             style: const TextStyle(color: Colors.white, fontSize: 72, fontWeight: FontWeight.w900, height: 1)),
                         const Text('day streak',
                             style: TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
                         const SizedBox(height: 8),
-                        if (streak.daysToNextLevel > 0)
-                          Text('${streak.daysToNextLevel} more days to ${streak.nextLevelLabel}',
-                              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                        
+                        // Days to next level
+                        _buildNextLevelInfo(snap.currentStreak),
+
                         const SizedBox(height: 36),
                         Row(
                           children: [
-                            _StatCard(label: 'Longest', value: '${streak.longestStreak}d', color: AppTheme.accent),
+                            _StatCard(label: 'Longest', value: '${snap.longestStreak}d', color: AppTheme.accent),
                             const SizedBox(width: 12),
-                            _StatCard(label: 'This Week', value: '${streak.daysHitThisWeek}/7', color: Colors.blueAccent),
+                            _StatCard(label: 'This Week', value: '${snap.weeklyActiveDays}/7', color: Colors.blueAccent),
                             const SizedBox(width: 12),
-                            _StatCard(label: 'This Month', value: '${streak.daysHitThisMonth}d', color: Colors.purpleAccent),
+                            _StatCard(label: 'This Month', value: '${snap.monthlyActiveDays}d', color: Colors.purpleAccent),
                           ],
                         ),
                         const SizedBox(height: 28),
                         const Align(alignment: Alignment.centerLeft, child: Text('Progress to Next Level', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15))),
                         const SizedBox(height: 12),
-                        _LevelProgressBar(streak: streak),
+                        _LevelProgressBar(streak: snap.currentStreak),
                         const SizedBox(height: 28),
                         const Align(alignment: Alignment.centerLeft, child: Text('Last 4 Weeks', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15))),
                         const SizedBox(height: 12),
-                        _WeeklyGrid(hitDays: streak.hitDays),
+                        _WeeklyGrid(hitDays: snap.hitDays),
                         const SizedBox(height: 28),
                         const Align(alignment: Alignment.centerLeft, child: Text('Progression Levels', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15))),
                         const SizedBox(height: 12),
@@ -150,6 +154,28 @@ class StreakScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  int _calculateLevel(int streak) {
+    if (streak >= 180) return 5;
+    if (streak >= 90) return 4;
+    if (streak >= 45) return 3;
+    if (streak >= 22) return 2;
+    if (streak >= 8) return 1;
+    return 0;
+  }
+
+  Widget _buildNextLevelInfo(int streak) {
+    int level = _calculateLevel(streak);
+    if (level >= 5) return const SizedBox();
+
+    final nextLevelIdx = level + 1;
+    final nextThreshold = StreakService._thresholds[nextLevelIdx];
+    final nextLabel = StreakService._labels[nextLevelIdx];
+    final remaining = nextThreshold - streak;
+
+    return Text('$remaining more days to $nextLabel',
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13));
   }
 }
 
@@ -537,25 +563,41 @@ class True3DPainter extends CustomPainter {
 }
 
 class _LevelProgressBar extends StatelessWidget {
-  final StreakData streak;
+  final int streak;
   const _LevelProgressBar({required this.streak});
 
   @override
   Widget build(BuildContext context) {
+    final thresholds = StreakService._thresholds;
+    final labels = StreakService._labels;
+
+    int level = 0;
+    for (int i = thresholds.length - 1; i >= 0; i--) {
+      if (streak >= thresholds[i]) { level = i; break; }
+    }
+
+    final nextLevel = (level + 1).clamp(0, 5);
+    final nextThreshold = thresholds[nextLevel];
+    final currentThreshold = thresholds[level];
+    
+    final progress = nextLevel == level
+        ? 1.0
+        : ((streak - currentThreshold) / (nextThreshold - currentThreshold)).clamp(0.0, 1.0);
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: LinearProgressIndicator(value: streak.levelProgress, backgroundColor: AppTheme.surface, color: AppTheme.accent, minHeight: 10),
+          child: LinearProgressIndicator(value: progress, backgroundColor: AppTheme.surface, color: AppTheme.accent, minHeight: 10),
         ),
         const SizedBox(height: 8),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(streak.levelLabel, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-            Text('${(streak.levelProgress * 100).round()}%', style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.bold)),
-            Text(streak.nextLevelLabel, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+            Text(labels[level], style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+            Text('${(progress * 100).round()}%', style: const TextStyle(color: AppTheme.accent, fontSize: 12, fontWeight: FontWeight.bold)),
+            Text(labels[nextLevel], style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
           ],
         ),
       ],
@@ -726,42 +768,48 @@ class StreakService {
   static const _thresholds = [0, 8, 22, 45, 90, 180];
   static const _labels = ['Light Dumbbell', 'Heavy Dumbbell', 'Barbell', '1-Plate Barbell', '2-Plate Barbell', '4-Plate Barbell'];
 
+
   static Future<StreakData> calculate(Ref ref) async {
     final now = DateTime.now();
     final hitDays = <String>{};
+    final isGuest = ref.read(isGuestProvider);
 
-    // ── Load historical hit days from Firestore ──────────────────────────
-    // We query the last 200 days in a single Firestore request using a
-    // dateString range — same collection that NutritionRepository uses.
+    // ── Load historical hit days ──────────────────────────────
     try {
-      final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-      if (uid.isNotEmpty) {
-        final cutoff = FoodItem.dateFor(now.subtract(const Duration(days: 200)));
-        final today  = FoodItem.dateFor(now);
+      if (isGuest) {
+        final guestLogs = await LocalNutritionService.getLogs();
+        for (final log in guestLogs) {
+          if (log.name.toLowerCase() != 'water') {
+            hitDays.add(log.dateString);
+          }
+        }
+      } else {
+        final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
+        if (uid.isNotEmpty) {
+          final cutoff = FoodItem.dateFor(now.subtract(const Duration(days: 200)));
+          final today  = FoodItem.dateFor(now);
 
-        final snap = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(uid)
-            .collection('logs')
-            .where('dateString', isGreaterThanOrEqualTo: cutoff)
-            .where('dateString', isLessThanOrEqualTo: today)
-            // Only pull the two fields we need — avoids over-fetching macro data.
-            .get();
+          final snap = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(uid)
+              .collection('logs')
+              .where('dateString', isGreaterThanOrEqualTo: cutoff)
+              .where('dateString', isLessThanOrEqualTo: today)
+              .get();
 
-        for (final doc in snap.docs) {
-          final data = doc.data();
-          final dateStr = data['dateString'] as String?;
-          final name    = (data['name'] as String? ?? '').toLowerCase();
-          // A day counts only when it has at least one real food entry
-          // (not just a water tap).
-          if (dateStr != null && name != 'water') {
-            hitDays.add(dateStr);
+          for (final doc in snap.docs) {
+            final data = doc.data();
+            final dateStr = data['dateString'] as String?;
+            final name    = (data['name'] as String? ?? '').toLowerCase();
+            if (dateStr != null && name != 'water') {
+              hitDays.add(dateStr);
+            }
           }
         }
       }
     } catch (e) {
-      debugPrint('[StreakService] Firestore read error: $e');
-      // Graceful fallback: at minimum count today if meals are in memory.
+      dev.log('[StreakService] Error calculating streaks: $e', name: 'Stats');
+      // Graceful fallback
       final todayMeals = ref.read(nutritionProvider).value ?? [];
       if (todayMeals.any((m) => m.name.toLowerCase() != 'water')) {
         hitDays.add(FoodItem.dateFor(now));

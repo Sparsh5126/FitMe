@@ -7,7 +7,8 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/models/user_profile.dart';
 import '../../../core/widgets/goal_pace_slider.dart';
 import '../../dashboard/providers/user_provider.dart';
-
+import '../../auth/providers/auth_provider.dart';
+import '../../nutrition/services/local_nutrition_service.dart';
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -434,10 +435,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       appUse: _appUse,
       mantra: _mantraCtrl.text.trim(),
     );
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.profile.uid)
-        .update(updated.toMap());
+    
+    final isGuest = widget.ref.read(isGuestProvider);
+    if (isGuest) {
+      await LocalNutritionService.saveProfile(updated);
+    } else {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.profile.uid)
+          .update(updated.toMap());
+    }
     widget.ref.invalidate(userProfileProvider);
     if (mounted) Navigator.pop(context);
   }
@@ -719,16 +726,29 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
     setState(() => _saving = true);
     final finalCals = _tabCtrl.index == 0 ? _manualCals : _paceCals;
     final m = _computeMacros(finalCals);
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(widget.profile.uid)
-        .update({
-      'dynamicCalories': m['calories'],
-      'dynamicProtein': m['protein'],
-      'dynamicCarbs': m['carbs'],
-      'dynamicFats': m['fats'],
-      'goalPace': _pace,
-    });
+    
+    final isGuest = widget.ref.read(isGuestProvider);
+    if (isGuest) {
+      final updated = widget.profile.copyWith(
+        dynamicCalories: m['calories'],
+        dynamicProtein: m['protein'],
+        dynamicCarbs: m['carbs'],
+        dynamicFats: m['fats'],
+        goalPace: _pace,
+      );
+      await LocalNutritionService.saveProfile(updated);
+    } else {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(widget.profile.uid)
+          .update({
+        'dynamicCalories': m['calories'],
+        'dynamicProtein': m['protein'],
+        'dynamicCarbs': m['carbs'],
+        'dynamicFats': m['fats'],
+        'goalPace': _pace,
+      });
+    }
     widget.ref.invalidate(userProfileProvider);
     if (mounted) Navigator.pop(context);
   }

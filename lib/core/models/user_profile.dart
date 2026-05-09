@@ -31,6 +31,10 @@ class UserProfile {
   final int smartLoggerUsedToday;
   final String smartLoggerLastResetDate;
 
+  final int currentStreak;
+  final int longestStreak;
+  final String streakLastEvaluated;
+
   final String mantra;
 
   UserProfile({
@@ -61,6 +65,9 @@ class UserProfile {
     this.rebalancerUpdatesEnabled = true,
     this.smartLoggerUsedToday = 0,
     this.smartLoggerLastResetDate = '',
+    this.currentStreak = 0,
+    this.longestStreak = 0,
+    this.streakLastEvaluated = '',
     this.mantra = '',
   });
 
@@ -202,15 +209,18 @@ class UserProfile {
     'rebalancerUpdatesEnabled': rebalancerUpdatesEnabled,
     'smartLoggerUsedToday': smartLoggerUsedToday,
     'smartLoggerLastResetDate': smartLoggerLastResetDate,
+    'currentStreak': currentStreak,
+    'longestStreak': longestStreak,
+    'streakLastEvaluated': streakLastEvaluated,
     'mantra': mantra,
   };
 
   factory UserProfile.fromMap(Map<String, dynamic> map) => UserProfile(
     uid:            map['uid'] ?? '',
-    name:           map['name'] ?? '',
+    name:           map['name'] ?? map['displayName'] ?? '',
     age:            map['age']?.toInt() ?? 0,
-    weight:         (map['weight'] ?? 70.0).toDouble(),
-    height:         (map['height'] ?? 170.0).toDouble(),
+    weight:         (map['weight'] ?? 0.0).toDouble(),
+    height:         (map['height'] ?? 0.0).toDouble(),
     gender:         map['gender'] ?? 'male',
     goalWeight:     (map['goalWeight'] ?? 70.0).toDouble(),
     activityLevel:  map['activityLevel'] ?? 'moderate',
@@ -233,6 +243,9 @@ class UserProfile {
     rebalancerUpdatesEnabled: map['rebalancerUpdatesEnabled'] ?? true,
     smartLoggerUsedToday:   map['smartLoggerUsedToday']?.toInt() ?? 0,
     smartLoggerLastResetDate: map['smartLoggerLastResetDate'] ?? '',
+    currentStreak:         map['currentStreak']?.toInt() ?? 0,
+    longestStreak:         map['longestStreak']?.toInt() ?? 0,
+    streakLastEvaluated:   map['streakLastEvaluated'] ?? '',
     mantra:         map['mantra'] ?? '',
   );
 
@@ -245,7 +258,9 @@ class UserProfile {
     bool? hiFiveEnabled, bool? celebrationsEnabled, bool? restMessagesEnabled,
     bool? morningReminderEnabled, bool? streakAlertsEnabled,
     bool? rebalancerUpdatesEnabled,
-    int? smartLoggerUsedToday, String? smartLoggerLastResetDate, String? mantra,
+    int? smartLoggerUsedToday, String? smartLoggerLastResetDate,
+    int? currentStreak, int? longestStreak, String? streakLastEvaluated,
+    String? mantra,
   }) => UserProfile(
     uid: uid ?? this.uid, name: name ?? this.name,
     age: age ?? this.age, weight: weight ?? this.weight,
@@ -270,6 +285,9 @@ class UserProfile {
     rebalancerUpdatesEnabled: rebalancerUpdatesEnabled ?? this.rebalancerUpdatesEnabled,
     smartLoggerUsedToday:     smartLoggerUsedToday     ?? this.smartLoggerUsedToday,
     smartLoggerLastResetDate: smartLoggerLastResetDate ?? this.smartLoggerLastResetDate,
+    currentStreak:            currentStreak            ?? this.currentStreak,
+    longestStreak:            longestStreak            ?? this.longestStreak,
+    streakLastEvaluated:      streakLastEvaluated      ?? this.streakLastEvaluated,
     mantra: mantra ?? this.mantra,
   );
 

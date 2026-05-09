@@ -151,10 +151,12 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                               ),
                             ),
                             const SizedBox(width: 10),
-                            Expanded(
-                              child: Text(ing,
-                                  style: const TextStyle(color: Colors.white, fontSize: 14)),
-                            ),
+        Expanded(
+          child: Text(
+            '${ing.amount.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} ${ing.unit} ${ing.name}',
+            style: const TextStyle(color: Colors.white, fontSize: 14),
+          ),
+        ),
                           ],
                         ),
                       ),

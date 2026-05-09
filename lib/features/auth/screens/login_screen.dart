@@ -183,12 +183,27 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
               ),
 
-              const SizedBox(height: 32),
+              const SizedBox(height: 12),
+
+              // ── Guest login ───────────────────────────
+              SizedBox(
+                width: double.infinity,
+                child: TextButton(
+                  onPressed: _loading ? null : _signInGuest,
+                  child: const Text('Continue as Guest',
+                      style: TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 14,
+                          fontWeight: FontWeight.w500)),
+                ),
+              ),
+
+              const SizedBox(height: 16),
 
               // ── Sign up link ──────────────────────────
               Center(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushReplacement(
+                  onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const SignupScreen()),
                   ),
@@ -224,14 +239,14 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     setState(() { _loading = true; _error = null; });
     HapticFeedback.mediumImpact();
     final result = await ref.read(authNotifierProvider.notifier).signInWithEmail(
-          email: _emailCtrl.text.trim(),
-          password: _passCtrl.text,
+          _emailCtrl.text.trim(),
+          _passCtrl.text,
         );
     if (!mounted) return;
-    if (result.isSuccess) {
-      Navigator.pop(context);
+    if (result.success) {
+      // Do nothing — AuthGate stream will rebuild and route to AppShell.
     } else {
-      setState(() { _error = result.error; _loading = false; });
+      setState(() { _error = result.errorMessage; _loading = false; });
     }
   }
 
@@ -240,11 +255,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     HapticFeedback.mediumImpact();
     final result = await ref.read(authNotifierProvider.notifier).signInWithGoogle();
     if (!mounted) return;
-    if (result.isSuccess) {
-      Navigator.pop(context);
+    if (result.success) {
+      // Do nothing — AuthGate stream will rebuild and route to AppShell.
     } else {
-      setState(() { _error = result.error; _loading = false; });
+      setState(() { _error = result.errorMessage; _loading = false; });
     }
+  }
+
+  Future<void> _signInGuest() async {
+    setState(() { _loading = true; _error = null; });
+    HapticFeedback.mediumImpact();
+    await ref.read(authNotifierProvider.notifier).continueAsGuest();
+    // AuthGate will rebuild and route based on isGuestProvider
   }
 
   Future<void> _forgotPassword() async {
@@ -258,10 +280,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         .sendPasswordReset(email);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(result.isSuccess
+      content: Text(result.success
           ? 'Reset link sent to $email'
-          : result.error ?? 'Failed to send reset email.'),
-      backgroundColor: result.isSuccess ? AppTheme.success : AppTheme.error,
+          : result.errorMessage ?? 'Failed to send reset email.'),
+      backgroundColor: result.success ? AppTheme.success : AppTheme.error,
     ));
   }
 

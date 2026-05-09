@@ -1,4 +1,5 @@
 import '../models/recipe_model.dart';
+import '../../nutrition/models/custom_meal_ingredient.dart';
 
 final List<RecipeModel> predefinedRecipes = [
   RecipeModel(
@@ -12,12 +13,30 @@ final List<RecipeModel> predefinedRecipes = [
     carbs: 45,
     fats: 8,
     ingredients: [
-      '80g rolled oats',
-      '1 scoop whey protein (vanilla)',
-      '200ml milk',
-      '1 banana, sliced',
-      '1 tbsp peanut butter',
-      '1 tsp honey',
+      CustomMealIngredient(
+          foodId: 'ing_oats', name: 'Rolled Oats', amount: 80, unit: 'g',
+          calories: 300, protein: 10, carbs: 54, fats: 5,
+          baseAmount: 80, baseCal: 300, basePro: 10, baseCarb: 54, baseFat: 5),
+      CustomMealIngredient(
+          foodId: 'ing_whey', name: 'Whey Protein (Vanilla)', amount: 1, unit: 'scoop',
+          calories: 120, protein: 25, carbs: 3, fats: 1,
+          baseAmount: 1, baseCal: 120, basePro: 25, baseCarb: 3, baseFat: 1),
+      CustomMealIngredient(
+          foodId: 'ing_milk', name: 'Milk', amount: 200, unit: 'ml',
+          calories: 120, protein: 6, carbs: 10, fats: 6,
+          baseAmount: 200, baseCal: 120, basePro: 6, baseCarb: 10, baseFat: 6),
+      CustomMealIngredient(
+          foodId: 'ing_banana', name: 'Banana', amount: 1, unit: 'piece',
+          calories: 105, protein: 1, carbs: 27, fats: 0,
+          baseAmount: 1, baseCal: 105, basePro: 1, baseCarb: 27, baseFat: 0),
+      CustomMealIngredient(
+          foodId: 'ing_pb', name: 'Peanut Butter', amount: 1, unit: 'tbsp',
+          calories: 90, protein: 4, carbs: 3, fats: 8,
+          baseAmount: 1, baseCal: 90, basePro: 4, baseCarb: 3, baseFat: 8),
+      CustomMealIngredient(
+          foodId: 'ing_honey', name: 'Honey', amount: 1, unit: 'tsp',
+          calories: 20, protein: 0, carbs: 5, fats: 0,
+          baseAmount: 1, baseCal: 20, basePro: 0, baseCarb: 5, baseFat: 0),
     ],
     steps: [
       'Microwave oats with milk for 2–3 minutes, stirring halfway.',
@@ -37,14 +56,18 @@ final List<RecipeModel> predefinedRecipes = [
     carbs: 52,
     fats: 18,
     ingredients: [
-      '150g paneer, cubed',
-      '2 whole wheat rotis',
-      '½ onion, sliced',
-      '½ capsicum, sliced',
-      '2 tbsp hung curd',
-      '1 tsp chaat masala',
-      '½ tsp cumin',
-      'Salt, pepper to taste',
+      CustomMealIngredient(
+          foodId: 'ing_paneer', name: 'Paneer', amount: 150, unit: 'g',
+          calories: 390, protein: 21, carbs: 4, fats: 32,
+          baseAmount: 150, baseCal: 390, basePro: 21, baseCarb: 4, baseFat: 32),
+      CustomMealIngredient(
+          foodId: 'ing_roti', name: 'Whole Wheat Roti', amount: 2, unit: 'piece',
+          calories: 160, protein: 6, carbs: 30, fats: 2,
+          baseAmount: 2, baseCal: 160, basePro: 6, baseCarb: 30, baseFat: 2),
+      CustomMealIngredient(
+          foodId: 'ing_curd', name: 'Hung Curd', amount: 2, unit: 'tbsp',
+          calories: 40, protein: 3, carbs: 2, fats: 2,
+          baseAmount: 2, baseCal: 40, basePro: 3, baseCarb: 2, baseFat: 2),
     ],
     steps: [
       'Marinate paneer in curd, chaat masala, cumin, salt, pepper for 10 mins.',
@@ -64,13 +87,22 @@ final List<RecipeModel> predefinedRecipes = [
     carbs: 88,
     fats: 16,
     ingredients: [
-      '2 scoops whey protein',
-      '1 large banana',
-      '200ml whole milk',
-      '2 tbsp oats',
-      '1 tbsp almond butter',
-      '1 tbsp honey',
-      '5–6 ice cubes',
+      CustomMealIngredient(
+          foodId: 'ing_whey2', name: 'Whey Protein', amount: 2, unit: 'scoop',
+          calories: 240, protein: 50, carbs: 6, fats: 2,
+          baseAmount: 2, baseCal: 240, basePro: 50, baseCarb: 6, baseFat: 2),
+      CustomMealIngredient(
+          foodId: 'ing_banana2', name: 'Banana', amount: 1, unit: 'piece',
+          calories: 120, protein: 1, carbs: 30, fats: 0,
+          baseAmount: 1, baseCal: 120, basePro: 1, baseCarb: 30, baseFat: 0),
+      CustomMealIngredient(
+          foodId: 'ing_wmilk', name: 'Whole Milk', amount: 200, unit: 'ml',
+          calories: 130, protein: 7, carbs: 10, fats: 8,
+          baseAmount: 200, baseCal: 130, basePro: 7, baseCarb: 10, baseFat: 8),
+      CustomMealIngredient(
+          foodId: 'ing_ab', name: 'Almond Butter', amount: 1, unit: 'tbsp',
+          calories: 100, protein: 3, carbs: 3, fats: 9,
+          baseAmount: 1, baseCal: 100, basePro: 3, baseCarb: 3, baseFat: 9),
     ],
     steps: [
       'Add all ingredients to blender.',
@@ -89,15 +121,18 @@ final List<RecipeModel> predefinedRecipes = [
     carbs: 68,
     fats: 10,
     ingredients: [
-      '1 cup rajma (canned or boiled)',
-      '1 cup cooked rice',
-      '1 onion, chopped',
-      '1 tomato, chopped',
-      '1 tsp ginger-garlic paste',
-      '½ tsp turmeric',
-      '1 tsp chole masala',
-      'Salt to taste',
-      '1 tsp oil',
+      CustomMealIngredient(
+          foodId: 'ing_rajma', name: 'Rajma (Boiled)', amount: 1, unit: 'cup',
+          calories: 220, protein: 15, carbs: 40, fats: 1,
+          baseAmount: 1, baseCal: 220, basePro: 15, baseCarb: 40, baseFat: 1),
+      CustomMealIngredient(
+          foodId: 'ing_rice', name: 'Cooked Rice', amount: 1, unit: 'cup',
+          calories: 200, protein: 4, carbs: 45, fats: 0,
+          baseAmount: 1, baseCal: 200, basePro: 4, baseCarb: 45, baseFat: 0),
+      CustomMealIngredient(
+          foodId: 'ing_oil', name: 'Oil', amount: 1, unit: 'tsp',
+          calories: 45, protein: 0, carbs: 0, fats: 5,
+          baseAmount: 1, baseCal: 45, basePro: 0, baseCarb: 0, baseFat: 5),
     ],
     steps: [
       'Heat oil, sauté onion until golden.',

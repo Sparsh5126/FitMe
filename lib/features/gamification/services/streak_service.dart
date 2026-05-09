@@ -4,6 +4,7 @@ import '../../../core/models/user_profile.dart';
 import '../../nutrition/models/food_item.dart';
 import '../../nutrition/repositories/nutrition_repository.dart';
 import '../../notifications/notification_service.dart';
+import '../../nutrition/services/local_nutrition_service.dart';
 
 class StreakService {
   static final _db = FirebaseFirestore.instance;
@@ -11,29 +12,60 @@ class StreakService {
   static String get _uid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   static const _milestones = [3, 5, 7, 14, 30, 60, 100];
+  static const _thresholds = [0, 8, 22, 45, 90, 180];
+  static const _labels = [
+    'Light Dumbbell',
+    'Heavy Dumbbell',
+    'Iron Beast',
+    'Titan',
+    'Legendary',
+    'Max Level',
+  ];
 
   // ─────────────────────────────────────────
   // CALL ON APP OPEN / AFTER FOOD LOG
   // ─────────────────────────────────────────
-  static Future<void> evaluate(UserProfile profile) async {
+  static Future<void> evaluate(UserProfile profile, {bool force = false}) async {
     final today = FoodItem.dateFor(DateTime.now());
-    final doc = await _db.collection('users').doc(_uid).get();
-    final data = doc.data() ?? {};
+    
+    int longest = 0;
+    int prevStreak = 0;
+    String lastEvaluated = '';
+    
+    if (_uid.isNotEmpty) {
+      final doc = await _db.collection('users').doc(_uid).get();
+      final data = doc.data() ?? {};
+      lastEvaluated = data['streakLastEvaluated'] as String? ?? '';
+      longest = (data['longestStreak'] as int? ?? 0);
+      prevStreak = data['currentStreak'] as int? ?? 0;
+    } else {
+      // Guest mode
+      longest = profile.longestStreak;
+      prevStreak = profile.currentStreak;
+      lastEvaluated = profile.streakLastEvaluated;
+    }
 
-    final lastEvaluated = data['streakLastEvaluated'] as String? ?? '';
-    if (lastEvaluated == today) return; // already ran today
+    if (!force && lastEvaluated == today) return; // already ran today, and not forced
 
     final hitDays = await _getHitDays(90);
     final current = _calculateStreak(hitDays);
-    final longest = (data['longestStreak'] as int? ?? 0);
     final newLongest = current > longest ? current : longest;
-    final prevStreak = data['currentStreak'] as int? ?? 0;
 
-    await _db.collection('users').doc(_uid).update({
-      'currentStreak': current,
-      'longestStreak': newLongest,
-      'streakLastEvaluated': today,
-    });
+    if (_uid.isNotEmpty) {
+      await _db.collection('users').doc(_uid).update({
+        'currentStreak': current,
+        'longestStreak': newLongest,
+        'streakLastEvaluated': today,
+      });
+    } else {
+      // Guest mode
+      final updated = profile.copyWith(
+        currentStreak: current,
+        longestStreak: newLongest,
+        streakLastEvaluated: today,
+      );
+      await LocalNutritionService.saveProfile(updated);
+    }
 
     // Fire milestone notification if newly crossed
     for (final m in _milestones) {

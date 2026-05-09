@@ -83,7 +83,7 @@ class BackupService {
       final backup = await _db.collection('backups').doc(uid).get();
       if (!backup.exists) return false;
 
-      final streakData = backup.data()?['streak_data'] as Map? ?? {};
+      final streakData = (backup.data()?['streak_data'] as Map?)?.cast<String, dynamic>() ?? {};
       if (streakData.isEmpty) return false;
 
       await _db.collection('users').doc(uid).update(streakData);

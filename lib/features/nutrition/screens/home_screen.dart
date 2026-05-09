@@ -12,6 +12,9 @@ import '../widgets/smart_logger_sheet.dart';
 import '../../nutrition/screens/macro_detail_screen.dart';
 import '../../nutrition/screens/quantity_selection_screen.dart';
 import '../../streak/screens/streak_screen.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../gamification/services/streak_service.dart';
 import '../models/food_item.dart';
 import '../../insights/screens/diet_analysis_screen.dart';
 import '../../insights/screens/diet_plan_screen.dart';
@@ -61,6 +64,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
   }
 
+  int _calculateLevel(int streak) {
+    if (streak >= 180) return 5;
+    if (streak >= 90) return 4;
+    if (streak >= 45) return 3;
+    if (streak >= 22) return 2;
+    if (streak >= 8) return 1;
+    return 0;
+  }
+
   @override
   Widget build(BuildContext context) {
     final userAsync = ref.watch(userProfileProvider);
@@ -70,11 +82,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         (mealsAsync.value ?? []).where((m) => !dismissedIds.contains(m.id)).toList();
     final selectedDate = ref.watch(selectedDateProvider);
 
-    final streakAsync = ref.watch(streakProvider);
+    final snapshotAsync = ref.watch(consistencySnapshotProvider);
     final debugLevel = ref.watch(debugStreakLevelProvider);
-    final currentStreakLevel = debugLevel ?? streakAsync.value?.level ?? 0;
-    // Issue 6: streak count for badge next to dumbbell
-    final streakCount = streakAsync.value?.currentStreak ?? 0;
+    
+    // Level 0-5 based on tier/thresholds
+    final currentStreakLevel = debugLevel ?? _calculateLevel(snapshotAsync.value?.currentStreak ?? 0);
+    final streakCount = snapshotAsync.value?.currentStreak ?? 0;
 
     return userAsync.when(
       loading: () => const Scaffold(

@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/models/workout.dart';
 import '../../../core/models/exercise.dart';
 import '../repositories/workout_repository.dart';
-import '../../gamification/services/fitpoints_service.dart';
+import '../../fitpoints/services/fitpoints_service.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../fitpoints/models/fitpoints_models.dart';
 import '../../notifications/notification_service.dart';
 import '../../dashboard/providers/user_provider.dart';
 
@@ -130,7 +132,21 @@ class WorkoutActions {
           (updated.prWeight ?? 0) > (e.prWeight ?? 0);
     });
 
-    await FitPointsService.awardWorkout(isPR: hasPR);
+    // Award FitPoints for completing workout
+    final service = _ref.read(fitPointsServiceProvider);
+    final fpRecord = await service.getRecord(profile?.uid ?? '', profile == null);
+    
+    final award = service.awardPoints(
+      userId: profile?.uid ?? '',
+      action: FitPointAction.completeWorkout,
+      record: fpRecord,
+      todayTransactions: [], // In-memory check for now, service handles absolute caps
+    );
+
+    if (award.awarded) {
+      final updatedRecord = service.applyAward(record: fpRecord, result: award);
+      await service.saveRecord(updatedRecord);
+    }
 
     if (hasPR && profile != null) {
       await NotificationService.showCoachMemory(

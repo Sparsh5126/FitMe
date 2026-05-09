@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer' as dev;
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,16 +11,61 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import '../../../core/theme/app_theme.dart';
 import '../../../core/widgets/oil_level_selector.dart';
 import '../models/food_item.dart';
+import '../models/parsed_meal.dart';
 import '../providers/nutrition_provider.dart';
 import '../providers/oil_level_provider.dart';
 import '../services/gemini_service.dart';
-import '../services/food_search_service.dart';
+import '../services/food_knowledge_resolver.dart';
 import '../screens/quantity_selection_screen.dart';
 import '../../dashboard/providers/user_provider.dart';
-
+import '../../auth/providers/auth_provider.dart';
+import '../../auth/screens/login_screen.dart';
 import '../models/custom_meal_ingredient.dart';
 import '../services/custom_meal_service.dart';
 import 'custom_meal_form.dart';
+import 'barcode_scanner_screen.dart';
+
+// ── Debounced resolution session ──────────────────────────────────────────
+class _ResolutionSession {
+  CancelToken? _current;
+  Timer? _debounce;
+
+  void cancel() {
+    _debounce?.cancel();
+    _current?.cancel();
+  }
+
+  Future<ParsedMeal> resolve({
+    required String input,
+    required List<FoodItem> customs,
+    required List<FoodItem> commonFoods,
+    required List<FoodItem> recents,
+    required bool allowAi,
+    required Function(ParsedMeal) onResult,
+  }) async {
+    _debounce?.cancel();
+    _current?.cancel();
+    final token = CancelToken();
+    _current = token;
+    final completer = Completer<ParsedMeal>();
+    _debounce = Timer(const Duration(milliseconds: 350), () async {
+      if (token.isCancelled) return;
+      final result = await FoodKnowledgeResolver.parseMeal(
+        input: input,
+        customs: customs,
+        commonFoods: commonFoods,
+        recents: recents,
+        cancel: token,
+        allowAi: allowAi,
+      );
+      if (!token.isCancelled) {
+        onResult(result);
+        if (!completer.isCompleted) completer.complete(result);
+      }
+    });
+    return completer.future;
+  }
+}
 
 class SmartLoggerSheet extends ConsumerStatefulWidget {
   const SmartLoggerSheet({super.key});
@@ -42,6 +88,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   final _searchController   = TextEditingController();
   final _scrollController   = ScrollController();
   final List<_ChatMessage>  _messages = [];
+  final _session            = _ResolutionSession();
 
   bool _isLoading      = false;
   bool _isListening    = false;
@@ -53,6 +100,8 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
   final _speech = stt.SpeechToText();
   bool _speechAvailable = false;
+
+  bool get _isGuest => ref.read(isGuestProvider);
 
   @override
   void initState() {
@@ -85,6 +134,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
   @override
   void dispose() {
+    _session.cancel();
     _inputController.dispose();
     _searchController.dispose();
     _scrollController.dispose();
@@ -105,8 +155,8 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
   Future<void> _sendMessage() async {
     final text = _inputController.text.trim();
-    if (text.isEmpty || _isLoading || _limitReached) return;
-
+    if (text.isEmpty || _isLoading) return;
+    // Auth users: blocked only when daily AI limit reached AND they need AI
     HapticFeedback.lightImpact();
     _inputController.clear();
     setState(() { _messages.add(_ChatMessage.user(text)); _isLoading = true; });
@@ -116,88 +166,103 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     final commonFoods = ref.read(commonFoodsProvider).value ?? [];
     final recents     = ref.read(recentsProvider).value ?? [];
     final customs     = ref.read(customMealsProvider).value ?? [];
+    final lowerText   = text.toLowerCase();
 
-    final lowerText = text.toLowerCase();
-
-    if (lowerText.startsWith('/aionly ')) {
-      final aiQuery = text.substring(8).trim();
-      if (aiQuery.isEmpty) {
-        setState(() {
-          _isLoading = false;
-          _messages.add(_ChatMessage.error("Please provide a food description after /aionly."));
-        });
-        _saveHistory();
-        _scrollToBottom();
+    // ── /aionly command ────────────────────────────────────────────────────
+    if (lowerText.startsWith('/aionly ') || lowerText == '/aionly') {
+      setState(() => _isLoading = false);
+      if (_isGuest) {
+        _showAiLockCard();
         return;
       }
+      if (_limitReached) {
+        setState(() => _messages.add(_ChatMessage.error('Daily AI limit reached (10/10). Resets tomorrow.')));
+        _saveHistory(); _scrollToBottom(); return;
+      }
+      final aiQuery = text.substring(lowerText.startsWith('/aionly ') ? 8 : 7).trim();
+      if (aiQuery.isEmpty) {
+        setState(() { _isLoading = false; _messages.add(_ChatMessage.error('Provide a food after /aionly')); });
+        _saveHistory(); _scrollToBottom(); return;
+      }
+      setState(() => _isLoading = true);
       await _runGemini(() => GeminiService.parseFoodSafe(aiQuery));
       return;
     }
 
+    // ── /custommeal command ────────────────────────────────────────────────
     if (lowerText.startsWith('/custommeal ')) {
-      final parsedMeal = FoodSearchService.parseCustomMealCommand(
-          text: text, recents: recents, customMeals: customs, commonFoods: commonFoods);
-      
-      setState(() => _isLoading = false);
-
-      if (parsedMeal != null) {
-        final draftIngs = parsedMeal.ingredients.map((m) => CustomMealIngredient(
-          foodId: m.food.id,
-          name: m.food.name,
-          amount: m.food.consumedAmount,
-          unit: m.food.consumedUnit,
-          calories: m.food.calories,
-          protein: m.food.protein,
-          carbs: m.food.carbs,
-          fats: m.food.fats,
-          baseAmount: m.food.consumedAmount,
-          baseCal: m.food.calories,
-          basePro: m.food.protein,
-          baseCarb: m.food.carbs,
-          baseFat: m.food.fats,
-        )).toList();
-
-        setState(() {
-          _messages.add(_ChatMessage.foodCard(
-            parsedMeal.summary, 
-            noAiUsed: true, 
-            isCustomMealDraft: true, 
-            draftIngredients: draftIngs,
-          ));
-        });
-      } else {
-        setState(() {
-          _messages.add(_ChatMessage.error("Could not parse custom meal. Ensure format: /custommeal \"Name\" ingredients..."));
-        });
+      final match = RegExp(r'^/custommeal\s+"([^"]+)"\s+(.+)$', caseSensitive: false).firstMatch(text.trim());
+      if (match == null) {
+        setState(() { _isLoading = false; _messages.add(_ChatMessage.error('Format: /custommeal "Name" ingredients...')); });
+        _saveHistory(); _scrollToBottom(); return;
       }
-      _saveHistory();
-      _scrollToBottom();
-      return;
+      final mealName   = match.group(1)!;
+      final ingredients = match.group(2)!;
+      final parsed = await FoodKnowledgeResolver.parseMeal(
+        input: ingredients, customs: customs, commonFoods: commonFoods, recents: recents, allowAi: false,
+      );
+      setState(() => _isLoading = false);
+      if (parsed.resolvedFoods.isEmpty) {
+        setState(() => _messages.add(_ChatMessage.error('No ingredients resolved. Try: /custommeal "Name" 250ml milk, 1 banana')));
+      } else {
+        final summary = parsed.toCustomMealSummary(mealName);
+        final draftIngs = parsed.toIngredients();
+        setState(() => _messages.add(_ChatMessage.foodCard(summary, noAiUsed: true, isCustomMealDraft: true, draftIngredients: draftIngs)));
+      }
+      _saveHistory(); _scrollToBottom(); return;
     }
 
-    final parsed = FoodSearchService.parseNaturalMeal(
-      text: text,
-      recents: recents,
-      customMeals: customs,
-      commonFoods: commonFoods,
+    // ── Natural language ───────────────────────────────────────────────────
+    final parsed = await FoodKnowledgeResolver.parseMeal(
+      input: text, customs: customs, commonFoods: commonFoods, recents: recents, allowAi: false,
     );
-    if (parsed.isNotEmpty) {
-      setState(() {
-        _isLoading = false;
-        for (final item in parsed) {
-          _messages.add(_ChatMessage.foodCard(item.food, noAiUsed: true));
-        }
-      });
-      _saveHistory();
-      _scrollToBottom();
-      return;
+    dev.log('[SmartLogger] resolved ${parsed.resolvedFoods.length}/${parsed.segments.length} locally+remote', name: 'SL');
+
+    // Add resolved foods
+    for (final seg in parsed.segments) {
+      if (seg.isResolved) {
+        setState(() => _messages.add(_ChatMessage.foodCard(seg.resolvedFood!, noAiUsed: seg.source != FoodSource.gemini)));
+      }
     }
 
-    await _runGemini(() => GeminiService.parseFoodSafe(text));
+    // Handle unresolved segments
+    if (parsed.requiresAi) {
+      final unresolvedNames = parsed.segments.where((s) => s.requiresAi).map((s) => s.rawInput).join(', ');
+      if (_isGuest) {
+        setState(() => _isLoading = false);
+        _showAiLockCard(hint: unresolvedNames);
+        _saveHistory(); _scrollToBottom(); return;
+      }
+      if (_limitReached) {
+        setState(() { _isLoading = false; _messages.add(_ChatMessage.error('Couldn\'t find: $unresolvedNames\nDaily AI limit reached. Resets tomorrow.')); });
+        _saveHistory(); _scrollToBottom(); return;
+      }
+      // Ask Gemini only for the unresolved parts
+      await _runGemini(() => GeminiService.parseFoodSafe(unresolvedNames));
+    } else {
+      setState(() => _isLoading = false);
+      if (parsed.isEmpty) {
+        setState(() => _messages.add(_ChatMessage.error('Couldn\'t identify that food. Try describing more specifically or use the search bar below.')));
+      }
+      _saveHistory(); _scrollToBottom();
+    }
+  }
+
+  void _showAiLockCard({String? hint}) {
+    setState(() {
+      _messages.add(_ChatMessage.aiLock(hint: hint));
+      _isLoading = false;
+    });
+    _saveHistory(); _scrollToBottom();
   }
 
   Future<void> _pickPhoto() async {
-    if (_isLoading || _limitReached) return;
+    if (_isLoading) return;
+    if (_isGuest) {
+      _showAiLockCard(hint: 'photo food analysis');
+      return;
+    }
+    if (_limitReached) { _showSnackbar('Daily AI limit reached.', error: true); return; }
     HapticFeedback.lightImpact();
 
     final picker = ImagePicker();
@@ -313,26 +378,31 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
   Future<void> _onSearchChanged(String query) async {
     _searchDebounce?.cancel();
+    _session.cancel();
     if (query.trim().isEmpty) {
       setState(() { _searchResults = []; _hasSearched = false; _isSearching = false; });
       return;
     }
     setState(() => _isSearching = true);
+    final token = CancelToken();
     _searchDebounce = Timer(const Duration(milliseconds: 350), () async {
       final recents     = ref.read(recentsProvider).value ?? [];
       final customs     = ref.read(customMealsProvider).value ?? [];
       final commonFoods = ref.read(commonFoodsProvider).value ?? [];
+      final favorites   = ref.read(favoritesProvider).value ?? [];
 
-      final result = await FoodSearchService.smartLoggerSearch(
+      final results = await FoodKnowledgeResolver.search(
         query: query,
-        recents: recents,
-        customMeals: customs,
+        customs: customs,
         commonFoods: commonFoods,
+        recents: recents,
+        favorites: favorites,
+        cancel: token,
       );
 
-      if (mounted) {
+      if (mounted && !token.isCancelled) {
         setState(() {
-          _searchResults = result.foods;
+          _searchResults = results;
           _isSearching   = false;
           _hasSearched   = true;
         });
@@ -345,6 +415,16 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     setState(() { _searchResults = []; _hasSearched = false; });
     Navigator.push(context,
         MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+  }
+
+  Future<void> _openBarcodeScanner() async {
+    HapticFeedback.lightImpact();
+    final food = await BarcodeScannerScreen.scan(context);
+    if (!mounted) return;
+    if (food != null) {
+      Navigator.push(context,
+          MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+    }
   }
 
   void _checkPop() {
@@ -601,15 +681,25 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                                 strokeWidth: 2, color: AppTheme.accent)))
                     : const Icon(Icons.search_rounded,
                         color: AppTheme.textSecondary, size: 20),
-                suffixIcon: isSearchActive
-                    ? IconButton(
-                        icon: const Icon(Icons.close_rounded,
-                            color: AppTheme.textSecondary, size: 18),
-                        onPressed: () {
-                          _searchController.clear();
-                          setState(() { _searchResults = []; _hasSearched = false; });
-                        })
-                    : null,
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isSearchActive)
+                      IconButton(
+                          icon: const Icon(Icons.close_rounded,
+                              color: AppTheme.textSecondary, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() { _searchResults = []; _hasSearched = false; });
+                          }),
+                    IconButton(
+                      icon: const Icon(Icons.qr_code_scanner_rounded,
+                          color: AppTheme.textSecondary, size: 20),
+                      onPressed: _openBarcodeScanner,
+                      tooltip: 'Scan barcode',
+                    ),
+                  ],
+                ),
                 filled: true,
                 fillColor: AppTheme.surface,
                 border: OutlineInputBorder(
@@ -658,6 +748,11 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                           return _UserBubble(text: msg.text!);
                         if (msg.type == _MsgType.error)
                           return _ErrorBubble(text: msg.text!);
+                        if (msg.type == _MsgType.aiLock)
+                          return _AiLockCard(
+                            hint: msg.text,
+                            onSignIn: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())),
+                          );
                         if (msg.type == _MsgType.foodCard) {
                           final favs = ref.watch(favoritesProvider).value ?? [];
                           final isFav = favs.any((f) =>
@@ -700,6 +795,26 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           ),
 
 
+          // ── Floating command buttons ──────────────────────────────────
+          if (!isSearchActive)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
+              child: _CommandButtonRow(
+                isGuest: _isGuest,
+                onCustomMeal: () {
+                  _inputController.text = '/custommeal "" ';
+                  _inputController.selection = TextSelection.fromPosition(
+                    TextPosition(offset: '/custommeal "'.length));
+                },
+                onAiOnly: () {
+                  if (_isGuest) { _showAiLockCard(); return; }
+                  _inputController.text = '/aionly ';
+                  _inputController.selection = TextSelection.fromPosition(
+                    TextPosition(offset: '/aionly '.length));
+                },
+              ),
+            ),
+
           Container(
             padding: EdgeInsets.fromLTRB(
                 16, 8, 16, bottomInset > 0 ? bottomInset : 24),
@@ -708,9 +823,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
               border:
                   Border(top: BorderSide(color: Colors.white.withOpacity(0.06))),
             ),
-            child: _limitReached
-                ? _LimitBanner()
-                : Row(
+            child: Row(
                     children: [
                       Expanded(
                         child: TextField(
@@ -723,7 +836,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                           decoration: InputDecoration(
                             hintText: _isListening
                                 ? '🎤 Listening…'
-                                : 'e.g. "3 rotis with dal and sabzi" or /custommeal',
+                                : '"oats banana" or /custommeal or /aionly',
                             hintStyle: TextStyle(
                                 color: _isListening
                                     ? AppTheme.accent
@@ -744,7 +857,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                             suffixIcon: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                IconButton(
+                               IconButton(
                                   icon: const Icon(Icons.camera_alt_outlined,
                                       color: AppTheme.textSecondary),
                                   onPressed: _pickPhoto,
@@ -887,7 +1000,7 @@ class _LimitBanner extends StatelessWidget {
       );
 }
 
-enum _MsgType { user, foodCard, error }
+enum _MsgType { user, foodCard, error, aiLock }
 
 class _ChatMessage {
   final _MsgType type;
@@ -925,6 +1038,10 @@ class _ChatMessage {
       
   factory _ChatMessage.error(String t) =>
       _ChatMessage(type: _MsgType.error, text: t, timestamp: DateTime.now());
+
+  /// AI lock card — shown to guests or when limit is reached.
+  factory _ChatMessage.aiLock({String? hint}) =>
+      _ChatMessage(type: _MsgType.aiLock, text: hint, timestamp: DateTime.now());
 
   _ChatMessage copyAccepted(bool v, {FoodItem? newFood}) =>
       _ChatMessage(
@@ -1144,10 +1261,10 @@ class _FoodCardMsgState extends ConsumerState<_FoodCardMsg> {
           ),
           border: Border.all(
             color: widget.accepted == null
-                ? Colors.white.withValues(alpha: 0.08)
+                ? Colors.white.withOpacity(0.08)
                 : widget.accepted!
-                    ? AppTheme.accent.withValues(alpha: 0.5)
-                    : Colors.redAccent.withValues(alpha: 0.5),
+                    ? AppTheme.accent.withOpacity(0.5)
+                    : Colors.redAccent.withOpacity(0.5),
           ),
         ),
         child: Column(
@@ -1295,9 +1412,9 @@ class _SmallBtn extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
           decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.10),
+            color: color.withOpacity(0.10),
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color.withValues(alpha: 0.25)),
+            border: Border.all(color: color.withOpacity(0.25)),
           ),
           child: Row(mainAxisSize: MainAxisSize.min, children: [
             Icon(icon, size: 14, color: color),
@@ -1312,23 +1429,68 @@ class _SmallBtn extends StatelessWidget {
 class _EmptyChat extends StatelessWidget {
   const _EmptyChat();
   @override
-  Widget build(BuildContext context) => const Center(
+  Widget build(BuildContext context) => SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('🪄', style: TextStyle(fontSize: 40)),
-            SizedBox(height: 12),
-            Text('Describe your meal, take a photo, or speak.',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            SizedBox(height: 6),
-            Text('"3 rotis with dal and sabzi"',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-            Text('"/aionly large biryani from Behrouz"',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-            Text('"/custommeal \"W Shake\" 2 banana, 250ml milk"',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            const Center(child: Text('🧙', style: TextStyle(fontSize: 44))),
+            const SizedBox(height: 12),
+            const Center(child: Text('Smart Logger',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
+            const SizedBox(height: 4),
+            const Center(child: Text('Describe meals in plain language — I\'ll find them.',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13))),
+            const SizedBox(height: 20),
+            _HintSection(icon: '🍽️', title: 'Natural language', examples: const [
+              '50g oats banana peanut butter',
+              '2 roti sabzi curd',
+              'protein shake with milk and banana',
+              '250ml milk + 1 scoop whey',
+            ]),
+            const SizedBox(height: 12),
+            _HintSection(icon: '⚡', title: '/custommeal — create & save a meal', examples: const [
+              '/custommeal "Workout Shake" 250ml milk, 1 scoop whey, 1 banana',
+              '/custommeal "Dal Rice" 1 katori dal, 1 katori rice',
+            ]),
+            const SizedBox(height: 12),
+            _HintSection(icon: '🤖', title: '/aionly — force AI (auth only)', examples: const [
+              '/aionly large biryani from Behrouz',
+              '/aionly homemade paneer sandwich',
+            ]),
+            const SizedBox(height: 8),
           ],
         ),
+      );
+}
+
+class _HintSection extends StatelessWidget {
+  final String icon, title;
+  final List<String> examples;
+  const _HintSection({required this.icon, required this.title, required this.examples});
+  @override
+  Widget build(BuildContext context) => Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.white.withOpacity(0.06)),
+        ),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Row(children: [
+            Text(icon, style: const TextStyle(fontSize: 14)),
+            const SizedBox(width: 8),
+            Expanded(child: Text(title, style: const TextStyle(
+                color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13))),
+          ]),
+          const SizedBox(height: 8),
+          ...examples.map((e) => Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(e, style: const TextStyle(
+                color: AppTheme.textSecondary, fontSize: 12, fontFamily: 'monospace')),
+          )),
+        ]),
       );
 }
 
@@ -1352,4 +1514,111 @@ class _TypingIndicator extends StatelessWidget {
           ),
         ),
       );
+}
+
+// ── Floating command buttons ────────────────────────────────────────────────
+class _CommandButtonRow extends StatelessWidget {
+  final bool isGuest;
+  final VoidCallback onCustomMeal;
+  final VoidCallback onAiOnly;
+  const _CommandButtonRow({required this.isGuest, required this.onCustomMeal, required this.onAiOnly});
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      _CommandPill(
+        label: '⚡ /custommeal',
+        tooltip: '/custommeal "Name" ingredients...',
+        color: AppTheme.accent,
+        onTap: onCustomMeal,
+      ),
+      const SizedBox(width: 8),
+      _CommandPill(
+        label: isGuest ? '🔒 /aionly' : '🤖 /aionly',
+        tooltip: isGuest ? 'Sign in to use AI search' : '/aionly food description...',
+        color: isGuest ? AppTheme.textSecondary : Colors.purpleAccent,
+        onTap: onAiOnly,
+      ),
+    ],
+  );
+}
+
+class _CommandPill extends StatelessWidget {
+  final String label, tooltip;
+  final Color color;
+  final VoidCallback onTap;
+  const _CommandPill({required this.label, required this.tooltip, required this.color, required this.onTap});
+  @override
+  Widget build(BuildContext context) => Tooltip(
+    message: tooltip,
+    child: GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: color.withOpacity(0.12),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withOpacity(0.3)),
+        ),
+        child: Text(label, style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600)),
+      ),
+    ),
+  );
+}
+
+// ── AI Lock card (guest mode) ─────────────────────────────────────────────
+class _AiLockCard extends StatelessWidget {
+  final String? hint;
+  final VoidCallback onSignIn;
+  const _AiLockCard({this.hint, required this.onSignIn});
+  @override
+  Widget build(BuildContext context) => Align(
+    alignment: Alignment.centerLeft,
+    child: Container(
+      margin: const EdgeInsets.only(bottom: 12, right: 24),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.purpleAccent.withOpacity(0.08),
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(4), topRight: Radius.circular(16),
+          bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16),
+        ),
+        border: Border.all(color: Colors.purpleAccent.withOpacity(0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(children: [
+            const Icon(Icons.lock_outline_rounded, color: Colors.purpleAccent, size: 16),
+            const SizedBox(width: 8),
+            const Text('AI Search — Sign In Required',
+                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+          ]),
+          if (hint != null) ...[
+            const SizedBox(height: 6),
+            Text('Couldn’t find locally: $hint',
+                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+          ],
+          const SizedBox(height: 12),
+          const Text(
+            'Create a free account to unlock AI-powered food search, photo logging, and more.',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          ),
+          const SizedBox(height: 12),
+          ElevatedButton.icon(
+            onPressed: onSignIn,
+            icon: const Icon(Icons.person_add_rounded, size: 16),
+            label: const Text('Sign Up Free', style: TextStyle(fontWeight: FontWeight.bold)),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.purpleAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              elevation: 0,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

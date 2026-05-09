@@ -5,6 +5,8 @@ import '../../dashboard/providers/user_provider.dart';
 import '../../nutrition/providers/nutrition_provider.dart';
 import '../../nutrition/models/food_item.dart';
 import '../../nutrition/repositories/nutrition_repository.dart';
+import '../../fitpoints/providers/fitpoints_provider.dart';
+import '../../fitpoints/models/fitpoints_models.dart';
 
 // Period selection
 enum InsightsPeriod { week, twoWeeks, month }
@@ -27,11 +29,19 @@ final insightsDataProvider = FutureProvider<List<DayMacros>>((ref) async {
     final date = now.subtract(Duration(days: i));
     final dateStr = FoodItem.dateFor(date);
     final meals = await repo.getLogsForDate(dateStr);
-    double cals = 0, pro = 0, carbs = 0, fats = 0;
+    final isActive = ActiveDayEvaluator.isActiveDay(meals);
+    
+    int cals = 0, pro = 0, carbs = 0, fats = 0;
     for (final m in meals) {
       cals += m.calories; pro += m.protein; carbs += m.carbs; fats += m.fats;
     }
-    result.add(DayMacros(date: date, calories: cals.round(), protein: pro.round(), carbs: carbs.round(), fats: fats.round()));
+    result.add(DayMacros(
+      date: date, 
+      calories: isActive ? cals.round() : 0, // Mark as 0 if not "active day" to match streak logic
+      protein: pro.round(), 
+      carbs: carbs.round(), 
+      fats: fats.round()
+    ));
   }
   return result;
 });
@@ -113,43 +123,90 @@ class InsightsScreen extends ConsumerWidget {
 // ─────────────────────────────────────────────
 // FITPOINTS CARD
 // ─────────────────────────────────────────────
-class _FitPointsCard extends StatelessWidget {
+class _FitPointsCard extends ConsumerWidget {
   final dynamic profile;
   const _FitPointsCard({required this.profile});
 
   @override
-  Widget build(BuildContext context) {
-    // FitPoints: calculated from streak + macro consistency
-    // TODO: wire to fitpoints_service.dart
-    const points = 0;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final snapshotAsync = ref.watch(consistencySnapshotProvider);
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: [AppTheme.accent.withOpacity(0.8), AppTheme.accent.withOpacity(0.3)],
+          colors: [
+            AppTheme.accent.withOpacity(0.8),
+            AppTheme.accent.withOpacity(0.3)
+          ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(18),
       ),
-      child: Row(
-        children: [
-          const Text('🐦‍🔥', style: TextStyle(fontSize: 36)),
-          const SizedBox(width: 16),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text('FitPoints', style: TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
-              Text('$points', style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w900, height: 1)),
-              const Text('Stay Consistent, Get Fit!',
-                  style: TextStyle(color: Colors.white70, fontSize: 12)),
-            ],
-          ),
-        ],
+      child: snapshotAsync.when(
+        data: (snap) => Row(
+          children: [
+            Text(
+              _getTierEmoji(snap.consistencyTier),
+              style: const TextStyle(fontSize: 36),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'FitPoints • ${snap.consistencyTier.displayName}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '${snap.fitPoints.toInt()}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
+                      height: 1.1,
+                    ),
+                  ),
+                  Text(
+                    'Streak: ${snap.currentStreak} days • Momentum: ${snap.momentum.toInt()}%',
+                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+        loading: () => const Center(
+          child: CircularProgressIndicator(color: Colors.white),
+        ),
+        error: (e, _) => const Row(
+          children: [
+            Text('🐦‍🔥', style: TextStyle(fontSize: 36)),
+            SizedBox(width: 16),
+            Text(
+              'FitPoints Unavailable',
+              style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  String _getTierEmoji(StreakTier tier) {
+    return '🐦‍🔥';
   }
 }
 
@@ -437,7 +494,7 @@ class _SummaryStats extends StatelessWidget {
 
     final daysLogged = data.where((d) => d.calories > 0).length;
     final avgProtein = data.isEmpty ? 0 : (data.map((d) => d.protein).reduce((a, b) => a + b) / data.length).round();
-    final goalHits = data.where((d) => d.protein >= profile.dynamicProtein).length;
+    final goalHits = data.where((d) => d.protein >= (profile?.dynamicProtein ?? 150)).length;
 
     return Container(
       padding: const EdgeInsets.all(16),

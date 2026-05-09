@@ -1,12 +1,70 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../core/theme/app_theme.dart';
 import '../providers/health_provider.dart';
-import '../services/health_sync_service.dart';
+// Removed direct import of health_sync_service — screen communicates only
+// through the provider layer (HealthConnectNotifier). Graph confirmed
+// integrations_screen → health_sync_service was a leaking dependency.
 
 class IntegrationsScreen extends ConsumerWidget {
   const IntegrationsScreen({super.key});
+
+  Future<bool> _requestPermissions(BuildContext context) async {
+    // Health Connect on Android 13+ needs activityRecognition at minimum.
+    debugPrint("Requesting permissions: [activityRecognition, sensors]");
+    final statuses = await [
+      Permission.activityRecognition,
+      if (Theme.of(context).platform == TargetPlatform.android)
+        Permission.sensors,
+    ].request();
+
+    debugPrint("Permission statuses: $statuses");
+
+    final denied = statuses.values.any(
+      (s) => s == PermissionStatus.denied || s == PermissionStatus.permanentlyDenied,
+    );
+
+    if (denied && context.mounted) {
+      final isPermanent = statuses.values
+          .any((s) => s == PermissionStatus.permanentlyDenied);
+
+      if (isPermanent) {
+        // Permanent denial — direct user to settings
+        await showDialog<void>(
+          context: context,
+          builder: (_) => AlertDialog(
+            backgroundColor: AppTheme.surface,
+            title: const Text('Permission required',
+                style: TextStyle(color: Colors.white)),
+            content: const Text(
+              'Health access was permanently denied.\n'
+              'Open Settings and enable Activity Recognition to continue.',
+              style: TextStyle(color: AppTheme.textSecondary, height: 1.5),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel',
+                    style: TextStyle(color: AppTheme.textSecondary)),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Navigator.pop(context);
+                  await openAppSettings();
+                },
+                child: const Text('Open Settings',
+                    style: TextStyle(color: AppTheme.accent)),
+              ),
+            ],
+          ),
+        );
+      }
+      return false;
+    }
+    return true;
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -25,7 +83,8 @@ class IntegrationsScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                    icon: const Icon(Icons.arrow_back_rounded,
+                        color: Colors.white),
                     onPressed: () => Navigator.pop(context),
                   ),
                   const Text('Integrations',
@@ -36,7 +95,8 @@ class IntegrationsScreen extends ConsumerWidget {
                   const Spacer(),
                   if (isConnected)
                     IconButton(
-                      icon: const Icon(Icons.refresh_rounded, color: AppTheme.accent),
+                      icon: const Icon(Icons.refresh_rounded,
+                          color: AppTheme.accent),
                       onPressed: () {
                         HapticFeedback.selectionClick();
                         ref.read(healthConnectNotifier.notifier).refresh();
@@ -61,14 +121,32 @@ class IntegrationsScreen extends ConsumerWidget {
                       isLoading: connectState.isLoading,
                       onConnect: () async {
                         HapticFeedback.mediumImpact();
+
+                        // Step 1: request runtime permissions from UI context
+                        final granted = await _requestPermissions(context);
+                        if (!granted) return;
+
+                        // Step 2: delegate to provider (which calls HealthSyncService)
+                        if (!context.mounted) return;
                         final ok = await ref
                             .read(healthConnectNotifier.notifier)
                             .connect();
+
                         if (!ok && context.mounted) {
+                          // Check if SDK is unavailable or update required
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                  'Permission denied. Enable in device settings.'),
+                            SnackBar(
+                              backgroundColor: AppTheme.surface,
+                              behavior: SnackBarBehavior.floating,
+                              content: const Text(
+                                'Health Connect SDK is missing or needs update. Check Play Store.',
+                                style: TextStyle(color: Colors.white),
+                              ),
+                              action: SnackBarAction(
+                                label: 'Settings',
+                                textColor: AppTheme.accent,
+                                onPressed: openAppSettings,
+                              ),
                             ),
                           );
                         }
@@ -88,17 +166,17 @@ class IntegrationsScreen extends ConsumerWidget {
                     // ── Coming soon ──────────────────────
                     const _GroupLabel('Coming Soon'),
                     const SizedBox(height: 10),
-                    _ComingSoonTile(
+                    const _ComingSoonTile(
                       icon: '⌚',
                       label: 'Fitbit',
                       subtitle: 'Sync workouts and sleep data',
                     ),
-                    _ComingSoonTile(
+                    const _ComingSoonTile(
                       icon: '🏃',
                       label: 'Garmin Connect',
                       subtitle: 'Import runs, rides, and VO2 max',
                     ),
-                    _ComingSoonTile(
+                    const _ComingSoonTile(
                       icon: '🔵',
                       label: 'Whoop',
                       subtitle: 'Recovery and strain scores',
@@ -134,7 +212,8 @@ class _HealthConnectCard extends StatelessWidget {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(16),
         border: isConnected
-            ? Border.all(color: AppTheme.success.withOpacity(0.4), width: 1.5)
+            ? Border.all(
+                color: AppTheme.success.withOpacity(0.4), width: 1.5)
             : null,
       ),
       child: Column(
@@ -142,13 +221,12 @@ class _HealthConnectCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              // Platform icons
               const Text('❤️', style: TextStyle(fontSize: 22)),
               const SizedBox(width: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Apple Health / Google Fit',
+                  const Text('Health Connect',
                       style: TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -157,7 +235,9 @@ class _HealthConnectCard extends StatelessWidget {
                   Text(
                     isConnected ? 'Connected' : 'Not connected',
                     style: TextStyle(
-                      color: isConnected ? AppTheme.success : AppTheme.textSecondary,
+                      color: isConnected
+                          ? AppTheme.success
+                          : AppTheme.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -173,7 +253,8 @@ class _HealthConnectCard extends StatelessWidget {
           const SizedBox(height: 12),
           const Text(
             'Syncs steps, calories burned, and weight from your device\'s health platform.',
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13, height: 1.5),
+            style: TextStyle(
+                color: AppTheme.textSecondary, fontSize: 13, height: 1.5),
           ),
           if (!isConnected) ...[
             const SizedBox(height: 14),
@@ -186,7 +267,8 @@ class _HealthConnectCard extends StatelessWidget {
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
-                            strokeWidth: 2, color: AppTheme.background),
+                            strokeWidth: 2,
+                            color: AppTheme.background),
                       )
                     : const Text('Connect'),
               ),
@@ -216,14 +298,23 @@ class _HealthSummaryCard extends ConsumerWidget {
       error: (e, _) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-            color: AppTheme.surface, borderRadius: BorderRadius.circular(14)),
-        child: const Text('Failed to load health data',
-            style: TextStyle(color: AppTheme.textSecondary)),
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(14)),
+        child: Row(
+          children: [
+            const Icon(Icons.warning_amber_rounded,
+                color: AppTheme.textSecondary, size: 16),
+            const SizedBox(width: 8),
+            const Text('Failed to load health data',
+                style: TextStyle(color: AppTheme.textSecondary)),
+          ],
+        ),
       ),
       data: (summary) => Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-            color: AppTheme.surface, borderRadius: BorderRadius.circular(16)),
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(16)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
@@ -273,11 +364,12 @@ class _StatChip extends StatelessWidget {
   final String value;
   final Color color;
 
-  const _StatChip(
-      {required this.icon,
-      required this.label,
-      required this.value,
-      required this.color});
+  const _StatChip({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -287,11 +379,13 @@ class _StatChip extends StatelessWidget {
         const SizedBox(height: 6),
         Text(value,
             style: TextStyle(
-                color: color, fontWeight: FontWeight.bold, fontSize: 15)),
+                color: color,
+                fontWeight: FontWeight.bold,
+                fontSize: 15)),
         const SizedBox(height: 2),
         Text(label,
-            style:
-                const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+            style: const TextStyle(
+                color: AppTheme.textSecondary, fontSize: 11)),
       ],
     );
   }
@@ -303,8 +397,11 @@ class _ComingSoonTile extends StatelessWidget {
   final String label;
   final String subtitle;
 
-  const _ComingSoonTile(
-      {required this.icon, required this.label, required this.subtitle});
+  const _ComingSoonTile({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -312,7 +409,8 @@ class _ComingSoonTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-          color: AppTheme.surface, borderRadius: BorderRadius.circular(14)),
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(14)),
       child: Row(
         children: [
           Text(icon, style: const TextStyle(fontSize: 22)),
@@ -323,7 +421,8 @@ class _ComingSoonTile extends StatelessWidget {
               children: [
                 Text(label,
                     style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.w500)),
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500)),
                 const SizedBox(height: 2),
                 Text(subtitle,
                     style: const TextStyle(

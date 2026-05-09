@@ -1,35 +1,68 @@
 import 'package:health/health.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 /// Unified wrapper around the `health` package (v10.x API).
 /// Covers Google Health Connect / Google Fit (Android) and Apple HealthKit (iOS).
+///
+/// Responsibility boundary:
+///   - This service ONLY talks to the health package.
+///   - Runtime OS permissions (activityRecognition etc.) are the caller's
+///     responsibility (IntegrationsScreen requests them before invoking connect).
 class HealthSyncService {
   static final HealthSyncService _instance = HealthSyncService._();
   factory HealthSyncService() => _instance;
   HealthSyncService._();
 
-  // health v10 is a singleton accessed via Health()
   final Health _health = Health();
 
   static const _types = [
     HealthDataType.STEPS,
     HealthDataType.ACTIVE_ENERGY_BURNED,
     HealthDataType.WEIGHT,
+    HealthDataType.WORKOUT,
   ];
 
   static const _permissions = [
     HealthDataAccess.READ,
     HealthDataAccess.READ,
     HealthDataAccess.READ,
+    HealthDataAccess.READ,
   ];
 
-  // ── Request permissions ──────────────────────────────
   Future<bool> requestPermissions() async {
-    // Android: activity recognition needed for steps
-    await Permission.activityRecognition.request();
+    try {
+      print('HealthSyncService: Configuring health package...');
+      await _health.configure();
 
-    await _health.configure();
-    return _health.requestAuthorization(_types, permissions: _permissions);
+      // Check Health Connect SDK status on Android
+      final status = await _health.getHealthConnectSdkStatus();
+      print('HealthSyncService: Health Connect SDK status: $status');
+      
+      if (status == HealthConnectSdkStatus.sdkUnavailable) {
+        // On Android 14+, Health Connect is a system setting, not a standalone app.
+        // We only return false if it's truly unavailable (old Android or restricted).
+        print('HealthSyncService: Health Connect SDK is not installed or is a system setting.');
+      }
+      if (status == HealthConnectSdkStatus.sdkUnavailableProviderUpdateRequired) {
+        print('HealthSyncService: Health Connect SDK update required.');
+        return false;
+      }
+
+      print('HealthSyncService: Requesting authorization for types: $_types');
+      final granted = await _health.requestAuthorization(_types,
+          permissions: _permissions);
+      
+      if (!granted) {
+        print('HealthSyncService: Authorization failed. Checking if permissions are missing in manifest...');
+        final hasSteps = await _health.hasPermissions([HealthDataType.STEPS]) ?? false;
+        print('HealthSyncService: Steps permission status: $hasSteps');
+      }
+      
+      print('HealthSyncService: Authorization granted: $granted');
+      return granted;
+    } catch (e) {
+      print('HealthSyncService: Health authorization error: $e');
+      return false;
+    }
   }
 
   // ── Check if already authorized ─────────────────────

@@ -210,10 +210,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               // ── Login link ────────────────────────────
               Center(
                 child: GestureDetector(
-                  onTap: () => Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (_) => const LoginScreen()),
-                  ),
+                  onTap: () => Navigator.pop(context),
                   child: RichText(
                     text: const TextSpan(
                       text: 'Already have an account? ',
@@ -267,13 +264,13 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
     final result = await ref
         .read(authNotifierProvider.notifier)
-        .signUpWithEmail(name: name, email: email, password: pass);
+        .registerWithEmail(email, pass, name);
 
     if (!mounted) return;
-    if (result.isSuccess) {
-      Navigator.pop(context);
+    if (result.success) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } else {
-      setState(() { _error = result.error; _loading = false; });
+      setState(() { _error = result.errorMessage; _loading = false; });
     }
   }
 
@@ -283,10 +280,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     final result =
         await ref.read(authNotifierProvider.notifier).signInWithGoogle();
     if (!mounted) return;
-    if (result.isSuccess) {
-      Navigator.pop(context);
+    if (result.success) {
+      Navigator.of(context).popUntil((route) => route.isFirst);
     } else {
-      setState(() { _error = result.error; _loading = false; });
+      setState(() { _error = result.errorMessage; _loading = false; });
     }
   }
 

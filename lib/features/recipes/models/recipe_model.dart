@@ -1,3 +1,4 @@
+import '../../nutrition/models/custom_meal_ingredient.dart';
 import '../../nutrition/models/food_item.dart';
 
 class RecipeModel {
@@ -10,7 +11,7 @@ class RecipeModel {
   final double protein;
   final double carbs;
   final double fats;
-  final List<String> ingredients;
+  final List<CustomMealIngredient> ingredients;
   final List<String> steps;
   final bool isFavorite;
 
@@ -63,7 +64,8 @@ class RecipeModel {
       isFavorite: isFavorite,
       dateString: FoodItem.dateFor(now),
       timestamp: now.millisecondsSinceEpoch,
-      ingredients: ingredients,
+      ingredients: ingredients.map((i) => i.name).toList(),
+      ingredientItems: ingredients,
     );
   }
 
@@ -81,7 +83,8 @@ class RecipeModel {
       consumedUnit: 'serving',
       isAiLogged: false,
       isFavorite: isFavorite,
-      ingredients: ingredients,
+      ingredients: ingredients.map((i) => i.name).toList(),
+      ingredientItems: ingredients,
     );
   }
 }
