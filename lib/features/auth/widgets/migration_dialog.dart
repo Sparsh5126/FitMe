@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../providers/auth_provider.dart';
-import '../../nutrition/services/migration_service.dart';
-import '../../../core/theme/app_theme.dart';
-import 'dart:developer' as dev;
+import 'package:fitme/features/auth/providers/auth_provider.dart';
+import 'package:fitme/features/nutrition/services/migration_service.dart';
+import 'package:fitme/core/theme/app_theme.dart';
 
 class MigrationDialog extends ConsumerStatefulWidget {
   final Widget child;
@@ -31,9 +30,9 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Migration failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Migration failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _isProcessing = false);
@@ -77,7 +76,11 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(Icons.merge_type_rounded, size: 48, color: AppTheme.accent),
+                  const Icon(
+                    Icons.merge_type_rounded,
+                    size: 48,
+                    color: AppTheme.accent,
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'Guest Data Found',
@@ -89,9 +92,12 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
                   ),
                   const SizedBox(height: 12),
                   const Text(
-                    'Do you want to merge your guest meals, recipes, and favorites into this account?',
+                    'Do you want to merge your guest meals, recipes, favorites, and FitPoints into this account?',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 14,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   if (_isProcessing)
@@ -105,9 +111,14 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
                           backgroundColor: AppTheme.accent,
                           foregroundColor: Colors.black,
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: const Text('Merge Guest Data', style: TextStyle(fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Merge Guest Data',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -118,15 +129,25 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           side: const BorderSide(color: AppTheme.textSecondary),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
                         ),
-                        child: const Text('Keep Account Data Only', style: TextStyle(color: Colors.white)),
+                        child: const Text(
+                          'Keep Account Data Only',
+                          style: TextStyle(color: Colors.white),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextButton(
-                      onPressed: () => ref.read(pendingMigrationProvider.notifier).state = false,
-                      child: const Text('Cancel', style: TextStyle(color: AppTheme.textSecondary)),
+                      onPressed: () =>
+                          ref.read(pendingMigrationProvider.notifier).state =
+                              false,
+                      child: const Text(
+                        'Cancel',
+                        style: TextStyle(color: AppTheme.textSecondary),
+                      ),
                     ),
                   ],
                 ],

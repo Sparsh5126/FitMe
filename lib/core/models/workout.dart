@@ -1,14 +1,14 @@
-import 'exercise.dart';
+import 'package:fitme/core/models/exercise.dart';
 
 class Workout {
   final String id;
   final String name;
   final List<Exercise> exercises;
-  final String dateString;      // YYYY-MM-DD
+  final String dateString; // YYYY-MM-DD
   final int startTimestamp;
   final int? endTimestamp;
   final bool isCompleted;
-  final int totalVolume;        // sum of all reps × weight across session
+  final int totalVolume; // sum of all reps × weight across session
   final int totalSets;
   final String notes;
 
@@ -23,8 +23,8 @@ class Workout {
     this.totalVolume = 0,
     this.totalSets = 0,
     this.notes = '',
-  })  : dateString = dateString ?? _today(),
-        startTimestamp = startTimestamp ?? DateTime.now().millisecondsSinceEpoch;
+  }) : dateString = dateString ?? _today(),
+       startTimestamp = startTimestamp ?? DateTime.now().millisecondsSinceEpoch;
 
   static String _today() {
     final now = DateTime.now();
@@ -59,7 +59,8 @@ class Workout {
           .map((e) => Exercise.fromMap(e as Map<String, dynamic>))
           .toList(),
       dateString: map['dateString'] ?? _today(),
-      startTimestamp: map['startTimestamp'] ?? DateTime.now().millisecondsSinceEpoch,
+      startTimestamp:
+          map['startTimestamp'] ?? DateTime.now().millisecondsSinceEpoch,
       endTimestamp: map['endTimestamp'],
       isCompleted: map['isCompleted'] ?? false,
       totalVolume: map['totalVolume'] ?? 0,

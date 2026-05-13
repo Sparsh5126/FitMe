@@ -3,22 +3,20 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/models/user_profile.dart';
-import '../../dashboard/providers/user_provider.dart';
-import '../providers/nutrition_provider.dart';
-import '../widgets/log_sheet.dart';
-import '../widgets/smart_logger_sheet.dart';
-import '../../nutrition/screens/macro_detail_screen.dart';
-import '../../nutrition/screens/quantity_selection_screen.dart';
-import '../../streak/screens/streak_screen.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
-import '../../gamification/services/streak_service.dart';
-import '../models/food_item.dart';
-import '../../insights/screens/diet_analysis_screen.dart';
-import '../../insights/screens/diet_plan_screen.dart';
-import '../../recipes/screens/recipes_screen.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
+import 'package:fitme/core/models/user_profile.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/features/nutrition/widgets/smart_logger_sheet.dart';
+import 'package:fitme/features/nutrition/screens/macro_detail_screen.dart';
+import 'package:fitme/features/nutrition/screens/quantity_selection_screen.dart';
+import 'package:fitme/features/streak/screens/streak_screen.dart';
+import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/insights/screens/diet_analysis_screen.dart';
+import 'package:fitme/features/insights/screens/diet_plan_screen.dart';
+import 'package:fitme/features/recipes/screens/recipes_screen.dart';
 
 class _DismissedMealsNotifier extends Notifier<Set<String>> {
   @override
@@ -28,7 +26,8 @@ class _DismissedMealsNotifier extends Notifier<Set<String>> {
 
 final dismissedMealsProvider =
     NotifierProvider<_DismissedMealsNotifier, Set<String>>(
-        _DismissedMealsNotifier.new);
+      _DismissedMealsNotifier.new,
+    );
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -75,33 +74,42 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     final userAsync = ref.watch(userProfileProvider);
     final mealsAsync = ref.watch(nutritionProvider);
     final dismissedIds = ref.watch(dismissedMealsProvider);
-    final meals =
-        (mealsAsync.value ?? []).where((m) => !dismissedIds.contains(m.id)).toList();
+    final meals = (mealsAsync.value ?? [])
+        .where((m) => !dismissedIds.contains(m.id))
+        .toList();
     final selectedDate = ref.watch(selectedDateProvider);
 
     final snapshotAsync = ref.watch(consistencySnapshotProvider);
     final debugLevel = ref.watch(debugStreakLevelProvider);
-    
+
     // Level 0-5 based on tier/thresholds
-    final currentStreakLevel = debugLevel ?? _calculateLevel(snapshotAsync.value?.currentStreak ?? 0);
+    final currentStreakLevel =
+        debugLevel ?? _calculateLevel(snapshotAsync.value?.currentStreak ?? 0);
     final streakCount = snapshotAsync.value?.currentStreak ?? 0;
 
     return userAsync.when(
-      loading: () => const Scaffold(
-        backgroundColor: AppTheme.background,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.accent)),
+      loading: () => Scaffold(
+        backgroundColor: theme.colors.backgroundPrimary,
+        body: Center(child: CircularProgressIndicator(color: theme.colors.accent)),
       ),
       error: (e, _) => Scaffold(
-        backgroundColor: AppTheme.background,
-        body: Center(child: Text('$e', style: const TextStyle(color: Colors.red))),
+        backgroundColor: theme.colors.backgroundPrimary,
+        body: Center(
+          child: Text('$e', style: TextStyle(color: theme.colors.error)),
+        ),
       ),
       data: (profile) {
         if (profile == null) return const SizedBox();
 
-        int totalCals = 0, totalPro = 0, totalCarbs = 0, totalFats = 0, totalWater = 0;
+        int totalCals = 0,
+            totalPro = 0,
+            totalCarbs = 0,
+            totalFats = 0,
+            totalWater = 0;
         for (final m in meals) {
           totalCals += m.calories;
           totalPro += m.protein;
@@ -113,14 +121,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         }
 
         return Scaffold(
-          backgroundColor: AppTheme.background,
+          backgroundColor: theme.colors.backgroundPrimary,
           body: SafeArea(
             child: Column(
               children: [
                 // ── Header ──────────────────────────────────────────
                 Padding(
                   padding: const EdgeInsets.symmetric(
-                      horizontal: 16.0, vertical: 12.0),
+                    horizontal: 16.0,
+                    vertical: 12.0,
+                  ),
                   child: SizedBox(
                     height: 50,
                     child: Stack(
@@ -135,9 +145,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               onTap: () {
                                 HapticFeedback.lightImpact();
                                 Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (_) => const StreakScreen()));
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const StreakScreen(),
+                                  ),
+                                );
                               },
                               behavior: HitTestBehavior.opaque,
                               child: Row(
@@ -163,7 +175,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     height: 35,
                                     child: FitMe3DModel(
                                       key: ValueKey(
-                                          'home_streak_$currentStreakLevel'),
+                                        'home_streak_$currentStreakLevel',
+                                      ),
                                       level: currentStreakLevel,
                                       angleX: -0.15,
                                       angleY: -0.35,
@@ -180,8 +193,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         // ── FitMe draggable logo ──────────────────
                         Align(
-                          alignment: Alignment.lerp(Alignment.centerLeft,
-                                  Alignment.centerRight, _logoOffset) ??
+                          alignment:
+                              Alignment.lerp(
+                                Alignment.centerLeft,
+                                Alignment.centerRight,
+                                _logoOffset,
+                              ) ??
                               Alignment.centerLeft,
                           child: GestureDetector(
                             onHorizontalDragUpdate: _onLogoDragUpdate,
@@ -194,19 +211,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     : CrossAxisAlignment.end,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text('FitMe',
-                                      style: TextStyle(
-                                          fontSize: 24,
-                                          fontWeight: FontWeight.w900,
-                                          color: Colors.white,
-                                          letterSpacing: -0.5)),
+                                  const Text(
+                                    'FitMe',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.w900,
+                                      color: Colors.white,
+                                      letterSpacing: -0.5,
+                                    ),
+                                  ),
                                   Text(
                                     _logoOffset < 0.5
                                         ? ' Exercise? →'
                                         : '← Macros? ',
-                                    style: const TextStyle(
-                                        fontSize: 10,
-                                        color: AppTheme.textSecondary),
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      color: theme.colors.textSecondary,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -273,20 +294,33 @@ class _FoodPage extends ConsumerWidget {
     if (d == today.subtract(const Duration(days: 1))) return 'Yesterday';
     if (d == today.add(const Duration(days: 1))) return 'Tomorrow';
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${date.day} ${months[date.month - 1]}';
   }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final visibleMeals =
-        meals.where((m) => m.name.toLowerCase() != 'water').toList();
+    final theme = ThemeManager.instance.activeTheme;
+    final visibleMeals = meals
+        .where((m) => m.name.toLowerCase() != 'water')
+        .toList();
     final dateLabel = _formatDate(selectedDate);
     final now = DateTime.now();
     final tomorrow = DateTime(now.year, now.month, now.day + 1);
-    final isAtToday = !selectedDate.isBefore(DateTime(now.year, now.month, now.day)) &&
+    final isAtToday =
+        !selectedDate.isBefore(DateTime(now.year, now.month, now.day)) &&
         selectedDate.isBefore(tomorrow);
 
     return SingleChildScrollView(
@@ -305,8 +339,8 @@ class _FoodPage extends ConsumerWidget {
                   icon: Icons.chevron_left_rounded,
                   onTap: () {
                     HapticFeedback.selectionClick();
-                    ref.read(selectedDateProvider.notifier).state =
-                        selectedDate.subtract(const Duration(days: 1));
+                    ref.read(selectedDateProvider.notifier).state = selectedDate
+                        .subtract(const Duration(days: 1));
                   },
                 ),
                 // Date label – tapping opens calendar picker
@@ -320,11 +354,13 @@ class _FoodPage extends ConsumerWidget {
                       builder: (ctx, child) => Theme(
                         data: Theme.of(ctx).copyWith(
                           colorScheme: ColorScheme.dark(
-                            primary: AppTheme.accent,
-                            surface: AppTheme.surface,
-                            onSurface: Colors.white,
+                            primary: theme.colors.accent,
+                            surface: theme.colors.surfacePrimary,
+                            onSurface: theme.colors.textPrimary,
                           ),
-                          dialogBackgroundColor: AppTheme.background,
+                          dialogTheme: DialogThemeData(
+                            backgroundColor: theme.colors.backgroundPrimary,
+                          ),
                         ),
                         child: child!,
                       ),
@@ -334,12 +370,16 @@ class _FoodPage extends ConsumerWidget {
                     }
                   },
                   child: Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     child: Text(
                       dateLabel,
                       style: TextStyle(
-                        color: isAtToday ? Colors.white : AppTheme.textSecondary,
+                        color: isAtToday
+                            ? theme.colors.textPrimary
+                            : theme.colors.textSecondary,
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,
@@ -370,94 +410,129 @@ class _FoodPage extends ConsumerWidget {
             children: [
               // Big calorie ring
               GestureDetector(
-                onTap: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => const MacroDetailScreen())),
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MacroDetailScreen()),
+                ),
                 child: CircularPercentIndicator(
                   radius: 80.0,
                   lineWidth: 12.0,
                   animation: true,
                   animateFromLastPercent: true,
-                  percent: (totalCals / profile.dynamicCalories).clamp(0.0, 1.0),
+                  percent: (totalCals / profile.dynamicCalories).clamp(
+                    0.0,
+                    1.0,
+                  ),
                   center: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text('$totalCals',
-                          style: const TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white)),
-                      Text('/ ${profile.dynamicCalories} kcal',
-                          style: const TextStyle(
-                              fontSize: 11, color: AppTheme.textSecondary)),
-                      const SizedBox(height: 2),
-                      const Text('tap for details',
-                          style: TextStyle(
-                              fontSize: 9, color: AppTheme.textSecondary)),
+                      Text(
+                        '$totalCals',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      Text(
+                        '/ ${profile.dynamicCalories} kcal',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colors.textSecondary,
+                        ),
+                      ),
+                      SizedBox(height: theme.spacing.xs),
+                      Text(
+                        'tap for details',
+                        style: TextStyle(
+                          fontSize: 9,
+                          color: theme.colors.textSecondary,
+                        ),
+                      ),
                     ],
                   ),
                   circularStrokeCap: CircularStrokeCap.round,
                   progressColor: totalCals > profile.dynamicCalories
                       ? Colors.redAccent
                       : Colors.white,
-                  backgroundColor: AppTheme.surface,
+                  backgroundColor: theme.colors.surfacePrimary,
                 ),
               ),
 
-              const SizedBox(height: 12),
+              SizedBox(height: theme.spacing.md),
 
               // 4 smaller rings
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   GestureDetector(
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const MacroDetailScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MacroDetailScreen(),
+                      ),
+                    ),
                     child: _SmallRing(
-                        label: 'Protein',
-                        current: totalPro,
-                        goal: profile.dynamicProtein,
-                        color: Colors.blueAccent),
+                      label: 'Protein',
+                      current: totalPro,
+                      goal: profile.dynamicProtein,
+                      color: Colors.blueAccent,
+                    ),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const MacroDetailScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MacroDetailScreen(),
+                      ),
+                    ),
                     child: _SmallRing(
-                        label: 'Carbs',
-                        current: totalCarbs,
-                        goal: profile.dynamicCarbs,
-                        color: Colors.orangeAccent),
+                      label: 'Carbs',
+                      current: totalCarbs,
+                      goal: profile.dynamicCarbs,
+                      color: Colors.orangeAccent,
+                    ),
                   ),
                   GestureDetector(
-                    onTap: () => Navigator.push(context,
-                        MaterialPageRoute(builder: (_) => const MacroDetailScreen())),
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const MacroDetailScreen(),
+                      ),
+                    ),
                     child: _SmallRing(
-                        label: 'Fats',
-                        current: totalFats,
-                        goal: profile.dynamicFats,
-                        color: Colors.purpleAccent),
+                      label: 'Fats',
+                      current: totalFats,
+                      goal: profile.dynamicFats,
+                      color: Colors.purpleAccent,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () {
                       HapticFeedback.mediumImpact();
-                      ref.read(foodActionsProvider).logFood(FoodItem(
-                        id:
-                            '${DateTime.now().millisecondsSinceEpoch}_${math.Random().nextInt(10000)}',
-                        name: 'Water',
-                        calories: 0,
-                        protein: 0,
-                        carbs: 0,
-                        fats: 0,
-                        consumedAmount: 250,
-                        consumedUnit: 'ml',
-                        dateString: FoodItem.dateFor(selectedDate),
-                      ));
+                      ref
+                          .read(foodActionsProvider)
+                          .logFood(
+                            FoodItem(
+                              id: '${DateTime.now().millisecondsSinceEpoch}_${math.Random().nextInt(10000)}',
+                              name: 'Water',
+                              calories: 0,
+                              protein: 0,
+                              carbs: 0,
+                              fats: 0,
+                              consumedAmount: 250,
+                              consumedUnit: 'ml',
+                              dateString: FoodItem.dateFor(selectedDate),
+                            ),
+                          );
                     },
                     child: _SmallRing(
-                        label: 'Water',
-                        current: totalWater,
-                        goal: 2500,
-                        color: Colors.cyanAccent,
-                        unit: 'ml'),
+                      label: 'Water',
+                      current: totalWater,
+                      goal: 2500,
+                      color: Colors.cyanAccent,
+                      unit: 'ml',
+                    ),
                   ),
                 ],
               ),
@@ -465,19 +540,22 @@ class _FoodPage extends ConsumerWidget {
           ),
 
           // ── Issue 4: More breathing room before SMART LOGGER label ──
-          const SizedBox(height: 22),
+          SizedBox(height: theme.spacing.lg),
 
           // ── SMART LOGGER ─────────────────────────────────────────
-          const Padding(
-            padding: EdgeInsets.only(left: 20),
-            child: Text('SMART LOGGER',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.textSecondary,
-                    letterSpacing: 1.2)),
+          Padding(
+            padding: EdgeInsets.only(left: theme.spacing.lg),
+            child: Text(
+              'SMART LOGGER',
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: theme.colors.textSecondary,
+                letterSpacing: 1.2,
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
+          SizedBox(height: theme.spacing.sm),
           SizedBox(
             height: 76,
             child: PageView(
@@ -492,23 +570,30 @@ class _FoodPage extends ConsumerWidget {
                     },
                     child: Container(
                       height: 56,
-                      margin: const EdgeInsets.symmetric(horizontal: 16),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      margin: EdgeInsets.symmetric(horizontal: theme.spacing.md),
+                      padding: EdgeInsets.symmetric(horizontal: theme.spacing.md),
                       decoration: BoxDecoration(
-                        color: AppTheme.surface,
-                        borderRadius: BorderRadius.circular(16),
+                        color: theme.colors.surfacePrimary,
+                        borderRadius: BorderRadius.circular(theme.radius.lg),
                         border: Border.all(
-                            color: Colors.white.withValues(alpha: 0.05)),
+                          color: Colors.white.withValues(alpha: 0.05),
+                        ),
                       ),
                       child: Row(
                         children: [
-                          const Expanded(
-                              child: Text('Type or Speak to log food...',
-                                  style: TextStyle(
-                                      color: AppTheme.textSecondary,
-                                      fontSize: 14))),
-                          Icon(Icons.mic_rounded,
-                              color: AppTheme.accent.withValues(alpha: 0.8)),
+                          Expanded(
+                            child: Text(
+                              'Type or Speak to log food...',
+                              style: TextStyle(
+                                color: theme.colors.textSecondary,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          Icon(
+                            Icons.mic_rounded,
+                            color: theme.colors.accent.withValues(alpha: 0.8),
+                          ),
                         ],
                       ),
                     ),
@@ -562,32 +647,38 @@ class _FoodPage extends ConsumerWidget {
             ),
           ),
 
-          const SizedBox(height: 8),
-          const Center(
-              child: Text('← Explore More! →',
-                  style:
-                      TextStyle(fontSize: 10, color: AppTheme.textSecondary))),
+          SizedBox(height: theme.spacing.sm),
+          Center(
+            child: Text(
+              '← Explore More! →',
+              style: TextStyle(fontSize: 10, color: theme.colors.textSecondary),
+            ),
+          ),
 
-          const SizedBox(height: 16),
+          SizedBox(height: theme.spacing.md),
 
           // ── LOGGED FOOD ─────────────────────────────────────────
-          const Padding(
-            padding: EdgeInsets.only(left: 20, bottom: 12),
-            child: Text('Logged Food',
-                style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
+          Padding(
+            padding: EdgeInsets.only(left: theme.spacing.lg, bottom: theme.spacing.md),
+            child: Text(
+              'Logged Food',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: theme.colors.textPrimary,
+              ),
+            ),
           ),
 
           if (visibleMeals.isEmpty)
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 32),
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: theme.spacing.xl),
               child: Center(
                 child: Text(
-                    'No meals logged yet.\nTap the + button to start.',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(color: AppTheme.textSecondary)),
+                  'No meals logged yet.\nTap the + button to start.',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: theme.colors.textSecondary),
+                ),
               ),
             )
           else
@@ -615,19 +706,26 @@ class _DateNavBtn extends StatelessWidget {
   final IconData icon;
   final VoidCallback onTap;
   final bool muted;
-  const _DateNavBtn({required this.icon, required this.onTap, this.muted = false});
+  const _DateNavBtn({
+    required this.icon,
+    required this.onTap,
+    this.muted = false,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 6),
-        child: Icon(icon,
-            color: muted
-                ? AppTheme.textSecondary.withOpacity(0.3)
-                : AppTheme.textSecondary,
-            size: 22),
+        padding: EdgeInsets.symmetric(horizontal: theme.spacing.xs, vertical: theme.spacing.sm),
+        child: Icon(
+          icon,
+          color: muted
+              ? theme.colors.textSecondary.withOpacity(0.3)
+              : theme.colors.textSecondary,
+          size: 22,
+        ),
       ),
     );
   }
@@ -641,15 +739,21 @@ class _ExercisePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.fitness_center_rounded,
-              color: AppTheme.textSecondary, size: 48),
-          SizedBox(height: 12),
-          Text('Exercise page coming soon.',
-              style: TextStyle(color: AppTheme.textSecondary)),
+        children: [
+          Icon(
+            Icons.fitness_center_rounded,
+            color: theme.colors.textSecondary,
+            size: 48,
+          ),
+          SizedBox(height: theme.spacing.md),
+          Text(
+            'Exercise page coming soon.',
+            style: TextStyle(color: theme.colors.textSecondary),
+          ),
         ],
       ),
     );
@@ -676,6 +780,7 @@ class _SmallRing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     final isOver = current > goal;
     final ringColor = isOver ? Colors.redAccent : color;
 
@@ -694,28 +799,38 @@ class _SmallRing extends StatelessWidget {
               center: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text('$current$unit',
-                      style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.bold,
-                          color: isOver ? Colors.redAccent : Colors.white)),
-                  Text('/$goal$unit',
-                      style: const TextStyle(
-                          fontSize: 9, color: AppTheme.textSecondary)),
+                  Text(
+                    '$current$unit',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.bold,
+                      color: isOver ? Colors.redAccent : Colors.white,
+                    ),
+                  ),
+                  Text(
+                    '/$goal$unit',
+                    style: TextStyle(
+                      fontSize: 9,
+                      color: theme.colors.textSecondary,
+                    ),
+                  ),
                 ],
               ),
               circularStrokeCap: CircularStrokeCap.round,
               progressColor: ringColor,
-              backgroundColor: AppTheme.surface,
+              backgroundColor: theme.colors.surfacePrimary,
             );
           },
         ),
-        const SizedBox(height: 6),
-        Text(label,
-            style: const TextStyle(
-                fontSize: 11,
-                color: AppTheme.textSecondary,
-                fontWeight: FontWeight.bold)),
+        SizedBox(height: theme.spacing.sm),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 11,
+            color: theme.colors.textSecondary,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
@@ -729,11 +844,15 @@ class _ActionIcon extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
 
-  const _ActionIcon(
-      {required this.icon, required this.label, required this.onTap});
+  const _ActionIcon({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     return GestureDetector(
       onTap: () {
         HapticFeedback.lightImpact();
@@ -746,19 +865,22 @@ class _ActionIcon extends StatelessWidget {
             width: 46,
             height: 46,
             decoration: BoxDecoration(
-              color: AppTheme.surface,
-              borderRadius: BorderRadius.circular(14),
+              color: theme.colors.surfacePrimary,
+              borderRadius: BorderRadius.circular(theme.radius.md),
               border: Border.all(color: Colors.white.withOpacity(0.06)),
             ),
-            child: Icon(icon, color: AppTheme.accent, size: 22),
+            child: Icon(icon, color: theme.colors.accent, size: 22),
           ),
-          const SizedBox(height: 4),
-          Text(label,
-              style: const TextStyle(
-                  fontSize: 10,
-                  color: AppTheme.textSecondary,
-                  fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center),
+          SizedBox(height: theme.spacing.xs),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 10,
+              color: theme.colors.textSecondary,
+              fontWeight: FontWeight.w600,
+            ),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -784,26 +906,28 @@ class _LoggedMealTile extends ConsumerWidget {
       background: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
-            color: Colors.redAccent.withValues(alpha: 0.8),
-            borderRadius: BorderRadius.circular(16)),
+          color: Colors.redAccent.withValues(alpha: 0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
         child: const Icon(Icons.delete_outline, color: Colors.white),
       ),
       child: GestureDetector(
         onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (_) =>
-                    QuantitySelectionScreen(baseFood: meal, editItemId: meal.id))),
+          context,
+          MaterialPageRoute(
+            builder: (_) =>
+                QuantitySelectionScreen(baseFood: meal, editItemId: meal.id),
+          ),
+        ),
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: AppTheme.surface,
             borderRadius: BorderRadius.circular(16),
-            border:
-                Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -820,26 +944,34 @@ class _LoggedMealTile extends ConsumerWidget {
                             child: Text('🪄', style: TextStyle(fontSize: 14)),
                           ),
                         Expanded(
-                          child: Text(meal.name,
-                              style: const TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis),
+                          child: Text(
+                            meal.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  Text('${meal.calories} Cal',
-                      style:
-                          const TextStyle(color: Colors.white, fontSize: 14)),
+                  Text(
+                    '${meal.calories} Cal',
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                  ),
                 ],
               ),
               const SizedBox(height: 6),
-              Text('P:${meal.protein}g C:${meal.carbs}g F:${meal.fats}g',
-                  style: const TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 12)),
+              Text(
+                'P:${meal.protein}g C:${meal.carbs}g F:${meal.fats}g',
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
             ],
           ),
         ),

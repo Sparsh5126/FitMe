@@ -1,11 +1,11 @@
 class ExerciseSet {
   final int setNumber;
   final int targetReps;
-  final double targetWeight;    // kg, 0 for bodyweight
+  final double targetWeight; // kg, 0 for bodyweight
   final int? actualReps;
   final double? actualWeight;
   final SetStatus status;
-  final int restSeconds;        // planned rest after this set
+  final int restSeconds; // planned rest after this set
   final int? actualRestSeconds; // how long they actually rested
 
   const ExerciseSet({
@@ -102,8 +102,8 @@ class Exercise {
   final String notes;
 
   // Personal records
-  final int? prReps;            // most reps in a single set
-  final double? prWeight;       // most weight in a single set
+  final int? prReps; // most reps in a single set
+  final double? prWeight; // most weight in a single set
 
   const Exercise({
     required this.id,
@@ -122,7 +122,8 @@ class Exercise {
 
   int get completedSets => sets.where((s) => s.isCompleted).length;
 
-  bool get allSetsCompleted => sets.every((s) => s.isCompleted || s.status == SetStatus.skipped);
+  bool get allSetsCompleted =>
+      sets.every((s) => s.isCompleted || s.status == SetStatus.skipped);
 
   // True if any set hit or exceeded the top set threshold for this progression level
   bool get hitTopSet => sets.any((s) => s.isTopSet);
@@ -146,7 +147,9 @@ class Exercise {
 
   int _defaultRestSeconds() {
     // Heavier compound: 120s, lighter: 90s
-    if (!isBodyweight && (sets.isNotEmpty && (sets.last.targetWeight) > 20)) return 120;
+    if (!isBodyweight && (sets.isNotEmpty && (sets.last.targetWeight) > 20)) {
+      return 120;
+    }
     return 90;
   }
 
@@ -194,7 +197,8 @@ class Exercise {
       name: name,
       muscleGroup: muscleGroup,
       progressionTreeId: progressionTreeId,
-      currentProgressionLevel: currentProgressionLevel ?? this.currentProgressionLevel,
+      currentProgressionLevel:
+          currentProgressionLevel ?? this.currentProgressionLevel,
       sets: sets ?? this.sets,
       isBodyweight: isBodyweight,
       notes: notes ?? this.notes,
@@ -208,12 +212,21 @@ class Exercise {
     final completedSets = sets.where((s) => s.isCompleted);
     if (completedSets.isEmpty) return this;
 
-    final maxReps = completedSets.map((s) => s.actualReps ?? 0).reduce((a, b) => a > b ? a : b);
-    final maxWeight = completedSets.map((s) => s.actualWeight ?? 0).reduce((a, b) => a > b ? a : b);
+    final maxReps = completedSets
+        .map((s) => s.actualReps ?? 0)
+        .reduce((a, b) => a > b ? a : b);
+    final maxWeight = completedSets
+        .map((s) => s.actualWeight ?? 0)
+        .reduce((a, b) => a > b ? a : b);
 
     final newPrReps = (prReps == null || maxReps > prReps!) ? maxReps : prReps;
-    final newPrWeight = (prWeight == null || maxWeight > prWeight!) ? maxWeight : prWeight;
+    final newPrWeight = (prWeight == null || maxWeight > prWeight!)
+        ? maxWeight
+        : prWeight;
 
-    return copyWith(prReps: newPrReps, prWeight: (newPrWeight != null && newPrWeight > 0) ? newPrWeight : null);
+    return copyWith(
+      prReps: newPrReps,
+      prWeight: (newPrWeight != null && newPrWeight > 0) ? newPrWeight : null,
+    );
   }
 }

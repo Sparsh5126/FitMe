@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/widgets/oil_level_selector.dart';
-import '../models/food_item.dart';
-import '../providers/nutrition_provider.dart';
-import '../providers/oil_level_provider.dart';
-import 'quantity_selection_screen.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/widgets/oil_level_selector.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/features/nutrition/providers/oil_level_provider.dart';
+import 'package:fitme/features/nutrition/screens/quantity_selection_screen.dart';
 
 class FoodDetailsScreen extends ConsumerStatefulWidget {
   final FoodItem food;
@@ -55,7 +55,8 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
   Widget build(BuildContext context) {
     final food = _displayFood;
     final favoritesAsync = ref.watch(favoritesProvider);
-    final isFavorite = favoritesAsync.value?.any((f) => f.name == food.name) ?? false;
+    final isFavorite =
+        favoritesAsync.value?.any((f) => f.name == food.name) ?? false;
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -68,20 +69,31 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
-                    child: Text(food.name,
-                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                        overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      food.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   // Favorite heart
                   GestureDetector(
                     onTap: () async {
                       HapticFeedback.mediumImpact();
                       if (isFavorite) {
-                        await ref.read(foodActionsProvider).removeFavorite(food.name);
+                        await ref
+                            .read(foodActionsProvider)
+                            .removeFavorite(food.name);
                       } else {
                         await ref.read(foodActionsProvider).addFavorite(food);
                       }
@@ -89,9 +101,13 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                     child: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: Icon(
-                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        isFavorite
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
                         key: ValueKey(isFavorite),
-                        color: isFavorite ? Colors.redAccent : AppTheme.textSecondary,
+                        color: isFavorite
+                            ? Colors.redAccent
+                            : AppTheme.textSecondary,
                         size: 26,
                       ),
                     ),
@@ -111,31 +127,48 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                     Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 6,
+                          ),
                           decoration: BoxDecoration(
                             color: AppTheme.surface,
                             borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             '${food.consumedAmount % 1 == 0 ? food.consumedAmount.toInt() : food.consumedAmount} ${food.consumedUnit}',
-                            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                            style: const TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 13,
+                            ),
                           ),
                         ),
                         if (food.isAiLogged) ...[
                           const SizedBox(width: 8),
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
                               color: Colors.amberAccent.withOpacity(0.1),
                               borderRadius: BorderRadius.circular(20),
-                              border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
+                              border: Border.all(
+                                color: Colors.amberAccent.withOpacity(0.3),
+                              ),
                             ),
                             child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text('🪄', style: TextStyle(fontSize: 12)),
                                 SizedBox(width: 4),
-                                Text('AI Estimate', style: TextStyle(color: Colors.amberAccent, fontSize: 12)),
+                                Text(
+                                  'AI Estimate',
+                                  style: TextStyle(
+                                    color: Colors.amberAccent,
+                                    fontSize: 12,
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -158,9 +191,22 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                     Center(
                       child: Column(
                         children: [
-                          Text('${food.calories}',
-                              style: const TextStyle(color: Colors.white, fontSize: 52, fontWeight: FontWeight.w900, height: 1)),
-                          const Text('kcal', style: TextStyle(color: AppTheme.textSecondary, fontSize: 16)),
+                          Text(
+                            '${food.calories}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 52,
+                              fontWeight: FontWeight.w900,
+                              height: 1,
+                            ),
+                          ),
+                          const Text(
+                            'kcal',
+                            style: TextStyle(
+                              color: AppTheme.textSecondary,
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -171,9 +217,27 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        _DetailRing(label: 'Protein', value: food.protein, color: Colors.blueAccent, total: food.calories, multiplier: 4),
-                        _DetailRing(label: 'Carbs', value: food.carbs, color: Colors.orangeAccent, total: food.calories, multiplier: 4),
-                        _DetailRing(label: 'Fats', value: food.fats, color: Colors.purpleAccent, total: food.calories, multiplier: 9),
+                        _DetailRing(
+                          label: 'Protein',
+                          value: food.protein,
+                          color: Colors.blueAccent,
+                          total: food.calories,
+                          multiplier: 4,
+                        ),
+                        _DetailRing(
+                          label: 'Carbs',
+                          value: food.carbs,
+                          color: Colors.orangeAccent,
+                          total: food.calories,
+                          multiplier: 4,
+                        ),
+                        _DetailRing(
+                          label: 'Fats',
+                          value: food.fats,
+                          color: Colors.purpleAccent,
+                          total: food.calories,
+                          multiplier: 9,
+                        ),
                       ],
                     ),
 
@@ -195,11 +259,16 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                         decoration: BoxDecoration(
                           color: Colors.amberAccent.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: Colors.amberAccent.withOpacity(0.3)),
+                          border: Border.all(
+                            color: Colors.amberAccent.withOpacity(0.3),
+                          ),
                         ),
                         child: const Text(
                           '🪄 Macros estimated by Gemini AI. Values may not be 100% accurate.',
-                          style: TextStyle(color: Colors.amberAccent, fontSize: 12),
+                          style: TextStyle(
+                            color: Colors.amberAccent,
+                            fontSize: 12,
+                          ),
                         ),
                       ),
 
@@ -214,7 +283,9 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
               decoration: BoxDecoration(
                 color: AppTheme.background,
-                border: Border(top: BorderSide(color: Colors.white.withOpacity(0.06))),
+                border: Border(
+                  top: BorderSide(color: Colors.white.withOpacity(0.06)),
+                ),
               ),
               child: Column(
                 children: [
@@ -223,15 +294,28 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: _displayFood))),
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) =>
+                              QuantitySelectionScreen(baseFood: _displayFood),
+                        ),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.accent,
                         foregroundColor: AppTheme.background,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                         elevation: 0,
                       ),
-                      child: const Text('Log This Food', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      child: const Text(
+                        'Log This Food',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
                     ),
                   ),
 
@@ -244,7 +328,9 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () async {
                         HapticFeedback.lightImpact();
-                        await ref.read(foodActionsProvider).saveCustomMeal(food);
+                        await ref
+                            .read(foodActionsProvider)
+                            .saveCustomMeal(food);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
@@ -260,7 +346,9 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: Colors.white,
                         side: BorderSide(color: Colors.white.withOpacity(0.2)),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
@@ -284,7 +372,13 @@ class _DetailRing extends StatelessWidget {
   final int total;
   final int multiplier;
 
-  const _DetailRing({required this.label, required this.value, required this.color, required this.total, required this.multiplier});
+  const _DetailRing({
+    required this.label,
+    required this.value,
+    required this.color,
+    required this.total,
+    required this.multiplier,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -301,8 +395,21 @@ class _DetailRing extends StatelessWidget {
           center: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text('${value}g', style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 14)),
-              Text('${(pct * 100).round()}%', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
+              Text(
+                '${value}g',
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                '${(pct * 100).round()}%',
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 10,
+                ),
+              ),
             ],
           ),
           circularStrokeCap: CircularStrokeCap.round,
@@ -310,7 +417,14 @@ class _DetailRing extends StatelessWidget {
           backgroundColor: AppTheme.surface,
         ),
         const SizedBox(height: 8),
-        Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(
+          label,
+          style: const TextStyle(
+            color: AppTheme.textSecondary,
+            fontSize: 12,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
       ],
     );
   }
@@ -354,24 +468,42 @@ class _NutritionTable extends StatelessWidget {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(row.$1, style: TextStyle(
-                      color: isSubItem ? AppTheme.textSecondary : Colors.white,
-                      fontWeight: isSubItem ? FontWeight.normal : FontWeight.bold,
-                      fontSize: isSubItem ? 12 : 14,
-                    )),
-                    Text(row.$2, style: TextStyle(
-                      color: isSubItem ? AppTheme.textSecondary : Colors.white,
-                      fontWeight: isSubItem ? FontWeight.normal : FontWeight.bold,
-                      fontSize: isSubItem ? 12 : 14,
-                    )),
+                    Text(
+                      row.$1,
+                      style: TextStyle(
+                        color: isSubItem
+                            ? AppTheme.textSecondary
+                            : Colors.white,
+                        fontWeight: isSubItem
+                            ? FontWeight.normal
+                            : FontWeight.bold,
+                        fontSize: isSubItem ? 12 : 14,
+                      ),
+                    ),
+                    Text(
+                      row.$2,
+                      style: TextStyle(
+                        color: isSubItem
+                            ? AppTheme.textSecondary
+                            : Colors.white,
+                        fontWeight: isSubItem
+                            ? FontWeight.normal
+                            : FontWeight.bold,
+                        fontSize: isSubItem ? 12 : 14,
+                      ),
+                    ),
                   ],
                 ),
               ),
-              if (!isLast) Divider(height: 1, color: Colors.white.withOpacity(0.05)),
+              if (!isLast)
+                Divider(height: 1, color: Colors.white.withOpacity(0.05)),
             ],
           );
         }).toList(),
@@ -389,6 +521,13 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16));
+    return Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w900,
+        fontSize: 16,
+      ),
+    );
   }
 }

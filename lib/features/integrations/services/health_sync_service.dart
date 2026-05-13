@@ -1,4 +1,5 @@
 import 'package:health/health.dart';
+import 'package:flutter/foundation.dart';
 
 /// Unified wrapper around the `health` package (v10.x API).
 /// Covers Google Health Connect / Google Fit (Android) and Apple HealthKit (iOS).
@@ -30,37 +31,45 @@ class HealthSyncService {
 
   Future<bool> requestPermissions() async {
     try {
-      print('HealthSyncService: Configuring health package...');
+      debugPrint('HealthSyncService: Configuring health package...');
       await _health.configure();
 
       // Check Health Connect SDK status on Android
       final status = await _health.getHealthConnectSdkStatus();
-      print('HealthSyncService: Health Connect SDK status: $status');
-      
+      debugPrint('HealthSyncService: Health Connect SDK status: $status');
+
       if (status == HealthConnectSdkStatus.sdkUnavailable) {
         // On Android 14+, Health Connect is a system setting, not a standalone app.
         // We only return false if it's truly unavailable (old Android or restricted).
-        print('HealthSyncService: Health Connect SDK is not installed or is a system setting.');
+        debugPrint(
+          'HealthSyncService: Health Connect SDK is not installed or is a system setting.',
+        );
       }
-      if (status == HealthConnectSdkStatus.sdkUnavailableProviderUpdateRequired) {
-        print('HealthSyncService: Health Connect SDK update required.');
+      if (status ==
+          HealthConnectSdkStatus.sdkUnavailableProviderUpdateRequired) {
+        debugPrint('HealthSyncService: Health Connect SDK update required.');
         return false;
       }
 
-      print('HealthSyncService: Requesting authorization for types: $_types');
-      final granted = await _health.requestAuthorization(_types,
-          permissions: _permissions);
-      
+      debugPrint('HealthSyncService: Requesting authorization for types: $_types');
+      final granted = await _health.requestAuthorization(
+        _types,
+        permissions: _permissions,
+      );
+
       if (!granted) {
-        print('HealthSyncService: Authorization failed. Checking if permissions are missing in manifest...');
-        final hasSteps = await _health.hasPermissions([HealthDataType.STEPS]) ?? false;
-        print('HealthSyncService: Steps permission status: $hasSteps');
+        debugPrint(
+          'HealthSyncService: Authorization failed. Checking if permissions are missing in manifest...',
+        );
+        final hasSteps =
+            await _health.hasPermissions([HealthDataType.STEPS]) ?? false;
+        debugPrint('HealthSyncService: Steps permission status: $hasSteps');
       }
-      
-      print('HealthSyncService: Authorization granted: $granted');
+
+      debugPrint('HealthSyncService: Authorization granted: $granted');
       return granted;
     } catch (e) {
-      print('HealthSyncService: Health authorization error: $e');
+      debugPrint('HealthSyncService: Health authorization error: $e');
       return false;
     }
   }
@@ -174,11 +183,11 @@ class HealthSummary {
   });
 
   factory HealthSummary.empty() => HealthSummary(
-        steps: 0,
-        caloriesBurned: 0,
-        weightKg: null,
-        fetchedAt: DateTime.now(),
-      );
+    steps: 0,
+    caloriesBurned: 0,
+    weightKg: null,
+    fetchedAt: DateTime.now(),
+  );
 
   bool get isEmpty => steps == 0 && caloriesBurned == 0 && weightKg == null;
 }

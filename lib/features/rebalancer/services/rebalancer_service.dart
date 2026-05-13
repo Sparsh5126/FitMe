@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../core/models/user_profile.dart';
-import '../../nutrition/models/food_item.dart';
-import '../../nutrition/repositories/nutrition_repository.dart';
+import 'package:fitme/core/models/user_profile.dart';
+import 'package:fitme/features/nutrition/repositories/nutrition_repository.dart';
 
 class RebalancerService {
   static final _db = FirebaseFirestore.instance;
@@ -15,10 +14,21 @@ class RebalancerService {
   // Checks if rebalance is due and runs it
   // ─────────────────────────────────────────
   static Future<void> runIfDue() async {
-    final doc = await _db.collection('users').doc(_uid).get();
-    if (!doc.exists) return;
+    final user = FirebaseAuth.instance.currentUser;
+    final isGuest = user == null;
+    final uid = user?.uid ?? 'guest';
 
-    final data = doc.data()!;
+    Map<String, dynamic> data;
+    if (isGuest) {
+      // TODO: Implement local storage read for guest rebalancer state
+      // For now, we skip rebalancing for guests until a local prefs service is unified.
+      return;
+    } else {
+      final doc = await _db.collection('users').doc(uid).get();
+      if (!doc.exists) return;
+      data = doc.data()!;
+    }
+
     final profile = UserProfile.fromMap(data);
     final today = _dateStr(DateTime.now());
     final lastRun = data['rebalancerLastRun'] as String? ?? '';
@@ -68,7 +78,9 @@ class RebalancerService {
     final daysRemaining = 7 - now.weekday; // days left after today
 
     if (daysElapsed == 0 || daysRemaining == 0) {
-      await _db.collection('users').doc(_uid).update({'rebalancerLastRun': today});
+      await _db.collection('users').doc(_uid).update({
+        'rebalancerLastRun': today,
+      });
       return;
     }
 
@@ -79,7 +91,10 @@ class RebalancerService {
     final targetFats = profile.dailyFats * daysElapsed;
 
     // Actual consumed Mon–yesterday
-    double actualCalories = 0, actualProtein = 0, actualCarbs = 0, actualFats = 0;
+    double actualCalories = 0,
+        actualProtein = 0,
+        actualCarbs = 0,
+        actualFats = 0;
     for (final log in logs) {
       // Only count logs before today
       final logDate = DateTime.parse(log.dateString);

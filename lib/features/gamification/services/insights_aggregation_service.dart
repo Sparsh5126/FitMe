@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../insights/screens/insights_screen.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
+import 'package:fitme/features/insights/screens/insights_screen.dart';
+import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
 
 class InsightsAggregationService {
   static Timer? _debounce;

@@ -1,14 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/models/workout.dart';
-import '../../../core/models/exercise.dart';
-import '../repositories/workout_repository.dart';
-import '../../fitpoints/services/fitpoints_service.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
-import '../../fitpoints/models/fitpoints_models.dart';
-import '../../notifications/notification_service.dart';
-import '../../dashboard/providers/user_provider.dart';
+import 'package:fitme/core/models/workout.dart';
+import 'package:fitme/core/models/exercise.dart';
+import 'package:fitme/features/workout/repositories/workout_repository.dart';
+import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
+import 'package:fitme/features/notifications/notification_service.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
 
 final _repo = WorkoutRepository();
 
@@ -36,7 +36,9 @@ final exerciseLibraryProvider = StreamProvider<List<Exercise>>((ref) {
 // ─────────────────────────────────────────────
 // PROGRESSION TREES (loaded from JSON)
 // ─────────────────────────────────────────────
-final progressionTreesProvider = FutureProvider<List<Map<String, dynamic>>>((ref) async {
+final progressionTreesProvider = FutureProvider<List<Map<String, dynamic>>>((
+  ref,
+) async {
   final jsonStr = await rootBundle.loadString('assets/progression_trees.json');
   final List data = jsonDecode(jsonStr);
   return data.cast<Map<String, dynamic>>();
@@ -45,7 +47,9 @@ final progressionTreesProvider = FutureProvider<List<Map<String, dynamic>>>((ref
 // ─────────────────────────────────────────────
 // WORKOUT ACTIONS
 // ─────────────────────────────────────────────
-final workoutActionsProvider = Provider<WorkoutActions>((ref) => WorkoutActions(ref));
+final workoutActionsProvider = Provider<WorkoutActions>(
+  (ref) => WorkoutActions(ref),
+);
 
 class WorkoutActions {
   final Ref _ref;
@@ -134,18 +138,41 @@ class WorkoutActions {
 
     // Award FitPoints for completing workout
     final service = _ref.read(fitPointsServiceProvider);
-    final fpRecord = await service.getRecord(profile?.uid ?? '', profile == null);
-    
+    final userId = profile?.uid ?? '';
+    final isGuest = profile == null;
+
+    final fpRecord = await service.getRecord(userId, isGuest);
+    final todayTxs = await service.getTodayTransactions(userId, isGuest);
+
     final award = service.awardPoints(
-      userId: profile?.uid ?? '',
+      userId: userId,
       action: FitPointAction.completeWorkout,
       record: fpRecord,
-      todayTransactions: [], // In-memory check for now, service handles absolute caps
+      todayTransactions: todayTxs,
     );
 
     if (award.awarded) {
       final updatedRecord = service.applyAward(record: fpRecord, result: award);
       await service.saveRecord(updatedRecord);
+
+      // Persist transaction for non-guests
+      if (!isGuest) {
+        final tx = service.buildTransaction(
+          userId: userId,
+          action: FitPointAction.completeWorkout,
+          result: award,
+          tier: fpRecord.currentTier,
+          metadata: '{"workoutId": "${workout.id}"}',
+        );
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('gamification')
+            .doc('fitpoints')
+            .collection('transactions')
+            .doc(tx.id)
+            .set(tx.toJson());
+      }
     }
 
     if (hasPR && profile != null) {
@@ -211,10 +238,12 @@ class WorkoutActions {
 // ─────────────────────────────────────────────
 Exercise exerciseFromTree(Map<String, dynamic> tree, int level) {
   final levels = tree['levels'] as List;
-  final levelData = levels.firstWhere(
-    (l) => (l['level'] as int) == level,
-    orElse: () => levels.first,
-  ) as Map<String, dynamic>;
+  final levelData =
+      levels.firstWhere(
+            (l) => (l['level'] as int) == level,
+            orElse: () => levels.first,
+          )
+          as Map<String, dynamic>;
 
   final topSet = levelData['topSet'] as Map<String, dynamic>;
   final sets = List.generate(

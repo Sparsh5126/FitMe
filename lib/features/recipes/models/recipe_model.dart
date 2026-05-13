@@ -1,5 +1,5 @@
-import '../../nutrition/models/custom_meal_ingredient.dart';
-import '../../nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/models/custom_meal_ingredient.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
 
 class RecipeModel {
   final String id;

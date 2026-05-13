@@ -1,7 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz_data;
-import '../../core/models/user_profile.dart';
+import 'package:fitme/core/models/user_profile.dart';
 
 class NotificationService {
   static final _plugin = FlutterLocalNotificationsPlugin();
@@ -52,7 +52,8 @@ class NotificationService {
       scheduled,
       _channel(),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.time,
     );
   }
@@ -61,7 +62,13 @@ class NotificationService {
   static Future<void> _scheduleWeeklyReset() async {
     final now = tz.TZDateTime.now(tz.local);
     final daysUntilSunday = (7 - now.weekday) % 7;
-    var sunday = tz.TZDateTime(tz.local, now.year, now.month, now.day + daysUntilSunday, 21);
+    var sunday = tz.TZDateTime(
+      tz.local,
+      now.year,
+      now.month,
+      now.day + daysUntilSunday,
+      21,
+    );
     if (sunday.isBefore(now)) sunday = sunday.add(const Duration(days: 7));
 
     await _plugin.zonedSchedule(
@@ -71,7 +78,8 @@ class NotificationService {
       sunday,
       _channel(),
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
       matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
     );
   }
@@ -85,7 +93,8 @@ class NotificationService {
     await _show(
       id: 10,
       title: 'Almost there! 💪',
-      body: 'You logged ${logged}g of ${goal}g $macro today. The re-balancer has you covered for tomorrow.',
+      body:
+          'You logged ${logged}g of ${goal}g $macro today. The re-balancer has you covered for tomorrow.',
     );
   }
 
@@ -98,7 +107,9 @@ class NotificationService {
       14: '2 weeks strong! You\'re in the zone now. ⚡',
       30: '30 DAYS! You\'re not the same person who started. 🏆',
     };
-    final body = messages[days] ?? '$days day streak! ${profile.mantra.isNotEmpty ? profile.mantra : "Keep going!"}';
+    final body =
+        messages[days] ??
+        '$days day streak! ${profile.mantra.isNotEmpty ? profile.mantra : "Keep going!"}';
 
     await _show(id: 11, title: '🔥 $days-Day Streak!', body: body);
   }
@@ -106,8 +117,12 @@ class NotificationService {
   // Show when re-balancer adjusts goals
   static Future<void> showRebalancerUpdate(int proteinAdj, int carbsAdj) async {
     final parts = <String>[];
-    if (proteinAdj != 0) parts.add('Protein ${proteinAdj > 0 ? '+' : ''}${proteinAdj}g');
-    if (carbsAdj != 0) parts.add('Carbs ${carbsAdj > 0 ? '+' : ''}${carbsAdj}g');
+    if (proteinAdj != 0) {
+      parts.add('Protein ${proteinAdj > 0 ? '+' : ''}${proteinAdj}g');
+    }
+    if (carbsAdj != 0) {
+      parts.add('Carbs ${carbsAdj > 0 ? '+' : ''}${carbsAdj}g');
+    }
     if (parts.isEmpty) return;
 
     await _show(
@@ -141,7 +156,8 @@ class NotificationService {
     await _show(
       id: 15,
       title: 'Back on track! 🙌',
-      body: 'You pushed through. That\'s the hardest part. You\'re stronger for it.',
+      body:
+          'You pushed through. That\'s the hardest part. You\'re stronger for it.',
     );
   }
 
@@ -149,7 +165,7 @@ class NotificationService {
   static Future<void> showSmartRescue(int remaining, String suggestion) async {
     await _show(
       id: 16,
-      title: '${remaining} kcal left today 🍽️',
+      title: '$remaining kcal left today 🍽️',
       body: 'Try: $suggestion to fill the gap.',
     );
   }
@@ -159,7 +175,8 @@ class NotificationService {
     await _show(
       id: 17,
       title: 'Macro goals crushed! 💪',
-      body: 'You hit your targets this week. That\'s a different kind of strength.',
+      body:
+          'You hit your targets this week. That\'s a different kind of strength.',
     );
   }
 
@@ -175,19 +192,28 @@ class NotificationService {
   // ─────────────────────────────────────────
   // HELPERS
   // ─────────────────────────────────────────
-  static Future<void> _show({required int id, required String title, required String body}) async {
+  static Future<void> _show({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
     await _plugin.show(id, title, body, _channel());
   }
 
   static NotificationDetails _channel() {
     return const NotificationDetails(
       android: AndroidNotificationDetails(
-        _channelId, _channelName,
+        _channelId,
+        _channelName,
         importance: Importance.high,
         priority: Priority.high,
         showWhen: true,
       ),
-      iOS: DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+      ),
     );
   }
 

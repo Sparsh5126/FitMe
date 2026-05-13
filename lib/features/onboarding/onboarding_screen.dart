@@ -7,9 +7,8 @@ import 'package:fitme/core/models/user_profile.dart';
 import 'package:fitme/core/theme/app_theme.dart';
 import 'package:fitme/core/widgets/goal_pace_slider.dart';
 import 'package:fitme/features/app_shell.dart';
-import '../auth/providers/auth_provider.dart';
-import '../nutrition/services/local_nutrition_service.dart';
-import '../nutrition/screens/home_screen.dart';
+import 'package:fitme/features/auth/providers/auth_provider.dart';
+import 'package:fitme/features/nutrition/services/local_nutrition_service.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -58,7 +57,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   double get _weight => double.tryParse(_weightController.text) ?? 0;
   double get _height => double.tryParse(_heightController.text) ?? 0;
-  double get _bmi => (_height > 0) ? _weight / ((_height / 100) * (_height / 100)) : 0;
+  double get _bmi =>
+      (_height > 0) ? _weight / ((_height / 100) * (_height / 100)) : 0;
 
   String get _bmiCategory {
     if (_bmi <= 0) return '';
@@ -80,7 +80,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     switch (_currentPage) {
       case 0:
         return _nameController.text.trim().isNotEmpty &&
-            (_ageController.text.isNotEmpty && int.tryParse(_ageController.text) != null) &&
+            (_ageController.text.isNotEmpty &&
+                int.tryParse(_ageController.text) != null) &&
             _weight > 0 &&
             _height > 0;
       case 1:
@@ -100,12 +101,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   void _next() {
     if (!_canProceed()) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill in all fields'), backgroundColor: Colors.redAccent),
+        const SnackBar(
+          content: Text('Please fill in all fields'),
+          backgroundColor: Colors.redAccent,
+        ),
       );
       return;
     }
     if (_currentPage < 4) {
-      _pageController.nextPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
       setState(() => _currentPage++);
     } else {
       _finish();
@@ -114,11 +121,13 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   void _back() {
     if (_currentPage > 0) {
-      _pageController.previousPage(duration: const Duration(milliseconds: 400), curve: Curves.easeInOut);
+      _pageController.previousPage(
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOut,
+      );
       setState(() => _currentPage--);
     }
   }
-
 
   Future<void> _finish() async {
     setState(() => _isSaving = true);
@@ -151,15 +160,18 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       }
 
       if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const AppShell()),
-        );
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const AppShell()));
       }
     } catch (e) {
       setState(() => _isSaving = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.redAccent),
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     }
@@ -183,7 +195,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       height: 4,
                       margin: const EdgeInsets.symmetric(horizontal: 3),
                       decoration: BoxDecoration(
-                        color: i <= _currentPage ? AppTheme.accent : AppTheme.surface,
+                        color: i <= _currentPage
+                            ? AppTheme.accent
+                            : AppTheme.surface,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -243,9 +257,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     onDietChanged: (v) => setState(() => _dietType = v),
                     onUseChanged: (v) => setState(() => _appUse = v),
                   ),
-                  _Step5Mantra(
-                    mantraController: _mantraController,
-                  ),
+                  _Step5Mantra(mantraController: _mantraController),
                 ],
               ),
             ),
@@ -261,14 +273,22 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppTheme.accent,
                     foregroundColor: AppTheme.background,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
                     elevation: 0,
                   ),
                   child: _isSaving
-                      ? const CircularProgressIndicator(color: AppTheme.background, strokeWidth: 2)
+                      ? const CircularProgressIndicator(
+                          color: AppTheme.background,
+                          strokeWidth: 2,
+                        )
                       : Text(
                           _currentPage == 4 ? "Let's Go" : 'Continue',
-                          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                 ),
               ),
@@ -315,33 +335,79 @@ class _Step1Basics extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('The Basics', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+          const Text(
+            'The Basics',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 6),
-          const Text("Let's start with who you are.", style: TextStyle(color: AppTheme.textSecondary)),
+          const Text(
+            "Let's start with who you are.",
+            style: TextStyle(color: AppTheme.textSecondary),
+          ),
           const SizedBox(height: 32),
 
-          _OField(label: 'Your name', controller: nameController, onChanged: (_) => onFieldChanged()),
+          _OField(
+            label: 'Your name',
+            controller: nameController,
+            onChanged: (_) => onFieldChanged(),
+          ),
           const SizedBox(height: 16),
-          _OField(label: 'Age', controller: ageController, keyboardType: TextInputType.number, onChanged: (_) => onFieldChanged()),
+          _OField(
+            label: 'Age',
+            controller: ageController,
+            keyboardType: TextInputType.number,
+            onChanged: (_) => onFieldChanged(),
+          ),
           const SizedBox(height: 16),
 
           // Gender toggle
-          const Text('Gender', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+          const Text(
+            'Gender',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
-              _GenderChip(label: 'Male', value: 'male', selected: gender, onTap: onGenderChanged),
+              _GenderChip(
+                label: 'Male',
+                value: 'male',
+                selected: gender,
+                onTap: onGenderChanged,
+              ),
               const SizedBox(width: 12),
-              _GenderChip(label: 'Female', value: 'female', selected: gender, onTap: onGenderChanged),
+              _GenderChip(
+                label: 'Female',
+                value: 'female',
+                selected: gender,
+                onTap: onGenderChanged,
+              ),
             ],
           ),
           const SizedBox(height: 16),
 
           Row(
             children: [
-              Expanded(child: _OField(label: 'Height (cm)', controller: heightController, keyboardType: TextInputType.number, onChanged: (_) => onFieldChanged())),
+              Expanded(
+                child: _OField(
+                  label: 'Height (cm)',
+                  controller: heightController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => onFieldChanged(),
+                ),
+              ),
               const SizedBox(width: 12),
-              Expanded(child: _OField(label: 'Weight (kg)', controller: weightController, keyboardType: TextInputType.number, onChanged: (_) => onFieldChanged())),
+              Expanded(
+                child: _OField(
+                  label: 'Weight (kg)',
+                  controller: weightController,
+                  keyboardType: TextInputType.number,
+                  onChanged: (_) => onFieldChanged(),
+                ),
+              ),
             ],
           ),
 
@@ -362,7 +428,10 @@ class _Step1Basics extends StatelessWidget {
                   const Text('Your BMI', style: TextStyle(color: Colors.white)),
                   Text(
                     '${bmi.toStringAsFixed(1)}  •  $bmiCategory',
-                    style: TextStyle(color: bmiColor, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: bmiColor,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ],
               ),
@@ -411,8 +480,12 @@ class _Step2GoalState extends State<_Step2Goal> {
     final goal = _goalWeight;
     if (goal <= 0 || widget.currentWeight <= 0) return '';
     final diff = (goal - widget.currentWeight).abs();
-    if (goal < widget.currentWeight) return 'Lose ${diff.toStringAsFixed(1)} kg';
-    if (goal > widget.currentWeight) return 'Gain ${diff.toStringAsFixed(1)} kg';
+    if (goal < widget.currentWeight) {
+      return 'Lose ${diff.toStringAsFixed(1)} kg';
+    }
+    if (goal > widget.currentWeight) {
+      return 'Gain ${diff.toStringAsFixed(1)} kg';
+    }
     return 'Maintain weight';
   }
 
@@ -420,7 +493,10 @@ class _Step2GoalState extends State<_Step2Goal> {
     if (widget.height <= 0 || widget.currentWeight <= 0) return 2000;
     double bmr = widget.gender == 'male'
         ? 10 * widget.currentWeight + 6.25 * widget.height - 5 * widget.age + 5
-        : 10 * widget.currentWeight + 6.25 * widget.height - 5 * widget.age - 161;
+        : 10 * widget.currentWeight +
+              6.25 * widget.height -
+              5 * widget.age -
+              161;
     return bmr * 1.55; // moderate activity default
   }
 
@@ -433,24 +509,39 @@ class _Step2GoalState extends State<_Step2Goal> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Your Goal',
-              style: TextStyle(fontSize: 28,
-                  fontWeight: FontWeight.bold, color: Colors.white)),
+          const Text(
+            'Your Goal',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 6),
-          const Text('Where do you want to be?',
-              style: TextStyle(color: AppTheme.textSecondary)),
+          const Text(
+            'Where do you want to be?',
+            style: TextStyle(color: AppTheme.textSecondary),
+          ),
           const SizedBox(height: 32),
 
           if (widget.currentWeight > 0)
             Padding(
               padding: const EdgeInsets.only(bottom: 16),
-              child: Row(children: [
-                const Text('Current weight: ',
-                    style: TextStyle(color: AppTheme.textSecondary)),
-                Text('${widget.currentWeight.toStringAsFixed(1)} kg',
+              child: Row(
+                children: [
+                  const Text(
+                    'Current weight: ',
+                    style: TextStyle(color: AppTheme.textSecondary),
+                  ),
+                  Text(
+                    '${widget.currentWeight.toStringAsFixed(1)} kg',
                     style: const TextStyle(
-                        color: Colors.white, fontWeight: FontWeight.bold)),
-              ]),
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
 
           _OField(
@@ -473,31 +564,42 @@ class _Step2GoalState extends State<_Step2Goal> {
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
               ),
-              child: Text(_goalLabel,
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                      color: AppTheme.accent,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16)),
+              child: Text(
+                _goalLabel,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
             ),
           ],
 
           if (showPace) ...[
             const SizedBox(height: 24),
-            const Text('Choose your pace',
-                style: TextStyle(color: Colors.white,
-                    fontWeight: FontWeight.bold, fontSize: 15)),
+            const Text(
+              'Choose your pace',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
             const SizedBox(height: 4),
-            const Text('How fast do you want to reach your goal?',
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+            const Text(
+              'How fast do you want to reach your goal?',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
             const SizedBox(height: 16),
             GoalPaceSlider(
-              weight:            widget.currentWeight,
-              goalWeight:        _goalWeight,
-              tdee:              _tdeeEstimate,
-              initialPace:       widget.goalPace,
-              onPaceChanged:     widget.onPaceChanged,
-              onCaloriesChanged: (_) {}, // calories computed server-side in fromOnboarding
+              weight: widget.currentWeight,
+              goalWeight: _goalWeight,
+              tdee: _tdeeEstimate,
+              initialPace: widget.goalPace,
+              onPaceChanged: widget.onPaceChanged,
+              onCaloriesChanged:
+                  (_) {}, // calories computed server-side in fromOnboarding
             ),
           ],
 
@@ -507,7 +609,6 @@ class _Step2GoalState extends State<_Step2Goal> {
     );
   }
 }
-
 
 // ─────────────────────────────────────────────
 // STEP 3: Activity Level
@@ -533,19 +634,31 @@ class _Step3Activity extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Activity Level', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
-          const SizedBox(height: 6),
-          const Text('How active are you on a typical week?', style: TextStyle(color: AppTheme.textSecondary)),
-          const SizedBox(height: 32),
-          ..._options.map((o) => Padding(
-            padding: const EdgeInsets.only(bottom: 12),
-            child: _SelectionTile(
-              title: o.$2,
-              subtitle: o.$3,
-              isSelected: selected == o.$1,
-              onTap: () => onChanged(o.$1),
+          const Text(
+            'Activity Level',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
             ),
-          )),
+          ),
+          const SizedBox(height: 6),
+          const Text(
+            'How active are you on a typical week?',
+            style: TextStyle(color: AppTheme.textSecondary),
+          ),
+          const SizedBox(height: 32),
+          ..._options.map(
+            (o) => Padding(
+              padding: const EdgeInsets.only(bottom: 12),
+              child: _SelectionTile(
+                title: o.$2,
+                subtitle: o.$3,
+                isSelected: selected == o.$1,
+                onTap: () => onChanged(o.$1),
+              ),
+            ),
+          ),
         ],
       ),
     );
@@ -575,43 +688,63 @@ class _Step4DietUse extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Diet & Goals', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+          const Text(
+            'Diet & Goals',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 6),
-          const Text('Help us tailor your macros.', style: TextStyle(color: AppTheme.textSecondary)),
+          const Text(
+            'Help us tailor your macros.',
+            style: TextStyle(color: AppTheme.textSecondary),
+          ),
           const SizedBox(height: 32),
 
-          const Text('Diet type', style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+          const Text(
+            'Diet type',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          ),
           const SizedBox(height: 10),
           ...([
             ('nonveg', 'Non-Vegetarian', 'Includes meat, fish, eggs'),
             ('veg', 'Vegetarian', 'No meat or fish'),
             ('vegan', 'Vegan', 'No animal products'),
-          ]).map((o) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: _SelectionTile(
-              title: o.$2,
-              subtitle: o.$3,
-              isSelected: dietType == o.$1,
-              onTap: () => onDietChanged(o.$1),
+          ]).map(
+            (o) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _SelectionTile(
+                title: o.$2,
+                subtitle: o.$3,
+                isSelected: dietType == o.$1,
+                onTap: () => onDietChanged(o.$1),
+              ),
             ),
-          )),
+          ),
 
           const SizedBox(height: 24),
-          const Text("What's the app for?", style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+          const Text(
+            "What's the app for?",
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          ),
           const SizedBox(height: 10),
           ...([
             ('both', 'Macros + Gym', 'Track food and workouts'),
             ('macros', 'Macros Only', 'Just track nutrition'),
             ('gym', 'Gym Only', 'Just track workouts'),
-          ]).map((o) => Padding(
-            padding: const EdgeInsets.only(bottom: 10),
-            child: _SelectionTile(
-              title: o.$2,
-              subtitle: o.$3,
-              isSelected: appUse == o.$1,
-              onTap: () => onUseChanged(o.$1),
+          ]).map(
+            (o) => Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: _SelectionTile(
+                title: o.$2,
+                subtitle: o.$3,
+                isSelected: appUse == o.$1,
+                onTap: () => onUseChanged(o.$1),
+              ),
             ),
-          )),
+          ),
         ],
       ),
     );
@@ -633,9 +766,19 @@ class _Step5Mantra extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('One Last Thing', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.white)),
+          const Text(
+            'One Last Thing',
+            style: TextStyle(
+              fontSize: 28,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
           const SizedBox(height: 6),
-          const Text("What do you want to hear when you're struggling?", style: TextStyle(color: AppTheme.textSecondary)),
+          const Text(
+            "What do you want to hear when you're struggling?",
+            style: TextStyle(color: AppTheme.textSecondary),
+          ),
           const SizedBox(height: 32),
 
           TextField(
@@ -644,14 +787,24 @@ class _Step5Mantra extends StatelessWidget {
             maxLines: 3,
             textCapitalization: TextCapitalization.sentences,
             decoration: InputDecoration(
-              hintText: '"Every rep counts." / "You showed up." / "Keep going."',
-              hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+              hintText:
+                  '"Every rep counts." / "You showed up." / "Keep going."',
+              hintStyle: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 14,
+              ),
               filled: true,
               fillColor: AppTheme.surface,
-              border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(16),
+                borderSide: BorderSide.none,
+              ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                borderSide: const BorderSide(
+                  color: AppTheme.accent,
+                  width: 1.5,
+                ),
               ),
             ),
           ),
@@ -698,7 +851,10 @@ class _OField extends StatelessWidget {
         labelStyle: const TextStyle(color: AppTheme.textSecondary),
         filled: true,
         fillColor: AppTheme.surface,
-        border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
@@ -714,7 +870,12 @@ class _GenderChip extends StatelessWidget {
   final String selected;
   final ValueChanged<String> onTap;
 
-  const _GenderChip({required this.label, required this.value, required this.selected, required this.onTap});
+  const _GenderChip({
+    required this.label,
+    required this.value,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -726,12 +887,23 @@ class _GenderChip extends StatelessWidget {
           duration: const Duration(milliseconds: 200),
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.accent.withOpacity(0.15) : AppTheme.surface,
+            color: isSelected
+                ? AppTheme.accent.withOpacity(0.15)
+                : AppTheme.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: isSelected ? AppTheme.accent : Colors.transparent, width: 1.5),
+            border: Border.all(
+              color: isSelected ? AppTheme.accent : Colors.transparent,
+              width: 1.5,
+            ),
           ),
           alignment: Alignment.center,
-          child: Text(label, style: TextStyle(color: isSelected ? AppTheme.accent : AppTheme.textSecondary, fontWeight: FontWeight.bold)),
+          child: Text(
+            label,
+            style: TextStyle(
+              color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ),
       ),
     );
@@ -744,7 +916,12 @@ class _SelectionTile extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _SelectionTile({required this.title, required this.subtitle, required this.isSelected, required this.onTap});
+  const _SelectionTile({
+    required this.title,
+    required this.subtitle,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -754,9 +931,14 @@ class _SelectionTile extends StatelessWidget {
         duration: const Duration(milliseconds: 200),
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: isSelected ? AppTheme.accent.withOpacity(0.1) : AppTheme.surface,
+          color: isSelected
+              ? AppTheme.accent.withOpacity(0.1)
+              : AppTheme.surface,
           borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: isSelected ? AppTheme.accent : Colors.transparent, width: 1.5),
+          border: Border.all(
+            color: isSelected ? AppTheme.accent : Colors.transparent,
+            width: 1.5,
+          ),
         ),
         child: Row(
           children: [
@@ -764,9 +946,21 @@ class _SelectionTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(title, style: TextStyle(color: isSelected ? AppTheme.accent : Colors.white, fontWeight: FontWeight.bold)),
+                  Text(
+                    title,
+                    style: TextStyle(
+                      color: isSelected ? AppTheme.accent : Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
             ),

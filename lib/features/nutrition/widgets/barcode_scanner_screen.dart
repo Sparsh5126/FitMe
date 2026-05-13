@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import '../../../core/theme/app_theme.dart';
-import '../models/food_item.dart';
-import '../services/food_search_service.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/services/food_search_service.dart';
 
 /// Full-screen barcode scanner.
 ///
@@ -63,8 +63,9 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
     // Lookup product. lookupBarcode has its own 2s+2s internal timeouts.
     FoodItem? food;
     try {
-      food = await FoodSearchService.lookupBarcode(raw)
-          .timeout(const Duration(seconds: 5));
+      food = await FoodSearchService.lookupBarcode(
+        raw,
+      ).timeout(const Duration(seconds: 5));
     } catch (_) {
       food = null;
     }
@@ -112,10 +113,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
       body: Stack(
         children: [
           // ── Camera — stays alive throughout all states ──────────────────
-          MobileScanner(
-            controller: _ctrl,
-            onDetect: _onDetect,
-          ),
+          MobileScanner(controller: _ctrl, onDetect: _onDetect),
 
           // ── Viewfinder frame ────────────────────────────────────────────
           if (!isNotFound)
@@ -126,9 +124,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                 height: 160,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: isFetching
-                        ? Colors.white24
-                        : AppTheme.accent,
+                    color: isFetching ? Colors.white24 : AppTheme.accent,
                     width: 2,
                   ),
                   borderRadius: BorderRadius.circular(14),
@@ -156,12 +152,15 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
               alignment: Alignment.center,
               child: Container(
                 padding: const EdgeInsets.symmetric(
-                    horizontal: 32, vertical: 28),
+                  horizontal: 32,
+                  vertical: 28,
+                ),
                 decoration: BoxDecoration(
                   color: const Color(0xFF1A2332),
                   borderRadius: BorderRadius.circular(18),
                   border: Border.all(
-                      color: AppTheme.accent.withValues(alpha: 0.3)),
+                    color: AppTheme.accent.withValues(alpha: 0.3),
+                  ),
                 ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -174,15 +173,18 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                     const Text(
                       'Fetching food…',
                       style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600),
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     const Text(
                       'Looking up product details',
                       style: TextStyle(
-                          color: AppTheme.textSecondary, fontSize: 13),
+                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
@@ -200,12 +202,12 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                   child: SafeArea(
                     child: Container(
                       width: double.infinity,
-                      padding:
-                          const EdgeInsets.fromLTRB(24, 24, 24, 28),
+                      padding: const EdgeInsets.fromLTRB(24, 24, 24, 28),
                       decoration: const BoxDecoration(
                         color: Color(0xFF1A2332),
                         borderRadius: BorderRadius.vertical(
-                            top: Radius.circular(24)),
+                          top: Radius.circular(24),
+                        ),
                       ),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
@@ -215,71 +217,84 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                             width: 40,
                             height: 4,
                             decoration: BoxDecoration(
-                                color: Colors.white24,
-                                borderRadius: BorderRadius.circular(2)),
+                              color: Colors.white24,
+                              borderRadius: BorderRadius.circular(2),
+                            ),
                           ),
                           const SizedBox(height: 20),
-                          const Icon(Icons.search_off_rounded,
-                              color: Colors.white38, size: 44),
+                          const Icon(
+                            Icons.search_off_rounded,
+                            color: Colors.white38,
+                            size: 44,
+                          ),
                           const SizedBox(height: 14),
                           const Text(
                             'Product not found',
                             style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                           const SizedBox(height: 6),
                           const Text(
                             "This product isn't in our database yet.\nYou can search by name or add it manually.",
                             textAlign: TextAlign.center,
                             style: TextStyle(
-                                color: AppTheme.textSecondary,
-                                fontSize: 13,
-                                height: 1.5),
+                              color: AppTheme.textSecondary,
+                              fontSize: 13,
+                              height: 1.5,
+                            ),
                           ),
                           const SizedBox(height: 28),
-                          Row(children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: () =>
-                                    Navigator.pop(context, null),
-                                icon: const Icon(Icons.search_rounded,
-                                    size: 18),
-                                label: const Text('Search by Name'),
-                                style: OutlinedButton.styleFrom(
-                                  foregroundColor: Colors.white,
-                                  side: const BorderSide(
-                                      color: Colors.white24),
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12)),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: () => Navigator.pop(context, null),
+                                  icon: const Icon(
+                                    Icons.search_rounded,
+                                    size: 18,
+                                  ),
+                                  label: const Text('Search by Name'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    side: const BorderSide(
+                                      color: Colors.white24,
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: ElevatedButton.icon(
-                                onPressed: _rescan,
-                                icon: const Icon(
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: ElevatedButton.icon(
+                                  onPressed: _rescan,
+                                  icon: const Icon(
                                     Icons.qr_code_scanner_rounded,
-                                    size: 18),
-                                label: const Text('Rescan'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.accent,
-                                  foregroundColor: AppTheme.background,
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 14),
-                                  elevation: 0,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius:
-                                          BorderRadius.circular(12)),
+                                    size: 18,
+                                  ),
+                                  label: const Text('Rescan'),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.accent,
+                                    foregroundColor: AppTheme.background,
+                                    padding: const EdgeInsets.symmetric(
+                                      vertical: 14,
+                                    ),
+                                    elevation: 0,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ]),
+                            ],
+                          ),
                         ],
                       ),
                     ),

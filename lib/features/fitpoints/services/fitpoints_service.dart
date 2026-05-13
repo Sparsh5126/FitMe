@@ -46,9 +46,12 @@ class FitPointsService {
 
     final doc = await _db.collection('users').doc(userId).collection('gamification').doc('fitpoints').get();
     if (!doc.exists || doc.data() == null) {
-      return FitPointsRecord.newGuest(userId);
+      debugPrint('[FitPointsService] No record found for $userId, returning fresh');
+      return FitPointsRecord.newGuest(userId).copyWith(isGuest: false);
     }
-    return FitPointsRecord.fromJson(doc.data()!);
+    final r = FitPointsRecord.fromJson(doc.data()!);
+    debugPrint('[FitPointsService] Fetched record for $userId: balance=${r.currentBalance}, lifetime=${r.lifetimePoints}');
+    return r;
   }
 
   /// Saves or updates the FitPointsRecord.
@@ -61,13 +64,53 @@ class FitPointsService {
     await _db.collection('users').doc(record.userId).collection('gamification').doc('fitpoints').set(record.toJson());
   }
 
+  /// Returns all FitPoint transactions for today for a given user.
+  Future<List<FitPointTransaction>> getTodayTransactions(String userId, bool isGuest) async {
+    if (isGuest || userId.isEmpty) {
+      // For guests, we could implement local storage for transactions, 
+      // but for now we return empty to avoid breaking the flow.
+      return [];
+    }
+
+    final now = DateTime.now();
+    final startOfDay = DateTime(now.year, now.month, now.day);
+    
+    final query = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('gamification')
+        .doc('fitpoints')
+        .collection('transactions')
+        .where('timestamp', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
+        .get();
+
+    return query.docs.map((doc) => FitPointTransaction.fromJson(doc.data())).toList();
+  }
+
+  /// Returns recent FitPoint transactions for a user.
+  Future<List<FitPointTransaction>> getRecentTransactions(String userId, int limit) async {
+    if (userId.isEmpty) return [];
+    
+    final query = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('gamification')
+        .doc('fitpoints')
+        .collection('transactions')
+        .orderBy('timestamp', descending: true)
+        .limit(limit)
+        .get();
+
+    return query.docs.map((doc) => FitPointTransaction.fromJson(doc.data())).toList();
+  }
+
   // ─── Daily Caps ───────────────────────────────────────────────────────────
 
   /// Max base FP (before multipliers) per day
   static const double _dailyBaseCap = 20.0;
 
   /// Hard cap including multipliers (Legendary tier max)
-  static const double _dailyAbsoluteCap = 125.0;
+  static const double _dailyAbsoluteCap = 160.0;
 
   // ─── Duplicate Detection ─────────────────────────────────────────────────
 
@@ -95,6 +138,8 @@ class FitPointsService {
     List<MealLogEntry> todayLogs = const [],
     MealLogEntry? targetMeal,
     List<FitPointTransaction> monthlyTransactions = const [],
+    double? calorieTarget,
+    double? proteinTarget,
   }) {
     _log('Evaluating action: ${action.name} for user $userId');
 
@@ -168,6 +213,8 @@ class FitPointsService {
       action: action,
       todayLogs: todayLogs,
       record: record,
+      calorieTarget: calorieTarget,
+      proteinTarget: proteinTarget,
     );
 
     double finalPoints = basePoints * streakMultiplier * qualityModifier;
@@ -342,6 +389,8 @@ class FitPointsService {
     required FitPointAction action,
     required List<MealLogEntry> todayLogs,
     required FitPointsRecord record,
+    double? calorieTarget,
+    double? proteinTarget,
   }) {
     // Quality only meaningfully applies to nutrition actions
     const nutritionActions = {
@@ -355,14 +404,14 @@ class FitPointsService {
     if (!nutritionActions.contains(action)) return 1.0;
     if (todayLogs.isEmpty) return LoggingQuality.normal.modifier;
 
-    // Approximate goals from record context (caller can override via subclass if needed)
-    const defaultCalorieTarget = 2000.0;
-    const defaultProteinTarget = 150.0;
+    // Use provided targets or fallback to record context
+    final calTarget = calorieTarget ?? 2000.0;
+    final proTarget = proteinTarget ?? 150.0;
 
     final quality = _consistencyEngine.evaluateLoggingQuality(
       todayLogs: todayLogs,
-      dailyCalorieTarget: defaultCalorieTarget,
-      dailyProteinTarget: defaultProteinTarget,
+      dailyCalorieTarget: calTarget,
+      dailyProteinTarget: proTarget,
     );
 
     return quality.modifier;

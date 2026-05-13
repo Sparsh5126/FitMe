@@ -1,13 +1,23 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import '../models/food_item.dart';
-import 'food_knowledge_resolver.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/services/food_knowledge_resolver.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // ENUMS / RESULT TYPES (kept for backward-compat with log_sheet, custom_meal_form)
 // ─────────────────────────────────────────────────────────────────────────────
-enum FoodSource { favorites, recents, custom, commonDb, off, usda, gemini, command, none }
+enum FoodSource {
+  favorites,
+  recents,
+  custom,
+  commonDb,
+  off,
+  usda,
+  gemini,
+  command,
+  none,
+}
 
 class FoodSearchResult {
   final List<FoodItem> foods;
@@ -45,7 +55,9 @@ class FoodSearchService {
     required List<FoodItem> customMeals,
     required List<FoodItem> commonFoods,
   }) async {
-    if (query.trim().isEmpty) return const FoodSearchResult([], FoodSource.none);
+    if (query.trim().isEmpty) {
+      return const FoodSearchResult([], FoodSource.none);
+    }
     final foods = await FoodKnowledgeResolver.search(
       query: query,
       customs: customMeals,
@@ -72,8 +84,8 @@ class FoodSearchService {
       if (resp.statusCode == 200) {
         final data = jsonDecode(resp.body);
         if (data['status'] == 1) {
-          final p    = data['product'] as Map;
-          final n    = (p['nutriments'] as Map?) ?? {};
+          final p = data['product'] as Map;
+          final n = (p['nutriments'] as Map?) ?? {};
           final name = (p['product_name'] as String? ?? '').trim();
           if (name.isNotEmpty) {
             productName = name;
@@ -84,9 +96,9 @@ class FoodSearchService {
                 id: 'off_$barcode',
                 name: _capitalize(name),
                 calories: cal,
-                protein:  _nMap(n, ['proteins_100g']),
-                carbs:    _nMap(n, ['carbohydrates_100g']),
-                fats:     _nMap(n, ['fat_100g']),
+                protein: _nMap(n, ['proteins_100g']),
+                carbs: _nMap(n, ['carbohydrates_100g']),
+                fats: _nMap(n, ['fat_100g']),
                 consumedAmount: 100,
                 consumedUnit: 'g',
               );

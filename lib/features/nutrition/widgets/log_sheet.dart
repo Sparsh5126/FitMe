@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../models/food_item.dart';
-import '../providers/nutrition_provider.dart';
-import '../services/food_search_service.dart';
-import '../screens/quantity_selection_screen.dart';
-import '../screens/favorites_screen.dart';
-import 'barcode_scanner_screen.dart';
-import 'custom_meal_form.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/features/nutrition/services/food_search_service.dart';
+import 'package:fitme/features/nutrition/screens/quantity_selection_screen.dart';
+import 'package:fitme/features/nutrition/screens/favorites_screen.dart';
+import 'package:fitme/features/nutrition/widgets/barcode_scanner_screen.dart';
+import 'package:fitme/features/nutrition/widgets/custom_meal_form.dart';
 
 class LogSheet extends ConsumerStatefulWidget {
   const LogSheet({super.key});
@@ -36,13 +36,10 @@ class _LogSheetState extends ConsumerState<LogSheet>
   List<FoodItem> _searchResults = [];
   bool _isSearching = false;
   bool _hasSearched = false;
-  int _activeTab = 0;
-
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this)
-      ..addListener(() => setState(() => _activeTab = _tabController.index));
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -68,9 +65,9 @@ class _LogSheetState extends ConsumerState<LogSheet>
     }
     setState(() => _isSearching = true);
     _debounce = Timer(const Duration(milliseconds: 500), () async {
-      final recents     = ref.read(recentsProvider).value ?? [];
-      final favorites   = ref.read(favoritesProvider).value ?? [];
-      final customs     = ref.read(customMealsProvider).value ?? [];
+      final recents = ref.read(recentsProvider).value ?? [];
+      final favorites = ref.read(favoritesProvider).value ?? [];
+      final customs = ref.read(customMealsProvider).value ?? [];
       final commonFoods = ref.read(commonFoodsProvider).value ?? [];
 
       final result = await FoodSearchService.logSheetSearch(
@@ -84,16 +81,20 @@ class _LogSheetState extends ConsumerState<LogSheet>
       if (mounted) {
         setState(() {
           _searchResults = result.foods;
-          _isSearching   = false;
-          _hasSearched   = true;
+          _isSearching = false;
+          _hasSearched = true;
         });
       }
     });
   }
 
   void _onFoodTapped(FoodItem food) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuantitySelectionScreen(baseFood: food),
+      ),
+    );
   }
 
   void _toggleFav(FoodItem food) {
@@ -106,18 +107,22 @@ class _LogSheetState extends ConsumerState<LogSheet>
     final food = await BarcodeScannerScreen.scan(context);
     if (!mounted) return;
     if (food != null) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuantitySelectionScreen(baseFood: food),
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final height        = MediaQuery.of(context).size.height * 0.92;
-    final recentFoods   = ref.watch(recentsProvider).value ?? [];
-    final favs          = ref.watch(favoritesProvider).value ?? [];
-    final customFoods   = ref.watch(customMealsProvider).value ?? [];
-    final favNamesSet   = _favNames(favs);
+    final height = MediaQuery.of(context).size.height * 0.92;
+    final recentFoods = ref.watch(recentsProvider).value ?? [];
+    final favs = ref.watch(favoritesProvider).value ?? [];
+    final customFoods = ref.watch(customMealsProvider).value ?? [];
+    final favNamesSet = _favNames(favs);
     final isSearchActive = _searchController.text.isNotEmpty;
 
     return Container(
@@ -126,139 +131,184 @@ class _LogSheetState extends ConsumerState<LogSheet>
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
-      child: Column(children: [
-        const SizedBox(height: 12),
-        Container(width: 40, height: 4,
-            decoration: BoxDecoration(color: AppTheme.surface,
-                borderRadius: BorderRadius.circular(2))),
-        const SizedBox(height: 16),
-
-        // ── Search bar ────────────────────────────────────────────────────
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: TextField(
-            controller: _searchController,
-            onChanged: _onSearchChanged,
-            autofocus: true,
-            style: const TextStyle(color: Colors.white),
-            decoration: InputDecoration(
-              hintText: 'Search food…',
-              hintStyle: const TextStyle(color: AppTheme.textSecondary),
-              prefixIcon: const Icon(Icons.search_rounded,
-                  color: AppTheme.textSecondary),
-              suffixIcon: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  if (_isSearching)
-                    const Padding(
-                      padding: EdgeInsets.all(12),
-                      child: SizedBox(width: 16, height: 16,
-                          child: CircularProgressIndicator(
-                              strokeWidth: 2, color: AppTheme.accent)),
-                    ),
-                  IconButton(
-                    icon: const Icon(Icons.qr_code_scanner_rounded,
-                        color: AppTheme.textSecondary),
-                    onPressed: _openBarcodeScanner,
-                    tooltip: 'Scan barcode',
-                  ),
-                ],
-              ),
-              filled: true, fillColor: AppTheme.surface,
-              border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide.none),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(14),
-                borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
-              ),
+      child: Column(
+        children: [
+          const SizedBox(height: 12),
+          Container(
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(2),
             ),
           ),
-        ),
+          const SizedBox(height: 16),
 
-        const SizedBox(height: 8),
-
-        // ── Favourites shortcut row ───────────────────────────────────────
-        if (!isSearchActive)
+          // ── Search bar ────────────────────────────────────────────────────
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: GestureDetector(
-              onTap: () => FavoritesScreen.push(context),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                decoration: BoxDecoration(
-                  color: AppTheme.accent.withOpacity(0.07),
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.accent.withOpacity(0.2)),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _onSearchChanged,
+              autofocus: true,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Search food…',
+                hintStyle: const TextStyle(color: AppTheme.textSecondary),
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  color: AppTheme.textSecondary,
                 ),
-                child: Row(children: [
-                  const Icon(Icons.favorite_rounded,
-                      color: AppTheme.accent, size: 16),
-                  const SizedBox(width: 10),
-                  Text(
-                    favs.isEmpty
-                        ? 'No favourites yet — tap ♡ on any food'
-                        : '${favs.length} favourite${favs.length == 1 ? '' : 's'} saved',
-                    style: const TextStyle(
-                        color: AppTheme.accent, fontSize: 13,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  const Spacer(),
-                  const Icon(Icons.chevron_right_rounded,
-                      color: AppTheme.accent, size: 18),
-                ]),
-              ),
-            ),
-          ),
-
-        const SizedBox(height: 8),
-
-        // ── Tabs ─────────────────────────────────────────────────────────
-        if (!isSearchActive)
-          TabBar(
-            controller: _tabController,
-            indicatorColor: AppTheme.accent,
-            indicatorWeight: 2,
-            labelColor: AppTheme.accent,
-            unselectedLabelColor: AppTheme.textSecondary,
-            labelStyle:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            tabs: const [Tab(text: 'Recents'), Tab(text: 'Customs')],
-          ),
-
-        Expanded(
-          child: isSearchActive
-              ? _SearchResults(
-                  results: _searchResults,
-                  isLoading: _isSearching,
-                  hasSearched: _hasSearched,
-                  favNames: favNamesSet,
-                  onTap: _onFoodTapped,
-                  onFavToggle: _toggleFav,
-                )
-              : TabBarView(
-                  controller: _tabController,
+                suffixIcon: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    _RecentsTab(
-                      foods: recentFoods,
-                      favNames: favNamesSet,
-                      onTap: _onFoodTapped,
-                      onFavToggle: _toggleFav,
-                      onCopyYesterday: () {
-                        ref.read(foodActionsProvider).copyYesterdayMeals();
-                        Navigator.pop(context);
-                      },
-                    ),
-                    _CustomsTab(
-                      customFoods: customFoods,
-                      favNames: favNamesSet,
-                      onTap: _onFoodTapped,
-                      onFavToggle: _toggleFav,
+                    if (_isSearching)
+                      const Padding(
+                        padding: EdgeInsets.all(12),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.accent,
+                          ),
+                        ),
+                      ),
+                    IconButton(
+                      icon: const Icon(
+                        Icons.qr_code_scanner_rounded,
+                        color: AppTheme.textSecondary,
+                      ),
+                      onPressed: _openBarcodeScanner,
+                      tooltip: 'Scan barcode',
                     ),
                   ],
                 ),
-        ),
-      ]),
+                filled: true,
+                fillColor: AppTheme.surface,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: const BorderSide(
+                    color: AppTheme.accent,
+                    width: 1.5,
+                  ),
+                ),
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 8),
+
+          // ── Favourites shortcut row ───────────────────────────────────────
+          if (!isSearchActive)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: GestureDetector(
+                onTap: () => FavoritesScreen.push(context),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 14,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.accent.withOpacity(0.07),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: AppTheme.accent.withOpacity(0.2)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.favorite_rounded,
+                        color: AppTheme.accent,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        favs.isEmpty
+                            ? 'No favourites yet — tap ♡ on any food'
+                            : '${favs.length} favourite${favs.length == 1 ? '' : 's'} saved',
+                        style: const TextStyle(
+                          color: AppTheme.accent,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const Spacer(),
+                      const Icon(
+                        Icons.chevron_right_rounded,
+                        color: AppTheme.accent,
+                        size: 18,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+          const SizedBox(height: 8),
+
+          // ── Tabs ─────────────────────────────────────────────────────────
+          if (!isSearchActive)
+            RepaintBoundary(
+              child: TabBar(
+                controller: _tabController,
+                indicatorColor: AppTheme.accent,
+                indicatorWeight: 2,
+                labelColor: AppTheme.accent,
+                unselectedLabelColor: AppTheme.textSecondary,
+                labelStyle: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+                tabs: const [
+                  Tab(text: 'Recents'),
+                  Tab(text: 'Customs'),
+                ],
+              ),
+            ),
+
+          Expanded(
+            child: isSearchActive
+                ? RepaintBoundary(
+                    child: _SearchResults(
+                      results: _searchResults,
+                      isLoading: _isSearching,
+                      hasSearched: _hasSearched,
+                      favNames: favNamesSet,
+                      onTap: _onFoodTapped,
+                      onFavToggle: _toggleFav,
+                    ),
+                  )
+                : RepaintBoundary(
+                    child: TabBarView(
+                      controller: _tabController,
+                      children: [
+                        _RecentsTab(
+                          foods: recentFoods,
+                          favNames: favNamesSet,
+                          onTap: _onFoodTapped,
+                          onFavToggle: _toggleFav,
+                          onCopyYesterday: () {
+                            ref.read(foodActionsProvider).copyYesterdayMeals();
+                            Navigator.pop(context);
+                          },
+                        ),
+                        _CustomsTab(
+                          customFoods: customFoods,
+                          favNames: favNamesSet,
+                          onTap: _onFoodTapped,
+                          onFavToggle: _toggleFav,
+                        ),
+                      ],
+                    ),
+                  ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -274,25 +324,40 @@ class _SearchResults extends StatelessWidget {
   final ValueChanged<FoodItem> onFavToggle;
 
   const _SearchResults({
-    required this.results, required this.isLoading, required this.hasSearched,
-    required this.favNames, required this.onTap, required this.onFavToggle,
+    required this.results,
+    required this.isLoading,
+    required this.hasSearched,
+    required this.favNames,
+    required this.onTap,
+    required this.onFavToggle,
   });
 
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
       return const Center(
-          child: CircularProgressIndicator(color: AppTheme.accent));
+        child: CircularProgressIndicator(color: AppTheme.accent),
+      );
     }
     if (hasSearched && results.isEmpty) {
       return const Center(
-        child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          Text('Nothing found.', style: TextStyle(
-              color: Colors.white, fontWeight: FontWeight.bold)),
-          SizedBox(height: 6),
-          Text('Try Smart Logger for home-cooked meals.',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-        ]),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Nothing found.',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            SizedBox(height: 6),
+            Text(
+              'Try Smart Logger for home-cooked meals.',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            ),
+          ],
+        ),
       );
     }
     return ListView.builder(
@@ -319,56 +384,90 @@ class _RecentsTab extends StatelessWidget {
   final VoidCallback onCopyYesterday;
 
   const _RecentsTab({
-    required this.foods, required this.favNames, required this.onTap,
-    required this.onFavToggle, required this.onCopyYesterday,
+    required this.foods,
+    required this.favNames,
+    required this.onTap,
+    required this.onFavToggle,
+    required this.onCopyYesterday,
   });
 
   @override
   Widget build(BuildContext context) {
-    final pinned = foods.where((f) => favNames.contains(f.name.toLowerCase())).toList();
-    final rest   = foods.where((f) => !favNames.contains(f.name.toLowerCase())).toList();
+    final pinned = foods
+        .where((f) => favNames.contains(f.name.toLowerCase()))
+        .toList();
+    final rest = foods
+        .where((f) => !favNames.contains(f.name.toLowerCase()))
+        .toList();
 
-    return Stack(children: [
-      foods.isEmpty
-          ? const Center(child: Text('No recent foods yet.',
-              style: TextStyle(color: AppTheme.textSecondary)))
-          : ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 80),
-              children: [
-                if (pinned.isNotEmpty) ...[
-                  _ListHeader('★  Favourites'),
-                  ...pinned.map((f) => _FoodResultTile(
-                    food: f, isFavorite: true,
-                    onTap: () => onTap(f),
-                    onFavToggle: () => onFavToggle(f),
-                  )),
-                  if (rest.isNotEmpty) _ListHeader('Recent'),
-                ],
-                ...rest.map((f) => _FoodResultTile(
-                  food: f,
-                  isFavorite: favNames.contains(f.name.toLowerCase()),
-                  onTap: () => onTap(f),
-                  onFavToggle: () => onFavToggle(f),
-                )),
-              ],
+    return Stack(
+      children: [
+        foods.isEmpty
+            ? const Center(
+                child: Text(
+                  'No recent foods yet.',
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+              )
+            : ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 80),
+                itemCount: pinned.isEmpty && rest.isEmpty ? 0 : (pinned.length + (pinned.isNotEmpty ? 1 : 0) + rest.length + (pinned.isNotEmpty && rest.isNotEmpty ? 1 : 0)),
+                itemBuilder: (context, index) {
+                  if (pinned.isNotEmpty) {
+                    if (index == 0) return const _ListHeader('★  Favourites');
+                    if (index <= pinned.length) {
+                      final f = pinned[index - 1];
+                      return _FoodResultTile(
+                        food: f,
+                        isFavorite: true,
+                        onTap: () => onTap(f),
+                        onFavToggle: () => onFavToggle(f),
+                      );
+                    }
+                    if (rest.isNotEmpty && index == pinned.length + 1) return const _ListHeader('Recent');
+                    final restIndex = index - pinned.length - (rest.isNotEmpty ? 2 : 1);
+                    if (restIndex >= 0 && restIndex < rest.length) {
+                      final f = rest[restIndex];
+                      return _FoodResultTile(
+                        food: f,
+                        isFavorite: favNames.contains(f.name.toLowerCase()),
+                        onTap: () => onTap(f),
+                        onFavToggle: () => onFavToggle(f),
+                      );
+                    }
+                  } else {
+                    final f = rest[index];
+                    return _FoodResultTile(
+                      food: f,
+                      isFavorite: favNames.contains(f.name.toLowerCase()),
+                      onTap: () => onTap(f),
+                      onFavToggle: () => onFavToggle(f),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+        Positioned(
+          bottom: 16,
+          left: 60,
+          right: 60,
+          child: ElevatedButton.icon(
+            onPressed: onCopyYesterday,
+            icon: const Icon(Icons.copy_rounded, size: 16),
+            label: const Text("Copy Yesterday's Meals"),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.surface,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(14),
+              ),
+              elevation: 0,
             ),
-      Positioned(
-        bottom: 16, left: 60, right: 60,
-        child: ElevatedButton.icon(
-          onPressed: onCopyYesterday,
-          icon: const Icon(Icons.copy_rounded, size: 16),
-          label: const Text("Copy Yesterday's Meals"),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppTheme.surface,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(14)),
-            elevation: 0,
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -382,60 +481,92 @@ class _CustomsTab extends StatelessWidget {
   final ValueChanged<FoodItem> onFavToggle;
 
   const _CustomsTab({
-    required this.customFoods, required this.favNames,
-    required this.onTap, required this.onFavToggle,
+    required this.customFoods,
+    required this.favNames,
+    required this.onTap,
+    required this.onFavToggle,
   });
 
   @override
   Widget build(BuildContext context) {
     final pinned = customFoods
-        .where((f) => favNames.contains(f.name.toLowerCase())).toList();
+        .where((f) => favNames.contains(f.name.toLowerCase()))
+        .toList();
     final rest = customFoods
-        .where((f) => !favNames.contains(f.name.toLowerCase())).toList();
+        .where((f) => !favNames.contains(f.name.toLowerCase()))
+        .toList();
 
-    return Stack(children: [
-      customFoods.isEmpty
-          ? const Center(
-              child: Text('No custom meals yet.\nTap + to create one.',
+    return Stack(
+      children: [
+        customFoods.isEmpty
+            ? const Center(
+                child: Text(
+                  'No custom meals yet.\nTap + to create one.',
                   textAlign: TextAlign.center,
-                  style: TextStyle(color: AppTheme.textSecondary)))
-          : ListView(
-              physics: const BouncingScrollPhysics(),
-              padding: const EdgeInsets.only(bottom: 80),
-              children: [
-                if (pinned.isNotEmpty) ...[
-                  _ListHeader('★  Favourites'),
-                  ...pinned.map((f) => _CustomMealTile(
-                    food: f, isFavorite: true,
-                    onTap: () => onTap(f),
-                    onFavToggle: () => onFavToggle(f),
-                    onEdit: () => CustomMealFormScreen.push(context, existing: f),
-                  )),
-                  if (rest.isNotEmpty) _ListHeader('All Customs'),
-                ],
-                ...rest.map((f) => _CustomMealTile(
-                  food: f,
-                  isFavorite: favNames.contains(f.name.toLowerCase()),
-                  onTap: () => onTap(f),
-                  onFavToggle: () => onFavToggle(f),
-                  onEdit: () => CustomMealFormScreen.push(context, existing: f),
-                )),
-              ],
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+              )
+            : ListView.builder(
+                physics: const BouncingScrollPhysics(),
+                padding: const EdgeInsets.only(bottom: 80),
+                itemCount: pinned.isEmpty && rest.isEmpty ? 0 : (pinned.length + (pinned.isNotEmpty ? 1 : 0) + rest.length + (pinned.isNotEmpty && rest.isNotEmpty ? 1 : 0)),
+                itemBuilder: (context, index) {
+                  if (pinned.isNotEmpty) {
+                    if (index == 0) return const _ListHeader('★  Favourites');
+                    if (index <= pinned.length) {
+                      final f = pinned[index - 1];
+                      return _CustomMealTile(
+                        food: f,
+                        isFavorite: true,
+                        onTap: () => onTap(f),
+                        onFavToggle: () => onFavToggle(f),
+                        onEdit: () => CustomMealFormScreen.push(context, existing: f),
+                      );
+                    }
+                    if (rest.isNotEmpty && index == pinned.length + 1) return const _ListHeader('All Customs');
+                    final restIndex = index - pinned.length - (rest.isNotEmpty ? 2 : 1);
+                    if (restIndex >= 0 && restIndex < rest.length) {
+                      final f = rest[restIndex];
+                      return _CustomMealTile(
+                        food: f,
+                        isFavorite: favNames.contains(f.name.toLowerCase()),
+                        onTap: () => onTap(f),
+                        onFavToggle: () => onFavToggle(f),
+                        onEdit: () => CustomMealFormScreen.push(context, existing: f),
+                      );
+                    }
+                  } else {
+                    final f = rest[index];
+                    return _CustomMealTile(
+                      food: f,
+                      isFavorite: favNames.contains(f.name.toLowerCase()),
+                      onTap: () => onTap(f),
+                      onFavToggle: () => onFavToggle(f),
+                      onEdit: () => CustomMealFormScreen.push(context, existing: f),
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
+        Positioned(
+          bottom: 16,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: FloatingActionButton.extended(
+              onPressed: () => CustomMealFormScreen.push(context),
+              backgroundColor: AppTheme.accent,
+              foregroundColor: AppTheme.background,
+              icon: const Icon(Icons.add_rounded),
+              label: const Text(
+                'New Meal',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
-      Positioned(
-        bottom: 16, left: 0, right: 0,
-        child: Center(
-          child: FloatingActionButton.extended(
-            onPressed: () => CustomMealFormScreen.push(context),
-            backgroundColor: AppTheme.accent,
-            foregroundColor: AppTheme.background,
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('New Meal',
-                style: TextStyle(fontWeight: FontWeight.bold)),
           ),
         ),
-      ),
-    ]);
+      ],
+    );
   }
 }
 
@@ -449,12 +580,15 @@ class _ListHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
-    child: Text(text, style: const TextStyle(
-      color: AppTheme.textSecondary,
-      fontSize: 11,
-      fontWeight: FontWeight.bold,
-      letterSpacing: 0.8,
-    )),
+    child: Text(
+      text,
+      style: const TextStyle(
+        color: AppTheme.textSecondary,
+        fontSize: 11,
+        fontWeight: FontWeight.bold,
+        letterSpacing: 0.8,
+      ),
+    ),
   );
 }
 
@@ -469,39 +603,57 @@ class _CustomMealTile extends StatelessWidget {
   final VoidCallback onEdit;
 
   const _CustomMealTile({
-    required this.food, required this.isFavorite,
-    required this.onTap, required this.onFavToggle, required this.onEdit,
+    required this.food,
+    required this.isFavorite,
+    required this.onTap,
+    required this.onFavToggle,
+    required this.onEdit,
   });
 
   @override
-  Widget build(BuildContext context) => ListTile(
-    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-    title: Text(food.name,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-    subtitle: Text(
-        '${food.protein}g P  ·  ${food.carbs}g C  ·  ${food.fats}g F',
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-      Text('${food.calories} kcal',
-          style: const TextStyle(
-              color: AppTheme.accent, fontWeight: FontWeight.bold)),
-      const SizedBox(width: 6),
-      _HeartButton(isFavorite: isFavorite, onTap: onFavToggle),
-      const SizedBox(width: 6),
-      GestureDetector(
-        onTap: onEdit,
-        child: Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: const Icon(Icons.edit_rounded,
-              size: 16, color: AppTheme.textSecondary),
-        ),
+  Widget build(BuildContext context) => RepaintBoundary(
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      title: Text(
+        food.name,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
       ),
-    ]),
-    onTap: onTap,
+      subtitle: Text(
+        '${food.protein}g P  ·  ${food.carbs}g C  ·  ${food.fats}g F',
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${food.calories} kcal',
+            style: const TextStyle(
+              color: AppTheme.accent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 6),
+          _HeartButton(isFavorite: isFavorite, onTap: onFavToggle),
+          const SizedBox(width: 6),
+          GestureDetector(
+            onTap: onEdit,
+            child: Container(
+              padding: const EdgeInsets.all(6),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Icon(
+                Icons.edit_rounded,
+                size: 16,
+                color: AppTheme.textSecondary,
+              ),
+            ),
+          ),
+        ],
+      ),
+      onTap: onTap,
+    ),
   );
 }
 
@@ -515,26 +667,40 @@ class _FoodResultTile extends StatelessWidget {
   final VoidCallback onFavToggle;
 
   const _FoodResultTile({
-    required this.food, required this.isFavorite,
-    required this.onTap, required this.onFavToggle,
+    required this.food,
+    required this.isFavorite,
+    required this.onTap,
+    required this.onFavToggle,
   });
 
   @override
-  Widget build(BuildContext context) => ListTile(
-    contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-    title: Text(food.name,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-    subtitle: Text(
+  Widget build(BuildContext context) => RepaintBoundary(
+    child: ListTile(
+      contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      title: Text(
+        food.name,
+        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+      ),
+      subtitle: Text(
         '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-    trailing: Row(mainAxisSize: MainAxisSize.min, children: [
-      Text('${food.calories} kcal',
-          style: const TextStyle(
-              color: AppTheme.accent, fontWeight: FontWeight.bold)),
-      const SizedBox(width: 8),
-      _HeartButton(isFavorite: isFavorite, onTap: onFavToggle),
-    ]),
-    onTap: onTap,
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+      ),
+      trailing: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '${food.calories} kcal',
+            style: const TextStyle(
+              color: AppTheme.accent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          const SizedBox(width: 8),
+          _HeartButton(isFavorite: isFavorite, onTap: onFavToggle),
+        ],
+      ),
+      onTap: onTap,
+    ),
   );
 }
 

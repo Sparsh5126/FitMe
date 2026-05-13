@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'food_item.dart';
-import 'custom_meal_ingredient.dart';
-import '../../nutrition/services/food_search_service.dart' show FoodSource;
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/models/custom_meal_ingredient.dart';
+import 'package:fitme/features/nutrition/services/food_search_service.dart' show FoodSource;
 
 // ── Source of a resolved food item ─────────────────────────────────────────
 // Re-exported from FoodSource for convenience.
@@ -70,17 +70,18 @@ class ParsedMealSegment {
   }
 
   Map<String, dynamic> toMap() => {
-        'rawInput': rawInput,
-        'resolvedFood': resolvedFood?.toMap(),
-        'quantity': quantity,
-        'unit': unit,
-        'source': source.name,
-        'confidence': confidence,
-        'requiresAi': requiresAi,
-        'alternatives': alternatives.map((f) => f.toMap()).toList(),
-      };
+    'rawInput': rawInput,
+    'resolvedFood': resolvedFood?.toMap(),
+    'quantity': quantity,
+    'unit': unit,
+    'source': source.name,
+    'confidence': confidence,
+    'requiresAi': requiresAi,
+    'alternatives': alternatives.map((f) => f.toMap()).toList(),
+  };
 
-  factory ParsedMealSegment.fromMap(Map<String, dynamic> m) => ParsedMealSegment(
+  factory ParsedMealSegment.fromMap(Map<String, dynamic> m) =>
+      ParsedMealSegment(
         rawInput: m['rawInput'] as String? ?? '',
         resolvedFood: m['resolvedFood'] != null
             ? FoodItem.fromMap(Map<String, dynamic>.from(m['resolvedFood']))
@@ -93,7 +94,8 @@ class ParsedMealSegment {
         ),
         confidence: (m['confidence'] as num?)?.toDouble() ?? 0.0,
         requiresAi: m['requiresAi'] as bool? ?? false,
-        alternatives: (m['alternatives'] as List?)
+        alternatives:
+            (m['alternatives'] as List?)
                 ?.map((x) => FoodItem.fromMap(Map<String, dynamic>.from(x)))
                 .toList() ??
             [],
@@ -180,31 +182,37 @@ class ParsedMeal {
   }
 
   /// All resolved segments as [CustomMealIngredient] list.
-  List<CustomMealIngredient> toIngredients() =>
-      segments.map((s) => s.toIngredient()).whereType<CustomMealIngredient>().toList();
+  List<CustomMealIngredient> toIngredients() => segments
+      .map((s) => s.toIngredient())
+      .whereType<CustomMealIngredient>()
+      .toList();
 
   // ── Serialization ─────────────────────────────────────────────────────────
 
   Map<String, dynamic> toMap() => {
-        'rawInput': rawInput,
-        'segments': segments.map((s) => s.toMap()).toList(),
-        'parsedAt': parsedAt.millisecondsSinceEpoch,
-      };
+    'rawInput': rawInput,
+    'segments': segments.map((s) => s.toMap()).toList(),
+    'parsedAt': parsedAt.millisecondsSinceEpoch,
+  };
 
   factory ParsedMeal.fromMap(Map<String, dynamic> m) => ParsedMeal(
-        rawInput: m['rawInput'] as String? ?? '',
-        segments: (m['segments'] as List?)
-                ?.map((x) => ParsedMealSegment.fromMap(Map<String, dynamic>.from(x)))
-                .toList() ??
-            [],
-        parsedAt: DateTime.fromMillisecondsSinceEpoch(
-            (m['parsedAt'] as int?) ?? DateTime.now().millisecondsSinceEpoch),
-      );
+    rawInput: m['rawInput'] as String? ?? '',
+    segments:
+        (m['segments'] as List?)
+            ?.map(
+              (x) => ParsedMealSegment.fromMap(Map<String, dynamic>.from(x)),
+            )
+            .toList() ??
+        [],
+    parsedAt: DateTime.fromMillisecondsSinceEpoch(
+      (m['parsedAt'] as int?) ?? DateTime.now().millisecondsSinceEpoch,
+    ),
+  );
 
   /// Empty result returned when input is blank.
   factory ParsedMeal.empty(String rawInput) => ParsedMeal(
-        rawInput: rawInput,
-        segments: const [],
-        parsedAt: DateTime.now(),
-      );
+    rawInput: rawInput,
+    segments: const [],
+    parsedAt: DateTime.now(),
+  );
 }

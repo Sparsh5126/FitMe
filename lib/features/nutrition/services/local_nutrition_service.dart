@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/food_item.dart';
-import '../../../core/models/user_profile.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/core/models/user_profile.dart';
 
 class LocalNutritionService {
   static const _kLogsKey = 'guest_nutrition_logs';
@@ -48,14 +48,20 @@ class LocalNutritionService {
     final prefs = await SharedPreferences.getInstance();
     final logs = await getLogs();
     logs.add(food);
-    await prefs.setStringList(_kLogsKey, logs.map((f) => jsonEncode(f.toMap())).toList());
+    await prefs.setStringList(
+      _kLogsKey,
+      logs.map((f) => jsonEncode(f.toMap())).toList(),
+    );
   }
 
   static Future<void> deleteLog(String id) async {
     final prefs = await SharedPreferences.getInstance();
     final logs = await getLogs();
     logs.removeWhere((f) => f.id == id);
-    await prefs.setStringList(_kLogsKey, logs.map((f) => jsonEncode(f.toMap())).toList());
+    await prefs.setStringList(
+      _kLogsKey,
+      logs.map((f) => jsonEncode(f.toMap())).toList(),
+    );
   }
 
   // ── Recents ─────────────────────────────────────────
@@ -72,7 +78,10 @@ class LocalNutritionService {
     recents.removeWhere((f) => f.name.toLowerCase() == key);
     recents.insert(0, food);
     if (recents.length > 30) recents.removeLast();
-    await prefs.setStringList(_kRecentsKey, recents.map((f) => jsonEncode(f.toMap())).toList());
+    await prefs.setStringList(
+      _kRecentsKey,
+      recents.map((f) => jsonEncode(f.toMap())).toList(),
+    );
   }
 
   // ── Favorites ───────────────────────────────────────
@@ -92,7 +101,10 @@ class LocalNutritionService {
     } else {
       favs.add(food.copyWith(isFavorite: true));
     }
-    await prefs.setStringList(_kFavoritesKey, favs.map((f) => jsonEncode(f.toMap())).toList());
+    await prefs.setStringList(
+      _kFavoritesKey,
+      favs.map((f) => jsonEncode(f.toMap())).toList(),
+    );
   }
 
   // ── Custom Meals ────────────────────────────────────
@@ -108,14 +120,20 @@ class LocalNutritionService {
     final key = food.name.toLowerCase();
     customs.removeWhere((f) => f.name.toLowerCase() == key);
     customs.add(food);
-    await prefs.setStringList(_kCustomsKey, customs.map((f) => jsonEncode(f.toMap())).toList());
+    await prefs.setStringList(
+      _kCustomsKey,
+      customs.map((f) => jsonEncode(f.toMap())).toList(),
+    );
   }
 
   static Future<void> deleteCustomMeal(String name) async {
     final prefs = await SharedPreferences.getInstance();
     final customs = await getCustomMeals();
     customs.removeWhere((f) => f.name.toLowerCase() == name.toLowerCase());
-    await prefs.setStringList(_kCustomsKey, customs.map((f) => jsonEncode(f.toMap())).toList());
+    await prefs.setStringList(
+      _kCustomsKey,
+      customs.map((f) => jsonEncode(f.toMap())).toList(),
+    );
   }
 
   static Future<void> clearAll() async {
@@ -125,5 +143,6 @@ class LocalNutritionService {
     await prefs.remove(_kFavoritesKey);
     await prefs.remove(_kRecentsKey);
     await prefs.remove(_kProfileKey);
+    await prefs.remove(_kFitPointsKey);
   }
 }

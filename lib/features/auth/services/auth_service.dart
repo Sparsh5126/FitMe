@@ -51,10 +51,14 @@ class AuthService {
     final hasLogs = prefs.containsKey('nutrition_logs');
     final hasFavs = prefs.containsKey('recipe_favorites');
     final hasHistory = prefs.containsKey('smart_logger_history');
-    
-    final found = hasLogs || hasFavs || hasHistory;
+    final hasFitPoints = prefs.containsKey('guest_fitpoints');
+
+    final found = hasLogs || hasFavs || hasHistory || hasFitPoints;
     if (found) {
-      dev.log('[AuthService] Guest data detected (logs:$hasLogs, favs:$hasFavs, history:$hasHistory)', name: 'Auth');
+      dev.log(
+        '[AuthService] Guest data detected (logs:$hasLogs, favs:$hasFavs, history:$hasHistory)',
+        name: 'Auth',
+      );
     }
     return found;
   }
@@ -70,10 +74,16 @@ class AuthService {
       final googleUser = await _googleSignIn.signIn();
       if (googleUser == null) {
         dev.log('[AuthService] Google Sign-In cancelled by user', name: 'Auth');
-        return const AuthResult.fail('Sign-in cancelled', AuthErrorType.cancelled);
+        return const AuthResult.fail(
+          'Sign-in cancelled',
+          AuthErrorType.cancelled,
+        );
       }
 
-      dev.log('[AuthService] Got Google account: ${googleUser.email}', name: 'Auth');
+      dev.log(
+        '[AuthService] Got Google account: ${googleUser.email}',
+        name: 'Auth',
+      );
       final googleAuth = await googleUser.authentication;
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
@@ -81,16 +91,25 @@ class AuthService {
       );
 
       final userCred = await _auth.signInWithCredential(credential);
-      dev.log('[AuthService] Firebase sign-in success: ${userCred.user?.uid}', name: 'Auth');
+      dev.log(
+        '[AuthService] Firebase sign-in success: ${userCred.user?.uid}',
+        name: 'Auth',
+      );
 
       await _ensureUserDoc(userCred.user!);
       return const AuthResult.ok();
     } on FirebaseAuthException catch (e) {
-      dev.log('[AuthService] FirebaseAuthException: ${e.code} - ${e.message}', name: 'Auth');
+      dev.log(
+        '[AuthService] FirebaseAuthException: ${e.code} - ${e.message}',
+        name: 'Auth',
+      );
       return AuthResult.fail(_mapError(e), AuthErrorType.invalidCredential);
     } catch (e) {
       dev.log('[AuthService] Unexpected error: $e', name: 'Auth');
-      return AuthResult.fail('Unexpected error. Please try again.', AuthErrorType.unknown);
+      return AuthResult.fail(
+        'Unexpected error. Please try again.',
+        AuthErrorType.unknown,
+      );
     }
   }
 
@@ -102,7 +121,10 @@ class AuthService {
         email: email.trim(),
         password: password,
       );
-      dev.log('[AuthService] Email sign-in success: ${userCred.user?.uid}', name: 'Auth');
+      dev.log(
+        '[AuthService] Email sign-in success: ${userCred.user?.uid}',
+        name: 'Auth',
+      );
       await _ensureUserDoc(userCred.user!);
       return const AuthResult.ok();
     } on FirebaseAuthException catch (e) {
@@ -110,23 +132,33 @@ class AuthService {
       return AuthResult.fail(_mapError(e), AuthErrorType.invalidCredential);
     } catch (e) {
       dev.log('[AuthService] Unexpected error: $e', name: 'Auth');
-      return AuthResult.fail('Unexpected error. Please try again.', AuthErrorType.unknown);
+      return AuthResult.fail(
+        'Unexpected error. Please try again.',
+        AuthErrorType.unknown,
+      );
     }
   }
 
   // ── Email Registration ────────────────────────────────
-  Future<AuthResult> registerWithEmail(String email, String password, String name) async {
+  Future<AuthResult> registerWithEmail(
+    String email,
+    String password,
+    String name,
+  ) async {
     dev.log('[AuthService] Starting email registration: $email', name: 'Auth');
     try {
       final userCred = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
-      dev.log('[AuthService] Registration success: ${userCred.user?.uid}', name: 'Auth');
-      
+      dev.log(
+        '[AuthService] Registration success: ${userCred.user?.uid}',
+        name: 'Auth',
+      );
+
       // Set display name in Firebase Auth
       await userCred.user?.updateDisplayName(name);
-      
+
       await _ensureUserDoc(userCred.user!, displayName: name);
       return const AuthResult.ok();
     } on FirebaseAuthException catch (e) {
@@ -134,7 +166,10 @@ class AuthService {
       return AuthResult.fail(_mapError(e), AuthErrorType.invalidCredential);
     } catch (e) {
       dev.log('[AuthService] Unexpected error: $e', name: 'Auth');
-      return AuthResult.fail('Unexpected error. Please try again.', AuthErrorType.unknown);
+      return AuthResult.fail(
+        'Unexpected error. Please try again.',
+        AuthErrorType.unknown,
+      );
     }
   }
 
@@ -147,7 +182,10 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       return AuthResult.fail(_mapError(e), AuthErrorType.invalidCredential);
     } catch (e) {
-      return AuthResult.fail('Failed to send reset email.', AuthErrorType.unknown);
+      return AuthResult.fail(
+        'Failed to send reset email.',
+        AuthErrorType.unknown,
+      );
     }
   }
 
@@ -164,7 +202,10 @@ class AuthService {
       }
     } catch (e) {
       // Non-fatal — Google may already be signed out
-      dev.log('[AuthService] Google disconnect error (non-fatal): $e', name: 'Auth');
+      dev.log(
+        '[AuthService] Google disconnect error (non-fatal): $e',
+        name: 'Auth',
+      );
     }
 
     // 2. Clear app-level persisted data
@@ -193,7 +234,10 @@ class AuthService {
       dev.log('[AuthService] Session valid for: ${user.uid}', name: 'Auth');
       return true;
     } catch (e) {
-      dev.log('[AuthService] Stale/invalid session detected, signing out: $e', name: 'Auth');
+      dev.log(
+        '[AuthService] Stale/invalid session detected, signing out: $e',
+        name: 'Auth',
+      );
       await signOut();
       return false;
     }
@@ -210,7 +254,10 @@ class AuthService {
         'displayName': displayName ?? user.displayName ?? '',
         'createdAt': FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
-      dev.log('[AuthService] Created Firestore user doc for ${user.uid}', name: 'Auth');
+      dev.log(
+        '[AuthService] Created Firestore user doc for ${user.uid}',
+        name: 'Auth',
+      );
     }
   }
 

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../core/theme/app_theme.dart';
-import 'nutrition/screens/home_screen.dart';
-import 'profile/screens/profile_screen.dart';
-import 'menu/screens/menu_screen.dart';
-import 'insights/screens/insights_screen.dart';
-import 'nutrition/widgets/log_sheet.dart';
-import 'nutrition/widgets/smart_logger_sheet.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/nutrition/screens/home_screen.dart';
+import 'package:fitme/features/profile/screens/profile_screen.dart';
+import 'package:fitme/features/menu/screens/menu_screen.dart';
+import 'package:fitme/features/insights/screens/insights_screen.dart';
+import 'package:fitme/features/nutrition/widgets/log_sheet.dart';
+import 'package:fitme/features/nutrition/widgets/smart_logger_sheet.dart';
 
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key});
@@ -31,10 +31,7 @@ class _AppShellState extends ConsumerState<AppShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: SafeArea(
         child: Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
@@ -64,16 +61,16 @@ class _AppShellState extends ConsumerState<AppShell> {
                   onTap: () => setState(() => _selectedIndex = 1),
                 ),
               ),
-              
+
               // Central Action Button
               Expanded(
                 child: GestureDetector(
                   onTap: () {
                     HapticFeedback.lightImpact();
                     if (_selectedIndex != 2) {
-                       setState(() => _selectedIndex = 2);
+                      setState(() => _selectedIndex = 2);
                     } else {
-                       LogSheet.show(context);
+                      LogSheet.show(context);
                     }
                   },
                   child: Column(
@@ -87,13 +84,29 @@ class _AppShellState extends ConsumerState<AppShell> {
                           shape: BoxShape.circle,
                           border: Border.all(color: AppTheme.accent, width: 2),
                           boxShadow: [
-                            BoxShadow(color: AppTheme.accent.withValues(alpha: 0.3), blurRadius: 12)
+                            BoxShadow(
+                              color: AppTheme.accent.withValues(alpha: 0.3),
+                              blurRadius: 12,
+                            ),
                           ],
                         ),
-                        child: const Icon(Icons.add_rounded, color: AppTheme.accent, size: 28),
+                        child: const Icon(
+                          Icons.add_rounded,
+                          color: AppTheme.accent,
+                          size: 28,
+                        ),
                       ),
                       const SizedBox(height: 4),
-                      Text('Log', style: TextStyle(color: _selectedIndex == 2 ? AppTheme.accent : AppTheme.textSecondary, fontSize: 10, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Log',
+                        style: TextStyle(
+                          color: _selectedIndex == 2
+                              ? AppTheme.accent
+                              : AppTheme.textSecondary,
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                 ),
@@ -155,13 +168,22 @@ class _NavItem extends StatelessWidget {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isSelected ? AppTheme.accent.withValues(alpha: 0.15) : Colors.transparent,
+              color: isSelected
+                  ? AppTheme.accent.withValues(alpha: 0.15)
+                  : Colors.transparent,
               shape: BoxShape.circle,
             ),
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(height: 4),
-          Text(label, style: TextStyle(color: color, fontSize: 10, fontWeight: isSelected ? FontWeight.bold : FontWeight.normal)),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 10,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
         ],
       ),
     );

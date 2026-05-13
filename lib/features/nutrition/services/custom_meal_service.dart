@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/food_item.dart';
-import '../models/custom_meal_ingredient.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/models/custom_meal_ingredient.dart';
 
 /// Handles CRUD for user-created custom recipes / meals stored in Firestore.
 ///
@@ -41,8 +41,10 @@ class CustomMealService {
     final data = doc.data()!;
     final raw = data['ingredientItems'] as List<dynamic>? ?? [];
     return raw
-        .map((e) =>
-            CustomMealIngredient.fromMap(Map<String, dynamic>.from(e as Map)))
+        .map(
+          (e) =>
+              CustomMealIngredient.fromMap(Map<String, dynamic>.from(e as Map)),
+        )
         .toList();
   }
 
@@ -68,14 +70,10 @@ class CustomMealService {
   /// Builds the Firestore map. Stores FoodItem-compatible fields AND the full
   /// ingredient list so the form can reload them in edit mode.
   static Map<String, dynamic> _toMap(String id, CustomMealDraft draft) {
-    final totalCal =
-        draft.ingredients.fold<int>(0, (s, i) => s + i.calories);
-    final totalPro =
-        draft.ingredients.fold<int>(0, (s, i) => s + i.protein);
-    final totalCarb =
-        draft.ingredients.fold<int>(0, (s, i) => s + i.carbs);
-    final totalFat =
-        draft.ingredients.fold<int>(0, (s, i) => s + i.fats);
+    final totalCal = draft.ingredients.fold<int>(0, (s, i) => s + i.calories);
+    final totalPro = draft.ingredients.fold<int>(0, (s, i) => s + i.protein);
+    final totalCarb = draft.ingredients.fold<int>(0, (s, i) => s + i.carbs);
+    final totalFat = draft.ingredients.fold<int>(0, (s, i) => s + i.fats);
 
     final servings = draft.servings > 0 ? draft.servings : 1;
     final calPerServing = (totalCal / servings).round();
@@ -100,13 +98,11 @@ class CustomMealService {
       // Extended fields
       'servings': servings,
       'notes': draft.notes,
-      'ingredientItems':
-          draft.ingredients.map((i) => i.toMap()).toList(),
+      'ingredientItems': draft.ingredients.map((i) => i.toMap()).toList(),
     };
   }
 
-  static FoodItem _foodFromDoc(
-      DocumentSnapshot<Map<String, dynamic>> doc) {
+  static FoodItem _foodFromDoc(DocumentSnapshot<Map<String, dynamic>> doc) {
     return FoodItem.fromMap(doc.data()!, doc.id);
   }
 }

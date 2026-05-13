@@ -26,9 +26,12 @@ class OilLevelSelector extends StatelessWidget {
 
   Color _sliderColor(OilLevel level) {
     switch (level) {
-      case OilLevel.light:  return const Color(0xFF00C7FF); // cyan – light
-      case OilLevel.normal: return AppTheme.accent;          // orange – normal
-      case OilLevel.heavy:  return const Color(0xFFFF453A); // red – heavy
+      case OilLevel.light:
+        return const Color(0xFF00C7FF); // cyan – light
+      case OilLevel.normal:
+        return AppTheme.accent; // orange – normal
+      case OilLevel.heavy:
+        return const Color(0xFFFF453A); // red – heavy
     }
   }
 
@@ -117,8 +120,7 @@ class OilLevelSelector extends StatelessWidget {
                   style: TextStyle(
                     color: isActive ? activeColor : AppTheme.textSecondary,
                     fontSize: 11,
-                    fontWeight:
-                        isActive ? FontWeight.bold : FontWeight.normal,
+                    fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                   ),
                 );
               }),
@@ -132,8 +134,7 @@ class OilLevelSelector extends StatelessWidget {
             duration: const Duration(milliseconds: 200),
             child: Container(
               key: ValueKey(idx),
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               decoration: BoxDecoration(
                 color: activeColor.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(8),
@@ -192,8 +193,7 @@ class OilLevelPills extends StatelessWidget {
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 180),
               margin: EdgeInsets.only(right: i < 2 ? 6 : 0),
-              padding:
-                  const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(vertical: 6),
               decoration: BoxDecoration(
                 color: isActive ? color.withOpacity(0.15) : AppTheme.surface,
                 borderRadius: BorderRadius.circular(8),
@@ -208,8 +208,7 @@ class OilLevelPills extends StatelessWidget {
                 style: TextStyle(
                   color: isActive ? color : AppTheme.textSecondary,
                   fontSize: 11,
-                  fontWeight:
-                      isActive ? FontWeight.bold : FontWeight.normal,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                 ),
               ),
             ),

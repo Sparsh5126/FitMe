@@ -10,6 +10,8 @@ import '../services/consistency_engine.dart';
 
 import '../../nutrition/repositories/nutrition_repository.dart';
 import '../../nutrition/models/food_item.dart';
+import '../../workout/repositories/workout_repository.dart';
+import '../../../core/models/workout.dart';
 
 final consistencyEngineProvider = Provider<ConsistencyEngine>((ref) {
   return ConsistencyEngine();
@@ -27,8 +29,9 @@ final consistencySnapshotProvider = FutureProvider<ConsistencySnapshot>((ref) as
   final engine = ref.watch(consistencyEngineProvider);
   final userProfile = ref.watch(userProfileProvider).value;
   
-  // Re-calculate when nutrition logs change
+  // Re-calculate when nutrition logs or FitPoints balance change
   ref.watch(nutritionProvider);
+  ref.watch(fitPointsProvider);
 
   final userId = authState.value?.uid ?? (isGuest ? 'guest_user' : '');
   if (userId.isEmpty && !isGuest) {
@@ -40,17 +43,46 @@ final consistencySnapshotProvider = FutureProvider<ConsistencySnapshot>((ref) as
 
   // 1. Fetch current FP record
   final record = await service.getRecord(userId, isGuest);
-  debugPrint('[ConsistencySnapshot] Fetched record: balance=${record.currentBalance}, tier=${record.currentTier.displayName}');
+  double currentFP = record.currentBalance;
+  double lifetimeFP = record.lifetimePoints;
+  
+  // FALLBACK: If record shows 0 but we aren't a fresh guest, check for transactions
+  if (currentFP == 0 && userId.isNotEmpty) {
+    try {
+      final txs = await service.getRecentTransactions(userId, 500);
+      if (txs.isNotEmpty) {
+        currentFP = txs.fold(0.0, (sum, t) => sum + t.finalPoints);
+        // Also update lifetimeFP from transactions if it's also 0
+        if (lifetimeFP == 0) {
+          lifetimeFP = currentFP;
+        }
+        debugPrint('[ConsistencySnapshot] Fallback balance recovered from ${txs.length} transactions: $currentFP');
+      }
+    } catch (e) {
+      debugPrint('[ConsistencySnapshot] Fallback recovery failed: $e');
+    }
+  }
 
-  // 2. Fetch historical logs (last 200 days for safety)
+  debugPrint('[ConsistencySnapshot] Fetched record: balance=$currentFP, lifetime=$lifetimeFP, tier=${record.currentTier.displayName}');
+
+  // 2. Fetch historical logs & workouts (last 90 days)
   final repo = NutritionRepository();
+  final workoutRepo = WorkoutRepository();
   final now = DateTime.now();
   final historicalLogs = <String, List<FoodItem>>{};
+  final historicalWorkouts = <String, List<Workout>>{};
   
-  // Optimization: Fetch all logs in one query for the last 90 days
-  debugPrint('[ConsistencySnapshot] Fetching historical logs for last 90 days in batch...');
   final startDate = now.subtract(const Duration(days: 89));
+  
+  debugPrint('[ConsistencySnapshot] Fetching historical logs & workouts...');
   final allLogs = await repo.getLogsForRange(startDate, now);
+  
+  List<Workout> allWorkouts = [];
+  try {
+    allWorkouts = await workoutRepo.getWorkoutsForRange(startDate, now);
+  } catch (e) {
+    debugPrint('[ConsistencySnapshot] Error fetching workouts: $e. Continuing with logs only.');
+  }
   
   for (final log in allLogs) {
     if (!historicalLogs.containsKey(log.dateString)) {
@@ -58,7 +90,15 @@ final consistencySnapshotProvider = FutureProvider<ConsistencySnapshot>((ref) as
     }
     historicalLogs[log.dateString]!.add(log);
   }
-  debugPrint('[ConsistencySnapshot] Fetched ${allLogs.length} logs across ${historicalLogs.keys.length} days');
+  
+  for (final w in allWorkouts) {
+    if (!historicalWorkouts.containsKey(w.dateString)) {
+      historicalWorkouts[w.dateString] = [];
+    }
+    historicalWorkouts[w.dateString]!.add(w);
+  }
+  
+  debugPrint('[ConsistencySnapshot] Data fetched: ${allLogs.length} logs, ${allWorkouts.length} workouts');
 
   // 3. Prepare goals
   final goals = <String, Map<String, double>>{};
@@ -80,8 +120,10 @@ final consistencySnapshotProvider = FutureProvider<ConsistencySnapshot>((ref) as
     userId: userId,
     isGuest: isGuest,
     historicalLogs: historicalLogs,
+    historicalWorkouts: historicalWorkouts,
     dailyGoals: goals,
-    currentFitPoints: record.currentBalance,
+    currentFitPoints: currentFP,
+    lifetimePoints: lifetimeFP,
     currentMomentum: record.momentumScore,
   );
   

@@ -5,23 +5,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'core/theme/app_theme.dart';
-import 'features/app_shell.dart';
-import 'features/auth/providers/auth_provider.dart';
-import 'features/auth/screens/login_screen.dart';
-import 'features/onboarding/onboarding_screen.dart';
-import 'features/dashboard/providers/user_provider.dart';
-import 'features/auth/widgets/migration_dialog.dart';
-import 'firebase_options.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/app_shell.dart';
+import 'package:fitme/features/auth/providers/auth_provider.dart';
+import 'package:fitme/features/auth/screens/login_screen.dart';
+import 'package:fitme/features/onboarding/onboarding_screen.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/auth/widgets/migration_dialog.dart';
+import 'package:fitme/firebase_options.dart';
+import 'package:fitme/features/rebalancer/services/rebalancer_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: '.env');
 
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   dev.log('[Main] Firebase initialised', name: 'App');
 
@@ -70,25 +69,29 @@ class AuthGate extends ConsumerWidget {
     return authAsync.when(
       // ── Still resolving (app cold start) ────────────
       loading: () => const _SplashScreen(),
-      error: (err, stack) => Scaffold(body: Center(child: Text('Auth Error: $err'))),
+      error: (err, stack) =>
+          Scaffold(body: Center(child: Text('Auth Error: $err'))),
       data: (user) {
         if (user == null && !isGuest) {
-          dev.log('[AuthGate] No user & not Guest — routing to LoginScreen', name: 'Nav');
-          return const PopScope(
-            canPop: false,
-            child: LoginScreen(),
+          dev.log(
+            '[AuthGate] No user & not Guest — routing to LoginScreen',
+            name: 'Nav',
           );
+          return const PopScope(canPop: false, child: LoginScreen());
         }
 
         if (isGuest && user == null) {
-          dev.log('[AuthGate] Guest session active — entering AppShell', name: 'Nav');
-          return const PopScope(
-            canPop: false,
-            child: AppShell(),
+          dev.log(
+            '[AuthGate] Guest session active — entering AppShell',
+            name: 'Nav',
           );
+          return const PopScope(canPop: false, child: AppShell());
         }
 
-        dev.log('[AuthGate] Authenticated as ${user?.uid} — routing to ProfileGate', name: 'Nav');
+        dev.log(
+          '[AuthGate] Authenticated as ${user?.uid} — routing to ProfileGate',
+          name: 'Nav',
+        );
         return const ProfileGate();
       },
     );
@@ -113,14 +116,24 @@ class ProfileGate extends ConsumerWidget {
       data: (profile) {
         // If profile doesn't exist or age is 0, onboarding is required.
         if (profile == null || profile.age == 0) {
-          dev.log('[ProfileGate] Profile incomplete — routing to Onboarding', name: 'Nav');
+          dev.log(
+            '[ProfileGate] Profile incomplete — routing to Onboarding',
+            name: 'Nav',
+          );
           return const PopScope(
             canPop: false,
             child: MigrationDialog(child: OnboardingScreen()),
           );
         }
 
-        dev.log('[ProfileGate] Profile complete — entering AppShell', name: 'Nav');
+        dev.log(
+          '[ProfileGate] Profile complete — entering AppShell',
+          name: 'Nav',
+        );
+
+        // Run rebalancer on startup if due
+        RebalancerService.runIfDue();
+
         return const PopScope(
           canPop: false,
           child: MigrationDialog(child: AppShell()),

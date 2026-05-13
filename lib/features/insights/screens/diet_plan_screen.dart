@@ -1,29 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../auth/providers/auth_provider.dart';
-import '../../auth/screens/login_screen.dart';
-import '../../dashboard/providers/user_provider.dart';
-import '../services/ai_usage_service.dart';
-import '../services/diet_plan_service.dart';
-import '../../fitpoints/services/fitpoints_service.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
-import '../../fitpoints/models/fitpoints_models.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/auth/providers/auth_provider.dart';
+import 'package:fitme/features/auth/screens/login_screen.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/insights/services/ai_usage_service.dart';
+import 'package:fitme/features/insights/services/diet_plan_service.dart';
+import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
 
 class DietPlanNotifier extends Notifier<AsyncValue<List<DietMealPlan>?>> {
   @override
   AsyncValue<List<DietMealPlan>?> build() => const AsyncValue.data(null);
 
-  Future<void> generate(String planType, String lifestyle, String budget) async {
+  Future<void> generate(
+    String planType,
+    String lifestyle,
+    String budget,
+  ) async {
     state = const AsyncValue.loading();
     try {
       final profile = ref.read(userProfileProvider).value;
       if (profile == null) throw Exception('Profile not loaded.');
 
-      // Consume one AI credit (shared 10/day counter)
-      final allowed = await AiUsageService.consume();
+      // Consume AI credits (2 for diet plan)
+      final allowed = await AiUsageService.consume(2);
       if (!allowed) {
-        throw Exception('Daily AI limit reached ($kAiDailyLimit/day). Try again tomorrow.');
+        final isGuest = ref.read(isGuestProvider);
+        throw Exception(
+          isGuest
+              ? 'Monthly AI limit reached (${kGuestMonthlyLimit ~/ 2} assists/month). Sign in to get more!'
+              : 'Daily AI limit reached (${kAuthDailyLimit ~/ 2} assists/day). Try again tomorrow.',
+        );
       }
 
       final plan = await DietPlanService.generatePlan(
@@ -42,16 +50,22 @@ class DietPlanNotifier extends Notifier<AsyncValue<List<DietMealPlan>?>> {
       // Award FitPoints for generating a diet plan
       final service = ref.read(fitPointsServiceProvider);
       final fpRecord = await service.getRecord(profile.uid, false);
-      
+
       final award = service.awardPoints(
         userId: profile.uid,
-        action: FitPointAction.createRecipe, // Reusing createRecipe for plan generation
+        action: FitPointAction
+            .createRecipe, // Reusing createRecipe for plan generation
         record: fpRecord,
         todayTransactions: [],
+        calorieTarget: profile.dynamicCalories.toDouble(),
+        proteinTarget: profile.dynamicProtein.toDouble(),
       );
 
       if (award.awarded) {
-        final updatedRecord = service.applyAward(record: fpRecord, result: award);
+        final updatedRecord = service.applyAward(
+          record: fpRecord,
+          result: award,
+        );
         await service.saveRecord(updatedRecord);
       }
     } catch (e, st) {
@@ -62,7 +76,10 @@ class DietPlanNotifier extends Notifier<AsyncValue<List<DietMealPlan>?>> {
   void reset() => state = const AsyncValue.data(null);
 }
 
-final dietPlanProvider = NotifierProvider<DietPlanNotifier, AsyncValue<List<DietMealPlan>?>>(DietPlanNotifier.new);
+final dietPlanProvider =
+    NotifierProvider<DietPlanNotifier, AsyncValue<List<DietMealPlan>?>>(
+      DietPlanNotifier.new,
+    );
 
 class DietPlanScreen extends ConsumerStatefulWidget {
   const DietPlanScreen({super.key});
@@ -76,13 +93,24 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
   String _selectedLifestyle = 'Student';
   String _selectedBudget = 'Medium';
 
-  final List<String> _types = ['Vegetarian', 'Non Vegetarian', 'Keto', 'High Protein', 'Fat Loss', 'Lean Bulk'];
-  final List<String> _lifestyles = ['Student', 'Working professional', 'Business owner'];
+  final List<String> _types = [
+    'Vegetarian',
+    'Non Vegetarian',
+    'Keto',
+    'High Protein',
+    'Fat Loss',
+    'Lean Bulk',
+  ];
+  final List<String> _lifestyles = [
+    'Student',
+    'Working professional',
+    'Business owner',
+  ];
   final List<String> _budgets = ['Low', 'Medium', 'High'];
 
   @override
   Widget build(BuildContext context) {
-    final isGuest  = ref.watch(isGuestProvider);
+    final isGuest = ref.watch(isGuestProvider);
     final planState = ref.watch(dietPlanProvider);
 
     return Scaffold(
@@ -91,25 +119,26 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
         backgroundColor: AppTheme.background,
         foregroundColor: Colors.white,
         elevation: 0,
-        title: const Text('Smart Diet Planner', style: TextStyle(fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Smart Diet Planner',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           if (planState.value != null)
             IconButton(
               icon: const Icon(Icons.refresh_rounded),
               onPressed: () => ref.read(dietPlanProvider.notifier).reset(),
-            )
+            ),
         ],
       ),
-      body: isGuest
-          ? const _GuestLockView()
-          : planState.when(
-              loading: () => const _LoadingView(),
-              error: (e, _) => _ErrorView(error: e.toString()),
-              data: (plan) {
-                if (plan == null) return _buildConfigurationForm();
-                return _buildGeneratedPlan(plan);
-              },
-            ),
+      body: planState.when(
+        loading: () => const _LoadingView(),
+        error: (e, _) => _ErrorView(error: e.toString()),
+        data: (plan) {
+          if (plan == null) return _buildConfigurationForm();
+          return _buildGeneratedPlan(plan);
+        },
+      ),
     );
   }
 
@@ -118,9 +147,19 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
       padding: const EdgeInsets.all(20),
       physics: const BouncingScrollPhysics(),
       children: [
-        const Text('Design Your Plan', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+        const Text(
+          'Design Your Plan',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         const SizedBox(height: 8),
-        const Text('Customize your AI-generated meal plan based on your preferences, schedule, and budget.', style: TextStyle(color: AppTheme.textSecondary, fontSize: 14)),
+        const Text(
+          'Customize your AI-generated meal plan based on your preferences, schedule, and budget.',
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
+        ),
         const SizedBox(height: 16),
         // AI usage counter
         _AiUsageChip(),
@@ -128,48 +167,73 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
 
         _SectionTitle('Plan Type'),
         Wrap(
-          spacing: 8, runSpacing: 8,
-          children: _types.map((t) => _ChoiceChip(
-            label: t, isSelected: _selectedType == t,
-            onTap: () => setState(() => _selectedType = t),
-          )).toList(),
+          spacing: 8,
+          runSpacing: 8,
+          children: _types
+              .map(
+                (t) => _ChoiceChip(
+                  label: t,
+                  isSelected: _selectedType == t,
+                  onTap: () => setState(() => _selectedType = t),
+                ),
+              )
+              .toList(),
         ),
         const SizedBox(height: 28),
 
         _SectionTitle('Lifestyle / Schedule'),
         Wrap(
-          spacing: 8, runSpacing: 8,
-          children: _lifestyles.map((l) => _ChoiceChip(
-            label: l, isSelected: _selectedLifestyle == l,
-            onTap: () => setState(() => _selectedLifestyle = l),
-          )).toList(),
+          spacing: 8,
+          runSpacing: 8,
+          children: _lifestyles
+              .map(
+                (l) => _ChoiceChip(
+                  label: l,
+                  isSelected: _selectedLifestyle == l,
+                  onTap: () => setState(() => _selectedLifestyle = l),
+                ),
+              )
+              .toList(),
         ),
         const SizedBox(height: 28),
 
         _SectionTitle('Budget'),
         Wrap(
-          spacing: 8, runSpacing: 8,
-          children: _budgets.map((b) => _ChoiceChip(
-            label: b, isSelected: _selectedBudget == b,
-            onTap: () => setState(() => _selectedBudget = b),
-          )).toList(),
+          spacing: 8,
+          runSpacing: 8,
+          children: _budgets
+              .map(
+                (b) => _ChoiceChip(
+                  label: b,
+                  isSelected: _selectedBudget == b,
+                  onTap: () => setState(() => _selectedBudget = b),
+                ),
+              )
+              .toList(),
         ),
         const SizedBox(height: 48),
 
         SizedBox(
           width: double.infinity,
           child: ElevatedButton.icon(
-            onPressed: () => ref.read(dietPlanProvider.notifier).generate(_selectedType, _selectedLifestyle, _selectedBudget),
+            onPressed: () => ref
+                .read(dietPlanProvider.notifier)
+                .generate(_selectedType, _selectedLifestyle, _selectedBudget),
             icon: const Icon(Icons.auto_awesome_rounded),
-            label: const Text('Generate My Plan', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+            label: const Text(
+              'Generate My Plan',
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppTheme.accent,
               foregroundColor: AppTheme.background,
               padding: const EdgeInsets.symmetric(vertical: 16),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -184,10 +248,21 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
       children: [
         Container(
           padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(color: AppTheme.accent.withOpacity(0.1), borderRadius: BorderRadius.circular(20), border: Border.all(color: AppTheme.accent.withOpacity(0.3))),
+          decoration: BoxDecoration(
+            color: AppTheme.accent.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+          ),
           child: Column(
             children: [
-              const Text('Target Met!', style: TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold, fontSize: 14)),
+              const Text(
+                'Target Met!',
+                style: TextStyle(
+                  color: AppTheme.accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
               const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -195,7 +270,7 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
                   _MacroStat('$totalCals', 'kcal'),
                   _MacroStat('${totalPro}g', 'Protein'),
                 ],
-              )
+              ),
             ],
           ),
         ),
@@ -212,7 +287,14 @@ class _SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
     padding: const EdgeInsets.only(bottom: 12),
-    child: Text(title, style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold)),
+    child: Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+      ),
+    ),
   );
 }
 
@@ -221,7 +303,11 @@ class _ChoiceChip extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _ChoiceChip({required this.label, required this.isSelected, required this.onTap});
+  const _ChoiceChip({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -233,7 +319,9 @@ class _ChoiceChip extends StatelessWidget {
         decoration: BoxDecoration(
           color: isSelected ? AppTheme.accent : AppTheme.surface,
           borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: isSelected ? AppTheme.accent : Colors.transparent),
+          border: Border.all(
+            color: isSelected ? AppTheme.accent : Colors.transparent,
+          ),
         ),
         child: Text(
           label,
@@ -266,12 +354,33 @@ class _MealPlanCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(meal.mealName, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-              Text(meal.time, style: const TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold, fontSize: 13)),
+              Text(
+                meal.mealName,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+              Text(
+                meal.time,
+                style: const TextStyle(
+                  color: AppTheme.accent,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 13,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
-          Text(meal.foodDescription, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 14, height: 1.4)),
+          Text(
+            meal.foodDescription,
+            style: const TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 14,
+              height: 1.4,
+            ),
+          ),
           const SizedBox(height: 16),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -281,7 +390,7 @@ class _MealPlanCard extends StatelessWidget {
               _MacroBadge('${meal.carbs}g', 'Carb', Colors.orangeAccent),
               _MacroBadge('${meal.fats}g', 'Fat', Colors.purpleAccent),
             ],
-          )
+          ),
         ],
       ),
     );
@@ -293,20 +402,44 @@ class _MacroBadge extends StatelessWidget {
   final Color color;
   const _MacroBadge(this.val, this.label, this.color);
   @override
-  Widget build(BuildContext context) => Column(children: [
-    Text(val, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
-    Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
-  ]);
+  Widget build(BuildContext context) => Column(
+    children: [
+      Text(
+        val,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+      Text(
+        label,
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+      ),
+    ],
+  );
 }
 
 class _MacroStat extends StatelessWidget {
   final String val, label;
   const _MacroStat(this.val, this.label);
   @override
-  Widget build(BuildContext context) => Column(children: [
-    Text(val, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 24)),
-    Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-  ]);
+  Widget build(BuildContext context) => Column(
+    children: [
+      Text(
+        val,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 24,
+        ),
+      ),
+      Text(
+        label,
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+      ),
+    ],
+  );
 }
 
 class _LoadingView extends StatelessWidget {
@@ -318,11 +451,17 @@ class _LoadingView extends StatelessWidget {
       children: [
         CircularProgressIndicator(color: AppTheme.accent),
         SizedBox(height: 24),
-        Text('Crafting your perfect diet...', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        Text(
+          'Crafting your perfect diet...',
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        ),
         SizedBox(height: 8),
-        Text('Crunching macros and matching your budget.', style: TextStyle(color: AppTheme.textSecondary)),
+        Text(
+          'Crunching macros and matching your budget.',
+          style: TextStyle(color: AppTheme.textSecondary),
+        ),
       ],
-    )
+    ),
   );
 }
 
@@ -336,15 +475,26 @@ class _ErrorView extends ConsumerWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Icon(Icons.error_outline_rounded, color: Colors.redAccent, size: 48),
+          const Icon(
+            Icons.error_outline_rounded,
+            color: Colors.redAccent,
+            size: 48,
+          ),
           const SizedBox(height: 16),
-          Text(error, textAlign: TextAlign.center, style: const TextStyle(color: Colors.redAccent)),
+          Text(
+            error,
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.redAccent),
+          ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () => ref.read(dietPlanProvider.notifier).reset(),
             style: ElevatedButton.styleFrom(backgroundColor: AppTheme.surface),
-            child: const Text('Try Again', style: TextStyle(color: Colors.white)),
-          )
+            child: const Text(
+              'Try Again',
+              style: TextStyle(color: Colors.white),
+            ),
+          ),
         ],
       ),
     ),
@@ -354,35 +504,43 @@ class _ErrorView extends ConsumerWidget {
 // ─────────────────────────────────────────────
 // AI USAGE CHIP
 // ─────────────────────────────────────────────
-class _AiUsageChip extends StatelessWidget {
+class _AiUsageChip extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<int>(
-      future: AiUsageService.getRemainingUses(),
-      builder: (context, snap) {
-        final remaining = snap.data ?? kAiDailyLimit;
-        return Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(Icons.auto_awesome_rounded, color: AppTheme.accent, size: 14),
-              const SizedBox(width: 6),
-              Text(
-                '$remaining/$kAiDailyLimit AI uses remaining today',
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final remainingAsync = ref.watch(remainingAiUsesProvider);
+    final isGuest = ref.watch(isGuestProvider);
+    final limit = isGuest ? kGuestMonthlyLimit : kAuthDailyLimit;
+
+    return remainingAsync.when(
+      data: (remaining) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(
+              Icons.auto_awesome_rounded,
+              color: AppTheme.accent,
+              size: 14,
+            ),
+            const SizedBox(width: 6),
+            Text(
+              isGuest
+                  ? '${remaining ~/ 2}/${limit ~/ 2} AI assists remaining this month'
+                  : '${remaining ~/ 2}/${limit ~/ 2} AI assists remaining today',
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
               ),
-            ],
-          ),
-        );
-      },
+            ),
+          ],
+        ),
+      ),
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
     );
   }
 }
@@ -406,11 +564,17 @@ class _GuestLockView extends StatelessWidget {
               decoration: BoxDecoration(
                 color: AppTheme.surface,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
+                border: Border.all(
+                  color: AppTheme.accent.withValues(alpha: 0.3),
+                ),
               ),
               child: Column(
                 children: [
-                  const Icon(Icons.lock_rounded, color: AppTheme.accent, size: 48),
+                  const Icon(
+                    Icons.lock_rounded,
+                    color: AppTheme.accent,
+                    size: 48,
+                  ),
                   const SizedBox(height: 16),
                   const Text(
                     'Smart Diet Planner requires an account',
@@ -425,7 +589,11 @@ class _GuestLockView extends StatelessWidget {
                   const Text(
                     'Sign in or create a free account to unlock AI-powered meal planning.',
                     textAlign: TextAlign.center,
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 14, height: 1.5),
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 14,
+                      height: 1.5,
+                    ),
                   ),
                   const SizedBox(height: 24),
                   SizedBox(
@@ -436,14 +604,17 @@ class _GuestLockView extends StatelessWidget {
                         MaterialPageRoute(builder: (_) => const LoginScreen()),
                       ),
                       icon: const Icon(Icons.login_rounded),
-                      label: const Text('Sign In / Create Account',
-                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      label: const Text(
+                        'Sign In / Create Account',
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppTheme.accent,
                         foregroundColor: AppTheme.background,
                         padding: const EdgeInsets.symmetric(vertical: 14),
                         shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(14)),
+                          borderRadius: BorderRadius.circular(14),
+                        ),
                       ),
                     ),
                   ),
@@ -455,4 +626,4 @@ class _GuestLockView extends StatelessWidget {
       ),
     );
   }
-}
+}

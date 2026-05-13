@@ -2,16 +2,15 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../models/food_item.dart';
-import '../repositories/nutrition_repository.dart';
-import '../services/food_search_service.dart';
-import '../../dashboard/providers/user_provider.dart';
-import '../../recipes/models/recipe_model.dart';
-import '../../gamification/services/streak_service.dart';
-import '../../gamification/services/insights_aggregation_service.dart';
-import '../../fitpoints/services/fitpoints_service.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
-import '../../fitpoints/models/fitpoints_models.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/repositories/nutrition_repository.dart';
+import 'package:fitme/features/nutrition/services/food_search_service.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/recipes/models/recipe_model.dart';
+import 'package:fitme/features/gamification/services/insights_aggregation_service.dart';
+import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
+import 'package:fitme/features/insights/services/ai_usage_service.dart';
 
 final _repo = NutritionRepository();
 
@@ -26,7 +25,9 @@ class _SelectedDateNotifier extends Notifier<DateTime> {
   void changeBy(int days) => state = state.add(Duration(days: days));
 }
 
-final selectedDateProvider = NotifierProvider<_SelectedDateNotifier, DateTime>(_SelectedDateNotifier.new);
+final selectedDateProvider = NotifierProvider<_SelectedDateNotifier, DateTime>(
+  _SelectedDateNotifier.new,
+);
 
 String _dateStr(DateTime d) => FoodItem.dateFor(d);
 
@@ -76,36 +77,65 @@ class FoodActions {
   FoodActions(this._ref);
 
   Future<void> logFood(FoodItem food) async {
-    debugPrint('[NutritionProvider] Logging food: ${food.name} (${food.calories} cals)');
+    debugPrint(
+      '[NutritionProvider] Logging food: ${food.name} (${food.calories} cals)',
+    );
     await _repo.addLog(food);
-    
+
     // Award FitPoints for logging food
     final service = _ref.read(fitPointsServiceProvider);
     final profile = _ref.read(userProfileProvider).value;
-    final fpRecord = await service.getRecord(profile?.uid ?? '', profile == null);
+    final userId = profile?.uid ?? '';
+    final isGuest = profile == null;
     
+    final fpRecord = await service.getRecord(userId, isGuest);
+    final todayTxs = await service.getTodayTransactions(userId, isGuest);
+
     final award = service.awardPoints(
-      userId: profile?.uid ?? '',
+      userId: userId,
       action: FitPointAction.logMeal,
       record: fpRecord,
-      todayTransactions: [], // Service handles caps internally if needed
+      todayTransactions: todayTxs,
       targetMeal: MealLogEntry(
         id: food.id,
-        userId: profile?.uid ?? '',
+        userId: userId,
         mealName: food.name,
-        ingredients: [food.name], // Simple ingredient for duplicate detection
+        ingredients: food.ingredients ?? [food.name],
         calories: food.calories.toDouble(),
         proteinGrams: food.protein.toDouble(),
         carbGrams: food.carbs.toDouble(),
         fatGrams: food.fats.toDouble(),
         loggedAt: DateTime.now(),
       ),
+      calorieTarget: profile?.dynamicCalories.toDouble(),
+      proteinTarget: profile?.dynamicProtein.toDouble(),
     );
 
     if (award.awarded) {
-      debugPrint('[NutritionProvider] FitPoints awarded: ${award.pointsEarned}');
+      debugPrint(
+        '[NutritionProvider] FitPoints awarded: ${award.pointsEarned}',
+      );
       final updatedRecord = service.applyAward(record: fpRecord, result: award);
       await service.saveRecord(updatedRecord);
+
+      // Persist transaction for non-guests
+      if (!isGuest) {
+        final tx = service.buildTransaction(
+          userId: userId,
+          action: FitPointAction.logMeal,
+          result: award,
+          tier: fpRecord.currentTier,
+          metadata: '{"foodId": "${food.id}"}',
+        );
+        FirebaseFirestore.instance
+            .collection('users')
+            .doc(userId)
+            .collection('gamification')
+            .doc('fitpoints')
+            .collection('transactions')
+            .doc(tx.id)
+            .set(tx.toJson());
+      }
     }
 
     // Invalidate recents so they refresh
@@ -119,7 +149,8 @@ class FoodActions {
   Future<void> logRecipe(RecipeModel recipe) async {
     debugPrint('[NutritionProvider] Logging recipe: ${recipe.title}');
     final logEntry = recipe.toFoodItem(); // unique ID tied to this log event
-    final customTemplate = recipe.toCustomMealTemplate(); // stable ID for customs
+    final customTemplate = recipe
+        .toCustomMealTemplate(); // stable ID for customs
 
     // Write to logs collection so home screen / stats see it immediately
     await _repo.addLogOnly(logEntry);
@@ -139,7 +170,9 @@ class FoodActions {
   }
 
   Future<void> updateFood(FoodItem food) async {
-    debugPrint('[NutritionProvider] Updating food: ${food.name} (${food.calories} cals), dateString=${food.dateString}');
+    debugPrint(
+      '[NutritionProvider] Updating food: ${food.name} (${food.calories} cals), dateString=${food.dateString}',
+    );
     await _repo.updateLog(food);
     _triggerAggregates();
   }
@@ -161,7 +194,8 @@ class FoodActions {
   Future<void> toggleFavorite(FoodItem food) async {
     final favs = _ref.read(favoritesProvider).value ?? [];
     final isFav = favs.any(
-        (f) => f.name.toLowerCase() == food.name.toLowerCase());
+      (f) => f.name.toLowerCase() == food.name.toLowerCase(),
+    );
     if (isFav) {
       await _repo.removeFavorite(food.name);
     } else {
@@ -179,28 +213,18 @@ class FoodActions {
 
   // Increment smart logger daily counter
   Future<void> incrementSmartLoggerCount() async {
-    final uid = FirebaseAuth.instance.currentUser?.uid ?? '';
-    final today = _dateStr(DateTime.now());
-    final ref = FirebaseFirestore.instance.collection('users').doc(uid);
-    final doc = await ref.get();
-    final data = doc.data() ?? {};
-    final lastReset = data['smartLoggerLastResetDate'] ?? '';
-    final currentCount = lastReset == today ? (data['smartLoggerUsedToday'] ?? 0) : 0;
-
-    await ref.update({
-      'smartLoggerUsedToday': currentCount + 1,
-      'smartLoggerLastResetDate': today,
-    });
-
+    await AiUsageService.consume();
     _ref.invalidate(userProfileProvider);
   }
 
   void _triggerAggregates() {
     // Invalidate the unified consistency snapshot provider
     // This will trigger re-calculation across all screens (Home, Streak, Insights)
-    debugPrint('[NutritionProvider] ✓ Invalidating consistency snapshot (triggers full streak/fp recalc)');
+    debugPrint(
+      '[NutritionProvider] ✓ Invalidating consistency snapshot (triggers full streak/fp recalc)',
+    );
     _ref.invalidate(consistencySnapshotProvider);
-    
+
     // Also refresh insights charts
     InsightsAggregationService.refresh(_ref);
   }
@@ -212,7 +236,7 @@ class FoodActions {
 final dailyTotalsProvider = Provider<Map<String, int>>((ref) {
   final mealsAsync = ref.watch(nutritionProvider);
   final meals = mealsAsync.value ?? [];
-  
+
   int cals = 0, pro = 0, carbs = 0, fats = 0;
   for (final m in meals) {
     cals += m.calories;

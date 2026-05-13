@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../providers/recipes_provider.dart';
-import '../../nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/recipes/providers/recipes_provider.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
 
 class RecipeDetailScreen extends ConsumerStatefulWidget {
   final String recipeId;
@@ -32,31 +32,45 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
                   Expanded(
-                    child: Text(recipe.title,
-                        style: const TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-                        overflow: TextOverflow.ellipsis),
+                    child: Text(
+                      recipe.title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                   IconButton(
                     onPressed: () async {
                       HapticFeedback.selectionClick();
                       // Update local UI state (heart icon on Recipes screen)
-                      ref.read(recipesProvider.notifier).toggleFavorite(recipe.id);
+                      ref
+                          .read(recipesProvider.notifier)
+                          .toggleFavorite(recipe.id);
                       // Sync to Firestore so it appears in the global Favorites tab
-                      await ref.read(foodActionsProvider).toggleFavorite(
-                        recipe.toFoodItem(),
-                      );
+                      await ref
+                          .read(foodActionsProvider)
+                          .toggleFavorite(recipe.toFoodItem());
                     },
                     icon: AnimatedSwitcher(
                       duration: const Duration(milliseconds: 200),
                       child: Icon(
-                        recipe.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        recipe.isFavorite
+                            ? Icons.favorite_rounded
+                            : Icons.favorite_border_rounded,
                         key: ValueKey(recipe.isFavorite),
-                        color: recipe.isFavorite ? Colors.redAccent : AppTheme.textSecondary,
+                        color: recipe.isFavorite
+                            ? Colors.redAccent
+                            : AppTheme.textSecondary,
                       ),
                     ),
                   ),
@@ -81,8 +95,10 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Center(
-                          child: Text(recipe.emoji,
-                              style: const TextStyle(fontSize: 48)),
+                          child: Text(
+                            recipe.emoji,
+                            style: const TextStyle(fontSize: 48),
+                          ),
                         ),
                       ),
                     ),
@@ -98,10 +114,30 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          _MacroChip('Calories', '${recipe.calories.toInt()}', 'kcal', AppTheme.accent),
-                          _MacroChip('Protein', '${recipe.protein.toInt()}', 'g', AppTheme.proteinColor),
-                          _MacroChip('Carbs', '${recipe.carbs.toInt()}', 'g', AppTheme.carbsColor),
-                          _MacroChip('Fats', '${recipe.fats.toInt()}', 'g', AppTheme.fatsColor),
+                          _MacroChip(
+                            'Calories',
+                            '${recipe.calories.toInt()}',
+                            'kcal',
+                            AppTheme.accent,
+                          ),
+                          _MacroChip(
+                            'Protein',
+                            '${recipe.protein.toInt()}',
+                            'g',
+                            AppTheme.proteinColor,
+                          ),
+                          _MacroChip(
+                            'Carbs',
+                            '${recipe.carbs.toInt()}',
+                            'g',
+                            AppTheme.carbsColor,
+                          ),
+                          _MacroChip(
+                            'Fats',
+                            '${recipe.fats.toInt()}',
+                            'g',
+                            AppTheme.fatsColor,
+                          ),
                         ],
                       ),
                     ),
@@ -110,30 +146,54 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                     // Prep time + tags row
                     Row(
                       children: [
-                        const Icon(Icons.timer_rounded, color: AppTheme.textSecondary, size: 14),
+                        const Icon(
+                          Icons.timer_rounded,
+                          color: AppTheme.textSecondary,
+                          size: 14,
+                        ),
                         const SizedBox(width: 4),
-                        Text('${recipe.prepMinutes} min prep',
-                            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                        Text(
+                          '${recipe.prepMinutes} min prep',
+                          style: const TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
                         const SizedBox(width: 12),
-                        ...recipe.tags.map((t) => Container(
-                              margin: const EdgeInsets.only(right: 6),
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                              decoration: BoxDecoration(
-                                color: AppTheme.surface,
-                                borderRadius: BorderRadius.circular(8),
+                        ...recipe.tags.map(
+                          (t) => Container(
+                            margin: const EdgeInsets.only(right: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.surface,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              t,
+                              style: const TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 11,
                               ),
-                              child: Text(t,
-                                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
-                            )),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
 
                     const SizedBox(height: 24),
 
                     // ── Ingredients ───────────────────────
-                    const Text('Ingredients',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text(
+                      'Ingredients',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     ...recipe.ingredients.map(
                       (ing) => Padding(
@@ -151,12 +211,15 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                               ),
                             ),
                             const SizedBox(width: 10),
-        Expanded(
-          child: Text(
-            '${ing.amount.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} ${ing.unit} ${ing.name}',
-            style: const TextStyle(color: Colors.white, fontSize: 14),
-          ),
-        ),
+                            Expanded(
+                              child: Text(
+                                '${ing.amount.toStringAsFixed(1).replaceAll(RegExp(r'\.0$'), '')} ${ing.unit} ${ing.name}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -165,41 +228,54 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                     const SizedBox(height: 24),
 
                     // ── Steps ─────────────────────────────
-                    const Text('Steps',
-                        style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+                    const Text(
+                      'Steps',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     ...recipe.steps.asMap().entries.map(
-                          (e) => Padding(
-                            padding: const EdgeInsets.only(bottom: 12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Container(
-                                  width: 26,
-                                  height: 26,
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.accent.withOpacity(0.15),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Center(
-                                    child: Text('${e.key + 1}',
-                                        style: const TextStyle(
-                                            color: AppTheme.accent,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 12)),
+                      (e) => Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: 26,
+                              height: 26,
+                              decoration: BoxDecoration(
+                                color: AppTheme.accent.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${e.key + 1}',
+                                  style: const TextStyle(
+                                    color: AppTheme.accent,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
                                   ),
                                 ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Text(e.value,
-                                      style: const TextStyle(
-                                          color: Colors.white, fontSize: 14, height: 1.5)),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Text(
+                                e.value,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 14,
+                                  height: 1.5,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
+                      ),
+                    ),
 
                     const SizedBox(height: 30),
                   ],
@@ -219,7 +295,9 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                           width: 16,
                           height: 16,
                           child: CircularProgressIndicator(
-                              strokeWidth: 2, color: AppTheme.background),
+                            strokeWidth: 2,
+                            color: AppTheme.background,
+                          ),
                         )
                       : const Icon(Icons.add_circle_outline_rounded),
                   label: Text(_logging ? 'Logging...' : 'Log as Meal'),
@@ -227,8 +305,13 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
                     backgroundColor: AppTheme.accent,
                     foregroundColor: AppTheme.background,
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-                    textStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    textStyle: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
                   ),
                 ),
               ),
@@ -269,13 +352,6 @@ class _RecipeDetailScreenState extends ConsumerState<RecipeDetailScreen> {
       if (mounted) setState(() => _logging = false);
     }
   }
-
-  String _inferMealType(int hour) {
-    if (hour < 11) return 'breakfast';
-    if (hour < 15) return 'lunch';
-    if (hour < 19) return 'snack';
-    return 'dinner';
-  }
 }
 
 class _MacroChip extends StatelessWidget {
@@ -290,11 +366,23 @@ class _MacroChip extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value,
-            style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18)),
-        Text(unit, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+        Text(
+          value,
+          style: TextStyle(
+            color: color,
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+          ),
+        ),
+        Text(
+          unit,
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+        ),
         const SizedBox(height: 2),
-        Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+        Text(
+          label,
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+        ),
       ],
     );
   }

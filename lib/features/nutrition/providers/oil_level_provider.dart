@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/food_item.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
 
 // ─────────────────────────────────────────
 // OIL LEVEL ENUM
@@ -10,50 +10,68 @@ enum OilLevel { light, normal, heavy }
 extension OilLevelExt on OilLevel {
   String get label {
     switch (this) {
-      case OilLevel.light:  return 'Light';
-      case OilLevel.normal: return 'Normal';
-      case OilLevel.heavy:  return 'Heavy';
+      case OilLevel.light:
+        return 'Light';
+      case OilLevel.normal:
+        return 'Normal';
+      case OilLevel.heavy:
+        return 'Heavy';
     }
   }
 
   String get emoji {
     switch (this) {
-      case OilLevel.light:  return '🥗';
-      case OilLevel.normal: return '🍛';
-      case OilLevel.heavy:  return '🧈';
+      case OilLevel.light:
+        return '🥗';
+      case OilLevel.normal:
+        return '🍛';
+      case OilLevel.heavy:
+        return '🧈';
     }
   }
 
   /// Fat multiplier relative to the base "normal" value.
   double get fatMultiplier {
     switch (this) {
-      case OilLevel.light:  return 0.65;
-      case OilLevel.normal: return 1.00;
-      case OilLevel.heavy:  return 1.45;
+      case OilLevel.light:
+        return 0.65;
+      case OilLevel.normal:
+        return 1.00;
+      case OilLevel.heavy:
+        return 1.45;
     }
   }
 
   int get index2 {
     switch (this) {
-      case OilLevel.light:  return 0;
-      case OilLevel.normal: return 1;
-      case OilLevel.heavy:  return 2;
+      case OilLevel.light:
+        return 0;
+      case OilLevel.normal:
+        return 1;
+      case OilLevel.heavy:
+        return 2;
     }
   }
 
   static OilLevel fromIndex(int i) {
     switch (i) {
-      case 0:  return OilLevel.light;
-      case 2:  return OilLevel.heavy;
-      default: return OilLevel.normal;
+      case 0:
+        return OilLevel.light;
+      case 2:
+        return OilLevel.heavy;
+      default:
+        return OilLevel.normal;
     }
   }
 
   static OilLevel fromString(String s) {
     switch (s) {
-      case 'light':  return OilLevel.light;
-      case 'heavy':  return OilLevel.heavy;
-      default:       return OilLevel.normal;
+      case 'light':
+        return OilLevel.light;
+      case 'heavy':
+        return OilLevel.heavy;
+      default:
+        return OilLevel.normal;
     }
   }
 }
@@ -62,13 +80,53 @@ extension OilLevelExt on OilLevel {
 // OILY INDIAN FOOD DETECTION
 // ─────────────────────────────────────────
 const _oilyIndianKeywords = {
-  'chole', 'bhature', 'poha', 'paneer', 'bhurji', 'sabzi', 'fried rice',
-  'rajma', 'dal', 'tadka', 'paratha', 'biryani', 'halwa', 'puri', 'aloo',
-  'matar', 'korma', 'curry', 'masala', 'samosa', 'pakora', 'kachori',
-  'chana', 'palak', 'navratan', 'pav bhaji', 'upma', 'dosa', 'uttapam',
-  'khichdi', 'pulao', 'thali', 'naan', 'tikka', 'butter chicken', 'keema',
-  'nihari', 'haleem', 'kadhi', 'baingan', 'lauki', 'methi', 'bhindi',
-  'sabji', 'tarka', 'ghee', 'makhan',
+  'chole',
+  'bhature',
+  'poha',
+  'paneer',
+  'bhurji',
+  'sabzi',
+  'fried rice',
+  'rajma',
+  'dal',
+  'tadka',
+  'paratha',
+  'biryani',
+  'halwa',
+  'puri',
+  'aloo',
+  'matar',
+  'korma',
+  'curry',
+  'masala',
+  'samosa',
+  'pakora',
+  'kachori',
+  'chana',
+  'palak',
+  'navratan',
+  'pav bhaji',
+  'upma',
+  'dosa',
+  'uttapam',
+  'khichdi',
+  'pulao',
+  'thali',
+  'naan',
+  'tikka',
+  'butter chicken',
+  'keema',
+  'nihari',
+  'haleem',
+  'kadhi',
+  'baingan',
+  'lauki',
+  'methi',
+  'bhindi',
+  'sabji',
+  'tarka',
+  'ghee',
+  'makhan',
 };
 
 bool isOilyIndianFood(String name) {
@@ -106,10 +164,7 @@ FoodItem applyOilLevel(FoodItem food, OilLevel level) {
       break;
   }
 
-  final newCalories =
-      (newProtein * 4) +
-      (newCarbs * 4) +
-      (newFats * 9);
+  final newCalories = (newProtein * 4) + (newCarbs * 4) + (newFats * 9);
 
   return food.copyWith(
     protein: newProtein,
@@ -158,5 +213,5 @@ class OilPreferenceNotifier extends Notifier<Map<String, OilLevel>> {
 
 final oilPreferenceProvider =
     NotifierProvider<OilPreferenceNotifier, Map<String, OilLevel>>(
-  OilPreferenceNotifier.new,
-);
+      OilPreferenceNotifier.new,
+    );

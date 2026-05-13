@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../core/models/workout.dart';
-import '../../../core/models/exercise.dart';
+import 'package:fitme/core/models/workout.dart';
+import 'package:fitme/core/models/exercise.dart';
 
 class WorkoutRepository {
   final _db = FirebaseFirestore.instance;
@@ -27,9 +27,11 @@ class WorkoutRepository {
         .limit(1)
         .snapshots()
         .map((snap) {
-      if (snap.docs.isEmpty) return null;
-      return Workout.fromMap(snap.docs.first.data() as Map<String, dynamic>);
-    });
+          if (snap.docs.isEmpty) return null;
+          return Workout.fromMap(
+            snap.docs.first.data() as Map<String, dynamic>,
+          );
+        });
   }
 
   Stream<List<Workout>> watchWorkoutHistory() {
@@ -38,9 +40,11 @@ class WorkoutRepository {
         .orderBy('startTimestamp', descending: true)
         .limit(50)
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => Workout.fromMap(d.data() as Map<String, dynamic>))
-            .toList());
+        .map(
+          (snap) => snap.docs
+              .map((d) => Workout.fromMap(d.data() as Map<String, dynamic>))
+              .toList(),
+        );
   }
 
   Future<Workout?> getWorkoutById(String id) async {
@@ -56,6 +60,19 @@ class WorkoutRepository {
         .get();
     return snap.docs
         .map((d) => Workout.fromMap(d.data() as Map<String, dynamic>))
+        .toList();
+  }
+
+  Future<List<Workout>> getWorkoutsForRange(DateTime start, DateTime end) async {
+    final startStr = _dateFor(start);
+    final endStr = _dateFor(end);
+    final snap = await _workouts
+        .where('dateString', isGreaterThanOrEqualTo: startStr)
+        .where('dateString', isLessThanOrEqualTo: endStr)
+        .get();
+    return snap.docs
+        .map((d) => Workout.fromMap(d.data() as Map<String, dynamic>))
+        .where((w) => w.isCompleted)
         .toList();
   }
 
@@ -117,9 +134,11 @@ class WorkoutRepository {
     return _exercises
         .orderBy('name')
         .snapshots()
-        .map((snap) => snap.docs
-            .map((d) => Exercise.fromMap(d.data() as Map<String, dynamic>))
-            .toList());
+        .map(
+          (snap) => snap.docs
+              .map((d) => Exercise.fromMap(d.data() as Map<String, dynamic>))
+              .toList(),
+        );
   }
 
   Future<List<Exercise>> getExerciseLibrary() async {
@@ -153,11 +172,16 @@ class WorkoutRepository {
 
     final existingData = existing.data() as Map<String, dynamic>;
     final existingPrReps = existingData['prReps'] as int? ?? 0;
-    final existingPrWeight = (existingData['prWeight'] as num?)?.toDouble() ?? 0;
+    final existingPrWeight =
+        (existingData['prWeight'] as num?)?.toDouble() ?? 0;
 
     final updates = <String, dynamic>{};
-    if ((exercise.prReps ?? 0) > existingPrReps) updates['prReps'] = exercise.prReps;
-    if ((exercise.prWeight ?? 0) > existingPrWeight) updates['prWeight'] = exercise.prWeight;
+    if ((exercise.prReps ?? 0) > existingPrReps) {
+      updates['prReps'] = exercise.prReps;
+    }
+    if ((exercise.prWeight ?? 0) > existingPrWeight) {
+      updates['prWeight'] = exercise.prWeight;
+    }
 
     if (updates.isNotEmpty) await _exercises.doc(exercise.id).update(updates);
   }
@@ -172,12 +196,12 @@ class WorkoutRepository {
 
     final snap = await _workouts
         .where('dateString', isGreaterThanOrEqualTo: mondayStr)
-        .where('isCompleted', isEqualTo: true)
         .get();
 
     final result = <String, int>{};
     for (final doc in snap.docs) {
       final w = Workout.fromMap(doc.data() as Map<String, dynamic>);
+      if (!w.isCompleted) continue;
       result[w.dateString] = (result[w.dateString] ?? 0) + w.totalVolume;
     }
     return result;

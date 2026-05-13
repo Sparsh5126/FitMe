@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/health_sync_service.dart';
+import 'package:fitme/features/integrations/services/health_sync_service.dart';
 
 // ── Permission state ──────────────────────────────────
 final healthPermissionProvider = FutureProvider<bool>((ref) async {
@@ -14,8 +14,9 @@ final healthSummaryProvider = FutureProvider<HealthSummary>((ref) async {
 });
 
 // ── Steps chart (last 7 days) ─────────────────────────
-final healthStepsChartProvider =
-    FutureProvider<Map<DateTime, int>>((ref) async {
+final healthStepsChartProvider = FutureProvider<Map<DateTime, int>>((
+  ref,
+) async {
   final authorized = await ref.watch(healthPermissionProvider.future);
   if (!authorized) return {};
   return HealthSyncService().fetchStepsLastDays(7);
@@ -23,7 +24,9 @@ final healthStepsChartProvider =
 
 // ── Notifier: request + refresh ──────────────────────
 final healthConnectNotifier =
-    AsyncNotifierProvider<HealthConnectNotifier, bool>(HealthConnectNotifier.new);
+    AsyncNotifierProvider<HealthConnectNotifier, bool>(
+      HealthConnectNotifier.new,
+    );
 
 class HealthConnectNotifier extends AsyncNotifier<bool> {
   @override

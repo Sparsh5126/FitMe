@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../core/theme/app_theme.dart';
+import 'package:fitme/core/theme/app_theme.dart';
 
 class SmartFoodCard extends StatelessWidget {
-  final String id; 
+  final String id;
   final String foodName;
   final int calories;
   final int protein;
@@ -11,9 +11,9 @@ class SmartFoodCard extends StatelessWidget {
   // NEW: The quantity variables
   final double consumedAmount;
   final String consumedUnit;
-  final VoidCallback onDetailsTap; 
-  final VoidCallback onEditDoubleTap; 
-  final VoidCallback onDeleteSwipe; 
+  final VoidCallback onDetailsTap;
+  final VoidCallback onEditDoubleTap;
+  final VoidCallback onDeleteSwipe;
 
   const SmartFoodCard({
     super.key,
@@ -33,18 +33,21 @@ class SmartFoodCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Formats the number nicely (e.g., "1 serving" or "150.5 g")
-    String displayAmount = consumedAmount.truncateToDouble() == consumedAmount 
-        ? consumedAmount.toInt().toString() 
+    String displayAmount = consumedAmount.truncateToDouble() == consumedAmount
+        ? consumedAmount.toInt().toString()
         : consumedAmount.toStringAsFixed(1);
 
     return Dismissible(
       key: Key(id),
-      direction: DismissDirection.endToStart, 
+      direction: DismissDirection.endToStart,
       onDismissed: (direction) => onDeleteSwipe(),
       background: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         padding: const EdgeInsets.only(right: 20),
-        decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.8), borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+          color: Colors.redAccent.withOpacity(0.8),
+          borderRadius: BorderRadius.circular(16),
+        ),
         alignment: Alignment.centerRight,
         child: const Icon(Icons.delete_outline, color: Colors.white, size: 28),
       ),
@@ -70,14 +73,36 @@ class SmartFoodCard extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(foodName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white), maxLines: 1, overflow: TextOverflow.ellipsis),
+                        Text(
+                          foodName,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 4),
                         // NEW: Displays the logged quantity
-                        Text('$displayAmount $consumedUnit', style: const TextStyle(fontSize: 13, color: AppTheme.textSecondary)),
+                        Text(
+                          '$displayAmount $consumedUnit',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Text('$calories kcal', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.accent)),
+                  Text(
+                    '$calories kcal',
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.accent,
+                    ),
+                  ),
                 ],
               ),
               const SizedBox(height: 12),
@@ -99,8 +124,19 @@ class SmartFoodCard extends StatelessWidget {
   Widget _buildMacroBadge(String label, Color color) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: BoxDecoration(color: color.withOpacity(0.1), borderRadius: BorderRadius.circular(8), border: Border.all(color: color.withOpacity(0.3))),
-      child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 12)),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
     );
   }
 }

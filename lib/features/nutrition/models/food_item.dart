@@ -1,4 +1,4 @@
-import 'custom_meal_ingredient.dart';
+import 'package:fitme/features/nutrition/models/custom_meal_ingredient.dart';
 
 class FoodItem {
   final String id;
@@ -38,8 +38,8 @@ class FoodItem {
     this.servingDescription,
     this.ingredients,
     this.ingredientItems,
-  })  : dateString = dateString ?? _today(),
-        timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
+  }) : dateString = dateString ?? _today(),
+       timestamp = timestamp ?? DateTime.now().millisecondsSinceEpoch;
 
   static String _today() {
     final now = DateTime.now();
@@ -87,14 +87,22 @@ class FoodItem {
       isFavorite: map['isFavorite'] ?? false,
       dateString: map['dateString'] ?? _today(),
       timestamp: map['timestamp'] ?? DateTime.now().millisecondsSinceEpoch,
-      servingWeightGrams: map['servingWeightGrams'] != null ? (map['servingWeightGrams'] as num).toDouble() : null,
-      totalServings: map['totalServings'] != null ? (map['totalServings'] as num).toInt() : null,
+      servingWeightGrams: map['servingWeightGrams'] != null
+          ? (map['servingWeightGrams'] as num).toDouble()
+          : null,
+      totalServings: map['totalServings'] != null
+          ? (map['totalServings'] as num).toInt()
+          : null,
       servingDescription: map['servingDescription'] as String?,
       ingredients: (map['ingredients'] as List<dynamic>?)?.cast<String>(),
       ingredientItems: map['ingredientItems'] != null
           ? (map['ingredientItems'] as List<dynamic>)
-              .map((e) => CustomMealIngredient.fromMap(Map<String, dynamic>.from(e)))
-              .toList()
+                .map(
+                  (e) => CustomMealIngredient.fromMap(
+                    Map<String, dynamic>.from(e),
+                  ),
+                )
+                .toList()
           : null,
     );
   }

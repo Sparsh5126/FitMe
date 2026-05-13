@@ -2,13 +2,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../models/food_item.dart';
-import '../models/custom_meal_ingredient.dart';
-import '../providers/nutrition_provider.dart';
-import '../services/custom_meal_service.dart';
-import '../services/food_search_service.dart';
-import 'barcode_scanner_screen.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/models/custom_meal_ingredient.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/features/nutrition/services/custom_meal_service.dart';
+import 'package:fitme/features/nutrition/services/food_search_service.dart';
+import 'package:fitme/features/nutrition/widgets/barcode_scanner_screen.dart';
 
 class CustomMealFormScreen extends ConsumerStatefulWidget {
   final FoodItem? existing;
@@ -16,20 +16,28 @@ class CustomMealFormScreen extends ConsumerStatefulWidget {
   final List<CustomMealIngredient>? draftIngredients;
 
   const CustomMealFormScreen({
-    super.key, 
-    this.existing, 
-    this.draftName, 
-    this.draftIngredients
+    super.key,
+    this.existing,
+    this.draftName,
+    this.draftIngredients,
   });
 
-  static Future<bool?> push(BuildContext context, {FoodItem? existing, String? draftName, List<CustomMealIngredient>? draftIngredients}) =>
-      Navigator.push<bool>(
-        context,
-        MaterialPageRoute(
-          builder: (_) => CustomMealFormScreen(existing: existing, draftName: draftName, draftIngredients: draftIngredients),
-          fullscreenDialog: true,
-        ),
-      );
+  static Future<bool?> push(
+    BuildContext context, {
+    FoodItem? existing,
+    String? draftName,
+    List<CustomMealIngredient>? draftIngredients,
+  }) => Navigator.push<bool>(
+    context,
+    MaterialPageRoute(
+      builder: (_) => CustomMealFormScreen(
+        existing: existing,
+        draftName: draftName,
+        draftIngredients: draftIngredients,
+      ),
+      fullscreenDialog: true,
+    ),
+  );
 
   @override
   ConsumerState<CustomMealFormScreen> createState() =>
@@ -79,8 +87,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
   }
 
   Future<void> _loadIngredients() async {
-    final items =
-        await CustomMealService.fetchIngredients(widget.existing!.id);
+    final items = await CustomMealService.fetchIngredients(widget.existing!.id);
     if (mounted) setState(() => _ingredients = items);
   }
 
@@ -145,7 +152,6 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
     _showQuantityPicker(food);
   }
 
-
   void _showQuantityPicker(FoodItem food, {int? editIndex}) {
     showModalBottomSheet(
       context: context,
@@ -177,15 +183,18 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
       _snack('Add at least one ingredient');
       return;
     }
-    
+
     setState(() => _saving = true);
-    
+
     final customs = ref.read(customMealsProvider).value ?? [];
     String finalName = baseName;
-    
-    if (!_isEdit || widget.existing!.name.toLowerCase() != baseName.toLowerCase()) {
+
+    if (!_isEdit ||
+        widget.existing!.name.toLowerCase() != baseName.toLowerCase()) {
       int counter = 1;
-      while (customs.any((c) => c.name.toLowerCase() == finalName.toLowerCase())) {
+      while (customs.any(
+        (c) => c.name.toLowerCase() == finalName.toLowerCase(),
+      )) {
         finalName = '$baseName ($counter)';
         counter++;
       }
@@ -197,14 +206,14 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
       ingredients: _ingredients,
       notes: _notesCtrl.text.trim(),
     );
-    
+
     try {
       if (_isEdit) {
         await CustomMealService.update(widget.existing!.id, draft);
       } else {
         await CustomMealService.create(draft);
       }
-      if (mounted) Navigator.pop(context, true); 
+      if (mounted) Navigator.pop(context, true);
     } catch (e) {
       setState(() => _saving = false);
       _snack('Error: $e', error: true);
@@ -216,20 +225,29 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
       context: context,
       builder: (_) => AlertDialog(
         backgroundColor: AppTheme.surface,
-        title: const Text('Delete meal?',
-            style: TextStyle(color: Colors.white)),
+        title: const Text(
+          'Delete meal?',
+          style: TextStyle(color: Colors.white),
+        ),
         content: Text(
-            'Permanently delete "${_nameCtrl.text}"?',
-            style: const TextStyle(color: AppTheme.textSecondary)),
+          'Permanently delete "${_nameCtrl.text}"?',
+          style: const TextStyle(color: AppTheme.textSecondary),
+        ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel',
-                  style: TextStyle(color: AppTheme.textSecondary))),
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text(
+              'Cancel',
+              style: TextStyle(color: AppTheme.textSecondary),
+            ),
+          ),
           TextButton(
-              onPressed: () => Navigator.pop(context, true),
-              child: const Text('Delete',
-                  style: TextStyle(color: Colors.redAccent))),
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: Colors.redAccent),
+            ),
+          ),
         ],
       ),
     );
@@ -240,10 +258,12 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
 
   void _snack(String msg, {bool error = false}) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-      content: Text(msg),
-      backgroundColor: error ? Colors.redAccent : null,
-    ));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(msg),
+        backgroundColor: error ? Colors.redAccent : null,
+      ),
+    );
   }
 
   @override
@@ -254,13 +274,17 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
         backgroundColor: AppTheme.background,
         foregroundColor: Colors.white,
         elevation: 0,
-        title: Text(_isEdit ? 'Edit Meal' : 'New Custom Meal',
-            style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(
+          _isEdit ? 'Edit Meal' : 'New Custom Meal',
+          style: const TextStyle(fontWeight: FontWeight.bold),
+        ),
         actions: [
           if (_isEdit)
             IconButton(
-              icon:
-                  const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+              icon: const Icon(
+                Icons.delete_outline_rounded,
+                color: Colors.redAccent,
+              ),
               onPressed: _delete,
             ),
           TextButton(
@@ -270,12 +294,18 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
-                        strokeWidth: 2, color: AppTheme.accent))
-                : const Text('Save',
+                      strokeWidth: 2,
+                      color: AppTheme.accent,
+                    ),
+                  )
+                : const Text(
+                    'Save',
                     style: TextStyle(
-                        color: AppTheme.accent,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16)),
+                      color: AppTheme.accent,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
           ),
         ],
       ),
@@ -302,21 +332,25 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
             ],
 
             _Label('Recipe makes (servings)'),
-            Row(children: [
-              SizedBox(
-                width: 80,
-                child: TextFormField(
-                  controller: _servingsCtrl,
-                  style: const TextStyle(color: Colors.white),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  decoration: _dec('1'),
+            Row(
+              children: [
+                SizedBox(
+                  width: 80,
+                  child: TextFormField(
+                    controller: _servingsCtrl,
+                    style: const TextStyle(color: Colors.white),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    decoration: _dec('1'),
+                  ),
                 ),
-              ),
-              const SizedBox(width: 12),
-              const Text('serving(s)',
-                  style: TextStyle(color: AppTheme.textSecondary)),
-            ]),
+                const SizedBox(width: 12),
+                const Text(
+                  'serving(s)',
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
+              ],
+            ),
             const SizedBox(height: 24),
 
             _Label('Ingredients'),
@@ -325,8 +359,10 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
               onChanged: _onSearchChanged,
               style: const TextStyle(color: Colors.white),
               decoration: _dec('Search to add ingredient…').copyWith(
-                prefixIcon: const Icon(Icons.search_rounded,
-                    color: AppTheme.textSecondary),
+                prefixIcon: const Icon(
+                  Icons.search_rounded,
+                  color: AppTheme.textSecondary,
+                ),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -334,14 +370,19 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                       const Padding(
                         padding: EdgeInsets.all(12),
                         child: SizedBox(
-                            width: 16,
-                            height: 16,
-                            child: CircularProgressIndicator(
-                                strokeWidth: 2, color: AppTheme.accent)),
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.accent,
+                          ),
+                        ),
                       ),
                     IconButton(
-                      icon: const Icon(Icons.qr_code_scanner_rounded,
-                          color: AppTheme.textSecondary),
+                      icon: const Icon(
+                        Icons.qr_code_scanner_rounded,
+                        color: AppTheme.textSecondary,
+                      ),
                       onPressed: _openBarcodeScanner,
                       tooltip: 'Scan barcode',
                     ),
@@ -352,17 +393,19 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
             const SizedBox(height: 8),
 
             if (_searchActive && _searchResults.isNotEmpty)
-              _SearchDropdown(
-                  results: _searchResults, onTap: _addFromSearch),
+              _SearchDropdown(results: _searchResults, onTap: _addFromSearch),
 
             if (_searchActive && !_isSearching && _searchResults.isEmpty)
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                    color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(12)),
-                child: const Text('No results found',
-                    style: TextStyle(color: AppTheme.textSecondary)),
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Text(
+                  'No results found',
+                  style: TextStyle(color: AppTheme.textSecondary),
+                ),
               ),
 
             const SizedBox(height: 12),
@@ -373,13 +416,16 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                 decoration: BoxDecoration(
                   color: AppTheme.surface.withOpacity(0.4),
                   borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: AppTheme.surface.withOpacity(0.8)),
+                  border: Border.all(color: AppTheme.surface.withOpacity(0.8)),
                 ),
                 child: const Center(
-                  child: Text('Search above to add ingredients',
-                      style:
-                          TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+                  child: Text(
+                    'Search above to add ingredients',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 13,
+                    ),
+                  ),
                 ),
               )
             else
@@ -402,8 +448,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                       );
                       _showQuantityPicker(food, editIndex: idx);
                     },
-                    onRemove: () =>
-                        setState(() => _ingredients.removeAt(idx)),
+                    onRemove: () => setState(() => _ingredients.removeAt(idx)),
                   );
                 }).toList(),
               ),
@@ -411,8 +456,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
             const SizedBox(height: 24),
 
             _Label('Notes (optional)'),
-            _textField(_notesCtrl, 'Cooking tips, source, etc.',
-                maxLines: 3),
+            _textField(_notesCtrl, 'Cooking tips, source, etc.', maxLines: 3),
           ],
         ),
       ),
@@ -420,23 +464,26 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
   }
 
   InputDecoration _dec(String hint) => InputDecoration(
-        hintText: hint,
-        hintStyle: const TextStyle(color: AppTheme.textSecondary),
-        filled: true,
-        fillColor: AppTheme.surface,
-        border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
-        ),
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-      );
+    hintText: hint,
+    hintStyle: const TextStyle(color: AppTheme.textSecondary),
+    filled: true,
+    fillColor: AppTheme.surface,
+    border: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: BorderSide.none,
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderRadius: BorderRadius.circular(12),
+      borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+    ),
+    contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+  );
 
-  Widget _textField(TextEditingController ctrl, String hint,
-      {int maxLines = 1}) {
+  Widget _textField(
+    TextEditingController ctrl,
+    String hint, {
+    int maxLines = 1,
+  }) {
     return TextField(
       controller: ctrl,
       style: const TextStyle(color: Colors.white),
@@ -447,8 +494,12 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
 }
 
 class _MacroCard extends StatelessWidget {
-  final int totalCal, calPerServing, proPerServing, carbPerServing,
-      fatPerServing, servings;
+  final int totalCal,
+      calPerServing,
+      proPerServing,
+      carbPerServing,
+      fatPerServing,
+      servings;
   const _MacroCard({
     required this.totalCal,
     required this.calPerServing,
@@ -472,12 +523,17 @@ class _MacroCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text('Nutrition per serving',
-                  style: TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 12)),
-              Text('Total: $totalCal kcal',
-                  style: const TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 12)),
+              const Text(
+                'Nutrition per serving',
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+              ),
+              Text(
+                'Total: $totalCal kcal',
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 12,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -502,18 +558,22 @@ class _MacroChip extends StatelessWidget {
   const _MacroChip(this.value, this.label, this.color);
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Text(value,
-              style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18)),
-          const SizedBox(height: 2),
-          Text(label,
-              style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 11)),
-        ],
-      );
+    children: [
+      Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 18,
+        ),
+      ),
+      const SizedBox(height: 2),
+      Text(
+        label,
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+      ),
+    ],
+  );
 }
 
 class _SearchDropdown extends StatelessWidget {
@@ -525,21 +585,30 @@ class _SearchDropdown extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(12)),
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Column(
         children: results.take(6).map((food) {
           return ListTile(
             dense: true,
-            title: Text(food.name,
-                style: const TextStyle(color: Colors.white, fontSize: 14)),
+            title: Text(
+              food.name,
+              style: const TextStyle(color: Colors.white, fontSize: 14),
+            ),
             subtitle: Text(
-                '${food.calories} kcal · '
-                '${food.consumedAmount.toStringAsFixed(0)} ${food.consumedUnit}',
-                style: const TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 12)),
-            trailing: const Icon(Icons.add_circle_outline_rounded,
-                color: AppTheme.accent, size: 20),
+              '${food.calories} kcal · '
+              '${food.consumedAmount.toStringAsFixed(0)} ${food.consumedUnit}',
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+              ),
+            ),
+            trailing: const Icon(
+              Icons.add_circle_outline_rounded,
+              color: AppTheme.accent,
+              size: 20,
+            ),
             onTap: () => onTap(food),
           );
         }).toList(),
@@ -552,10 +621,11 @@ class _IngredientTile extends StatelessWidget {
   final CustomMealIngredient ingredient;
   final VoidCallback onEdit;
   final VoidCallback onRemove;
-  const _IngredientTile(
-      {required this.ingredient,
-      required this.onEdit,
-      required this.onRemove});
+  const _IngredientTile({
+    required this.ingredient,
+    required this.onEdit,
+    required this.onRemove,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -566,31 +636,39 @@ class _IngredientTile extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: ListTile(
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
-        title: Text(ingredient.name,
-            style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-                fontSize: 14)),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 4),
+        title: Text(
+          ingredient.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w600,
+            fontSize: 14,
+          ),
+        ),
         subtitle: Text(
-            '${ingredient.amount.toStringAsFixed(ingredient.amount == ingredient.amount.roundToDouble() ? 0 : 1)} '
-            '${ingredient.unit}  ·  ${ingredient.calories} kcal',
-            style: const TextStyle(
-                color: AppTheme.textSecondary, fontSize: 12)),
+          '${ingredient.amount.toStringAsFixed(ingredient.amount == ingredient.amount.roundToDouble() ? 0 : 1)} '
+          '${ingredient.unit}  ·  ${ingredient.calories} kcal',
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
               onTap: onEdit,
-              child: const Icon(Icons.edit_rounded,
-                  size: 18, color: AppTheme.textSecondary),
+              child: const Icon(
+                Icons.edit_rounded,
+                size: 18,
+                color: AppTheme.textSecondary,
+              ),
             ),
             const SizedBox(width: 12),
             GestureDetector(
               onTap: onRemove,
-              child: const Icon(Icons.close_rounded,
-                  size: 18, color: Colors.redAccent),
+              child: const Icon(
+                Icons.close_rounded,
+                size: 18,
+                color: Colors.redAccent,
+              ),
             ),
           ],
         ),
@@ -603,8 +681,11 @@ class _QuantityPickerSheet extends StatefulWidget {
   final FoodItem food;
   final CustomMealIngredient? existing;
   final void Function(CustomMealIngredient) onConfirm;
-  const _QuantityPickerSheet(
-      {required this.food, this.existing, required this.onConfirm});
+  const _QuantityPickerSheet({
+    required this.food,
+    this.existing,
+    required this.onConfirm,
+  });
 
   @override
   State<_QuantityPickerSheet> createState() => _QuantityPickerSheetState();
@@ -617,21 +698,16 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
   double get _base => widget.food.consumedAmount;
   String get _unit => widget.food.consumedUnit;
 
-  int get _cal =>
-      (widget.food.calories * _amount / _base).round();
-  int get _pro =>
-      (widget.food.protein * _amount / _base).round();
-  int get _carb =>
-      (widget.food.carbs * _amount / _base).round();
-  int get _fat =>
-      (widget.food.fats * _amount / _base).round();
+  int get _cal => (widget.food.calories * _amount / _base).round();
+  int get _pro => (widget.food.protein * _amount / _base).round();
+  int get _carb => (widget.food.carbs * _amount / _base).round();
+  int get _fat => (widget.food.fats * _amount / _base).round();
 
   @override
   void initState() {
     super.initState();
     _amount = widget.existing?.amount ?? _base;
-    _amountCtrl =
-        TextEditingController(text: _amount.toStringAsFixed(0));
+    _amountCtrl = TextEditingController(text: _amount.toStringAsFixed(0));
   }
 
   @override
@@ -642,20 +718,21 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
 
   String _getServingInfo() {
     final food = widget.food;
-    if (food.servingDescription != null && food.servingDescription!.isNotEmpty) {
+    if (food.servingDescription != null &&
+        food.servingDescription!.isNotEmpty) {
       return food.servingDescription!;
     }
     if (food.servingWeightGrams != null && food.servingWeightGrams! > 0) {
-      final g = food.servingWeightGrams! % 1 == 0 
-        ? food.servingWeightGrams!.toInt().toString() 
-        : food.servingWeightGrams!.toStringAsFixed(0);
+      final g = food.servingWeightGrams! % 1 == 0
+          ? food.servingWeightGrams!.toInt().toString()
+          : food.servingWeightGrams!.toStringAsFixed(0);
       return '1 serving = ${g}g';
     }
-    
-    final amt = food.consumedAmount % 1 == 0 
-      ? food.consumedAmount.toInt().toString() 
-      : food.consumedAmount.toString();
-      
+
+    final amt = food.consumedAmount % 1 == 0
+        ? food.consumedAmount.toInt().toString()
+        : food.consumedAmount.toString();
+
     if (food.consumedUnit != 'serving') {
       return '1 serving = $amt ${food.consumedUnit}';
     }
@@ -714,16 +791,20 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
               width: 40,
               height: 4,
               decoration: BoxDecoration(
-                  color: AppTheme.surface,
-                  borderRadius: BorderRadius.circular(2)),
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
           ),
           const SizedBox(height: 16),
-          Text(widget.food.name,
-              style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 17,
-                  fontWeight: FontWeight.bold)),
+          Text(
+            widget.food.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           const SizedBox(height: 4),
           Text(
             _getServingInfo(),
@@ -735,10 +816,10 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
           ),
           const SizedBox(height: 2),
           Text(
-              'Base: ${_base.toStringAsFixed(0)} $_unit = '
-              '${widget.food.calories} kcal',
-              style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 13)),
+            'Base: ${_base.toStringAsFixed(0)} $_unit = '
+            '${widget.food.calories} kcal',
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          ),
           const SizedBox(height: 20),
 
           Row(
@@ -750,25 +831,30 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
                   controller: _amountCtrl,
                   onChanged: _onTyped,
                   keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true),
+                    decimal: true,
+                  ),
                   style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold),
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
                   textAlign: TextAlign.center,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: AppTheme.surface,
                     border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none),
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                      borderSide: const BorderSide(
+                        color: AppTheme.accent,
+                        width: 1.5,
+                      ),
                     ),
                     suffixText: _unit,
-                    suffixStyle:
-                        const TextStyle(color: AppTheme.textSecondary),
+                    suffixStyle: const TextStyle(color: AppTheme.textSecondary),
                   ),
                 ),
               ),
@@ -808,11 +894,13 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
                 foregroundColor: AppTheme.background,
                 padding: const EdgeInsets.symmetric(vertical: 14),
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
+                  borderRadius: BorderRadius.circular(14),
+                ),
               ),
-              child: const Text('Add Ingredient',
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold, fontSize: 15)),
+              child: const Text(
+                'Add Ingredient',
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+              ),
             ),
           ),
         ],
@@ -829,16 +917,17 @@ class _CircleBtn extends StatelessWidget {
   const _CircleBtn(this.icon, this.onTap);
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          width: 48,
-          height: 48,
-          decoration: BoxDecoration(
-              color: AppTheme.surface,
-              borderRadius: BorderRadius.circular(12)),
-          child: Icon(icon, color: AppTheme.accent, size: 24),
-        ),
-      );
+    onTap: onTap,
+    child: Container(
+      width: 48,
+      height: 48,
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Icon(icon, color: AppTheme.accent, size: 24),
+    ),
+  );
 }
 
 class _MiniMacro extends StatelessWidget {
@@ -847,17 +936,21 @@ class _MiniMacro extends StatelessWidget {
   const _MiniMacro(this.value, this.label, this.color);
   @override
   Widget build(BuildContext context) => Column(
-        children: [
-          Text(value,
-              style: TextStyle(
-                  color: color,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14)),
-          Text(label,
-              style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 10)),
-        ],
-      );
+    children: [
+      Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+      Text(
+        label,
+        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+      ),
+    ],
+  );
 }
 
 class _Label extends StatelessWidget {
@@ -865,11 +958,14 @@ class _Label extends StatelessWidget {
   const _Label(this.text);
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(bottom: 8),
-        child: Text(text,
-            style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 15)),
-      );
+    padding: const EdgeInsets.only(bottom: 8),
+    child: Text(
+      text,
+      style: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.bold,
+        fontSize: 15,
+      ),
+    ),
+  );
 }

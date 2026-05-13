@@ -2,13 +2,13 @@ import 'dart:developer' as dev;
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../services/auth_service.dart';
-import '../services/auth_session_cleanup_service.dart';
-import '../../dashboard/providers/user_provider.dart';
-import '../../nutrition/providers/nutrition_provider.dart';
-import '../../insights/screens/insights_screen.dart';
-import '../../integrations/providers/health_provider.dart';
-import '../../fitpoints/providers/fitpoints_provider.dart';
+import 'package:fitme/features/auth/services/auth_service.dart';
+import 'package:fitme/features/auth/services/auth_session_cleanup_service.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/features/insights/screens/insights_screen.dart';
+import 'package:fitme/features/integrations/providers/health_provider.dart';
+import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
 
 // ── Auth state ───────────────────────────────────────
 final authStateProvider = StreamProvider<User?>((ref) {
@@ -21,18 +21,26 @@ class IsGuestNotifier extends Notifier<bool> {
   @override
   bool build() => false;
 }
-final isGuestProvider = NotifierProvider<IsGuestNotifier, bool>(IsGuestNotifier.new);
+
+final isGuestProvider = NotifierProvider<IsGuestNotifier, bool>(
+  IsGuestNotifier.new,
+);
 
 // ── Migration state ───────────────────────────────────
 class PendingMigrationNotifier extends Notifier<bool> {
   @override
   bool build() => false;
 }
-final pendingMigrationProvider = NotifierProvider<PendingMigrationNotifier, bool>(PendingMigrationNotifier.new);
+
+final pendingMigrationProvider =
+    NotifierProvider<PendingMigrationNotifier, bool>(
+      PendingMigrationNotifier.new,
+    );
 
 // ── Auth notifier ─────────────────────────────────────
-final authNotifierProvider =
-    AsyncNotifierProvider<AuthNotifier, User?>(AuthNotifier.new);
+final authNotifierProvider = AsyncNotifierProvider<AuthNotifier, User?>(
+  AuthNotifier.new,
+);
 
 class AuthNotifier extends AsyncNotifier<User?> {
   AuthService get _service => AuthService();
@@ -42,15 +50,23 @@ class AuthNotifier extends AsyncNotifier<User?> {
     dev.log('[AuthNotifier] build() — checking current session', name: 'Auth');
     final valid = await _service.validateCurrentSession();
     final user = valid ? _service.currentUser : null;
-    
+
     // Check if we should be in guest mode
     final guestMode = await _service.isGuestMode();
     if (user == null && guestMode) {
       dev.log('[AuthNotifier] build() restoring guest session', name: 'Auth');
       ref.read(isGuestProvider.notifier).state = true;
     }
+
+    dev.log(
+      '[AuthNotifier] build() resolved user: ${user?.uid ?? (guestMode ? 'Guest' : 'null')}',
+      name: 'Auth',
+    );
     
-    dev.log('[AuthNotifier] build() resolved user: ${user?.uid ?? (guestMode ? 'Guest' : 'null')}', name: 'Auth');
+    if (user != null) {
+      await _checkMigration();
+    }
+    
     return user;
   }
 
@@ -80,7 +96,9 @@ class AuthNotifier extends AsyncNotifier<User?> {
     state = const AsyncValue.loading();
     final result = await _service.signInWithGoogle();
     if (result.success) {
-      debugPrint('[Auth] Google sign-in success, switching from guest/null to account');
+      debugPrint(
+        '[Auth] Google sign-in success, switching from guest/null to account',
+      );
       await _service.setGuestMode(false);
       ref.read(isGuestProvider.notifier).state = false;
       debugPrint('[Auth] Invalidating providers for account switch');
@@ -90,7 +108,10 @@ class AuthNotifier extends AsyncNotifier<User?> {
       dev.log('[AuthNotifier] Google sign-in success', name: 'Auth');
     } else {
       state = const AsyncValue.data(null);
-      dev.log('[AuthNotifier] Google sign-in failed: ${result.errorMessage}', name: 'Auth');
+      dev.log(
+        '[AuthNotifier] Google sign-in failed: ${result.errorMessage}',
+        name: 'Auth',
+      );
     }
     return result;
   }
@@ -102,7 +123,9 @@ class AuthNotifier extends AsyncNotifier<User?> {
     state = const AsyncValue.loading();
     final result = await _service.signInWithEmail(email, password);
     if (result.success) {
-      debugPrint('[Auth] Email sign-in success, switching from guest/null to account');
+      debugPrint(
+        '[Auth] Email sign-in success, switching from guest/null to account',
+      );
       await _service.setGuestMode(false);
       ref.read(isGuestProvider.notifier).state = false;
       debugPrint('[Auth] Invalidating providers for account switch');
@@ -116,13 +139,19 @@ class AuthNotifier extends AsyncNotifier<User?> {
   }
 
   // ── Register ─────────────────────────────────────────
-  Future<AuthResult> registerWithEmail(String email, String password, String name) async {
+  Future<AuthResult> registerWithEmail(
+    String email,
+    String password,
+    String name,
+  ) async {
     dev.log('[AuthNotifier] registerWithEmail()', name: 'Auth');
     debugPrint('[Auth] Email registration started');
     state = const AsyncValue.loading();
     final result = await _service.registerWithEmail(email, password, name);
     if (result.success) {
-      debugPrint('[Auth] Email registration success, switching from guest/null to account');
+      debugPrint(
+        '[Auth] Email registration success, switching from guest/null to account',
+      );
       await _service.setGuestMode(false);
       ref.read(isGuestProvider.notifier).state = false;
       debugPrint('[Auth] Invalidating providers for account switch');
@@ -165,7 +194,9 @@ class AuthNotifier extends AsyncNotifier<User?> {
   // ── Invalidate all user-scoped providers ─────────────
   void _invalidateUserProviders() {
     dev.log('[AuthNotifier] Invalidating user-scoped providers', name: 'Auth');
-    debugPrint('[Auth] Invalidating all user-scoped providers (logout/guest-switch)');
+    debugPrint(
+      '[Auth] Invalidating all user-scoped providers (logout/guest-switch)',
+    );
     try {
       ref.invalidate(userProfileProvider);
       ref.invalidate(nutritionProvider);
@@ -175,7 +206,9 @@ class AuthNotifier extends AsyncNotifier<User?> {
       ref.invalidate(insightsDataProvider);
       ref.invalidate(healthConnectNotifier);
       ref.invalidate(consistencySnapshotProvider);
-      debugPrint('[Auth] ✓ Cache invalidated: consistency snapshot will rebuild on next access');
+      debugPrint(
+        '[Auth] ✓ Cache invalidated: consistency snapshot will rebuild on next access',
+      );
       ref.invalidateSelf();
     } catch (e) {
       dev.log('[AuthNotifier] Error invalidating providers: $e', name: 'Auth');

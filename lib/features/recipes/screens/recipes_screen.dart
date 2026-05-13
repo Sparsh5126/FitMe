@@ -1,15 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../../core/theme/app_theme.dart';
-import '../providers/recipes_provider.dart';
-import '../models/recipe_model.dart';
-import 'recipe_detail_screen.dart';
-import '../../nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/features/recipes/providers/recipes_provider.dart';
+import 'package:fitme/features/recipes/models/recipe_model.dart';
+import 'package:fitme/features/recipes/screens/recipe_detail_screen.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
 
 class RecipesScreen extends ConsumerWidget {
   const RecipesScreen({super.key});
 
-  static const _allTags = ['breakfast', 'lunch', 'post-workout', 'high-protein', 'budget', 'quick', 'vegetarian', 'high-calorie'];
+  static const _allTags = [
+    'breakfast',
+    'lunch',
+    'post-workout',
+    'high-protein',
+    'budget',
+    'quick',
+    'vegetarian',
+    'high-calorie',
+  ];
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,11 +37,20 @@ class RecipesScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text('Recipes',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                  const Text(
+                    'Recipes',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -49,14 +67,18 @@ class RecipesScreen extends ConsumerWidget {
                   _TagChip(
                     label: 'All',
                     selected: selectedTag == null,
-                    onTap: () => ref.read(recipeTagFilterProvider.notifier).setTag(null),
+                    onTap: () =>
+                        ref.read(recipeTagFilterProvider.notifier).setTag(null),
                   ),
-                  ..._allTags.map((tag) => _TagChip(
-                        label: tag,
-                        selected: selectedTag == tag,
-                        onTap: () => ref.read(recipeTagFilterProvider.notifier).setTag(
-                            selectedTag == tag ? null : tag),
-                      )),
+                  ..._allTags.map(
+                    (tag) => _TagChip(
+                      label: tag,
+                      selected: selectedTag == tag,
+                      onTap: () => ref
+                          .read(recipeTagFilterProvider.notifier)
+                          .setTag(selectedTag == tag ? null : tag),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -67,8 +89,10 @@ class RecipesScreen extends ConsumerWidget {
             Expanded(
               child: recipes.isEmpty
                   ? const Center(
-                      child: Text('No recipes found',
-                          style: TextStyle(color: AppTheme.textSecondary)),
+                      child: Text(
+                        'No recipes found',
+                        style: TextStyle(color: AppTheme.textSecondary),
+                      ),
                     )
                   : ListView.separated(
                       physics: const BouncingScrollPhysics(),
@@ -80,16 +104,19 @@ class RecipesScreen extends ConsumerWidget {
                         onTap: () => Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (_) => RecipeDetailScreen(recipeId: recipes[i].id),
+                            builder: (_) =>
+                                RecipeDetailScreen(recipeId: recipes[i].id),
                           ),
                         ),
                         onFavoriteTap: () async {
                           // Update local UI state (heart icon)
-                          ref.read(recipesProvider.notifier).toggleFavorite(recipes[i].id);
+                          ref
+                              .read(recipesProvider.notifier)
+                              .toggleFavorite(recipes[i].id);
                           // Sync to Firestore favorites collection
-                          await ref.read(foodActionsProvider).toggleFavorite(
-                            recipes[i].toFoodItem(),
-                          );
+                          await ref
+                              .read(foodActionsProvider)
+                              .toggleFavorite(recipes[i].toFoodItem());
                         },
                       ),
                     ),
@@ -107,7 +134,11 @@ class _TagChip extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  const _TagChip({required this.label, required this.selected, required this.onTap});
+  const _TagChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +171,11 @@ class _RecipeCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback onFavoriteTap;
 
-  const _RecipeCard({required this.recipe, required this.onTap, required this.onFavoriteTap});
+  const _RecipeCard({
+    required this.recipe,
+    required this.onTap,
+    required this.onFavoriteTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -173,29 +208,58 @@ class _RecipeCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(recipe.title,
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+                  Text(
+                    recipe.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 15,
+                    ),
+                  ),
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.local_fire_department_rounded,
-                          color: AppTheme.accent, size: 13),
+                      const Icon(
+                        Icons.local_fire_department_rounded,
+                        color: AppTheme.accent,
+                        size: 13,
+                      ),
                       const SizedBox(width: 3),
-                      Text('${recipe.calories.toInt()} kcal',
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                      Text(
+                        '${recipe.calories.toInt()} kcal',
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      const Icon(Icons.fitness_center_rounded,
-                          color: AppTheme.proteinColor, size: 13),
+                      const Icon(
+                        Icons.fitness_center_rounded,
+                        color: AppTheme.proteinColor,
+                        size: 13,
+                      ),
                       const SizedBox(width: 3),
-                      Text('${recipe.protein.toInt()}g protein',
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                      Text(
+                        '${recipe.protein.toInt()}g protein',
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
                       const SizedBox(width: 10),
-                      const Icon(Icons.timer_rounded,
-                          color: AppTheme.textSecondary, size: 13),
+                      const Icon(
+                        Icons.timer_rounded,
+                        color: AppTheme.textSecondary,
+                        size: 13,
+                      ),
                       const SizedBox(width: 3),
-                      Text('${recipe.prepMinutes}m',
-                          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                      Text(
+                        '${recipe.prepMinutes}m',
+                        style: const TextStyle(
+                          color: AppTheme.textSecondary,
+                          fontSize: 12,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 6),
@@ -203,16 +267,25 @@ class _RecipeCard extends StatelessWidget {
                     spacing: 6,
                     children: recipe.tags
                         .take(2)
-                        .map((t) => Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppTheme.background,
-                                borderRadius: BorderRadius.circular(8),
+                        .map(
+                          (t) => Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.background,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              t,
+                              style: const TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 10,
                               ),
-                              child: Text(t,
-                                  style: const TextStyle(
-                                      color: AppTheme.textSecondary, fontSize: 10)),
-                            ))
+                            ),
+                          ),
+                        )
                         .toList(),
                   ),
                 ],
@@ -225,9 +298,13 @@ class _RecipeCard extends StatelessWidget {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 200),
                 child: Icon(
-                  recipe.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                  recipe.isFavorite
+                      ? Icons.favorite_rounded
+                      : Icons.favorite_border_rounded,
                   key: ValueKey(recipe.isFavorite),
-                  color: recipe.isFavorite ? Colors.redAccent : AppTheme.textSecondary,
+                  color: recipe.isFavorite
+                      ? Colors.redAccent
+                      : AppTheme.textSecondary,
                   size: 22,
                 ),
               ),

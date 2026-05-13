@@ -90,9 +90,10 @@ class MomentumService {
   }) {
     // Higher tiers decay more slowly (they've earned protection)
     final tierProtectionFactor = switch (tier) {
-      StreakTier.legendary => 0.4,
-      StreakTier.titan => 0.55,
-      StreakTier.ironBeast => 0.7,
+      StreakTier.fourPlateBarbell => 0.4,
+      StreakTier.twoPlateBarbell => 0.5,
+      StreakTier.onePlateBarbell => 0.6,
+      StreakTier.barbell => 0.7,
       StreakTier.heavyDumbbell => 0.85,
       StreakTier.lightDumbbell => 1.0,
     };
@@ -188,9 +189,10 @@ class MomentumService {
   }
 
   StreakTier _tierFromMomentum(double momentum) {
-    if (momentum >= 85) return StreakTier.legendary;
-    if (momentum >= 65) return StreakTier.titan;
-    if (momentum >= 45) return StreakTier.ironBeast;
+    if (momentum >= 92) return StreakTier.fourPlateBarbell;
+    if (momentum >= 80) return StreakTier.twoPlateBarbell;
+    if (momentum >= 65) return StreakTier.onePlateBarbell;
+    if (momentum >= 45) return StreakTier.barbell;
     if (momentum >= 25) return StreakTier.heavyDumbbell;
     return StreakTier.lightDumbbell;
   }

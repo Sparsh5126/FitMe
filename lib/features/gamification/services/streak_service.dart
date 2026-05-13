@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../core/models/user_profile.dart';
-import '../../nutrition/models/food_item.dart';
-import '../../nutrition/repositories/nutrition_repository.dart';
-import '../../notifications/notification_service.dart';
-import '../../nutrition/services/local_nutrition_service.dart';
+import 'package:fitme/core/models/user_profile.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/repositories/nutrition_repository.dart';
+import 'package:fitme/features/notifications/notification_service.dart';
+import 'package:fitme/features/nutrition/services/local_nutrition_service.dart';
 
 class StreakService {
   static final _db = FirebaseFirestore.instance;
@@ -12,26 +12,20 @@ class StreakService {
   static String get _uid => FirebaseAuth.instance.currentUser?.uid ?? '';
 
   static const _milestones = [3, 5, 7, 14, 30, 60, 100];
-  static const _thresholds = [0, 8, 22, 45, 90, 180];
-  static const _labels = [
-    'Light Dumbbell',
-    'Heavy Dumbbell',
-    'Iron Beast',
-    'Titan',
-    'Legendary',
-    'Max Level',
-  ];
 
   // ─────────────────────────────────────────
   // CALL ON APP OPEN / AFTER FOOD LOG
   // ─────────────────────────────────────────
-  static Future<void> evaluate(UserProfile profile, {bool force = false}) async {
+  static Future<void> evaluate(
+    UserProfile profile, {
+    bool force = false,
+  }) async {
     final today = FoodItem.dateFor(DateTime.now());
-    
+
     int longest = 0;
     int prevStreak = 0;
     String lastEvaluated = '';
-    
+
     if (_uid.isNotEmpty) {
       final doc = await _db.collection('users').doc(_uid).get();
       final data = doc.data() ?? {};
@@ -45,7 +39,9 @@ class StreakService {
       lastEvaluated = profile.streakLastEvaluated;
     }
 
-    if (!force && lastEvaluated == today) return; // already ran today, and not forced
+    if (!force && lastEvaluated == today) {
+      return; // already ran today, and not forced
+    }
 
     final hitDays = await _getHitDays(90);
     final current = _calculateStreak(hitDays);

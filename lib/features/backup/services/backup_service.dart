@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 
 /// Backup + Restore service.
 /// - Guests: no-op (return false/empty)
@@ -9,7 +10,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 ///   - nutrition_logs (meals)
 ///   - streak data
 ///   - recipe favorites
-///   - profile settings (personality, notifications, etc)
+///   - custom meals
+///   - profile settings
 class BackupService {
   static final BackupService _instance = BackupService._();
   factory BackupService() => _instance;
@@ -32,21 +34,22 @@ class BackupService {
         'timestamp': FieldValue.serverTimestamp(),
         'nutrition_logs': await _collectNutritionLogs(uid),
         'streak_data': await _collectStreakData(uid),
-        'recipe_favorites': await _collectRecipeFavorites(),
+        'recipe_favorites': await _collectRecipeFavorites(uid),
+        'custom_meals': await _collectCustomMeals(uid),
       };
 
       await _db.collection('backups').doc(uid).set(backup);
       return DateTime.now();
     } catch (e) {
-      print('Backup failed: $e');
+      debugPrint('Backup failed: $e');
       return null;
     }
   }
 
   // ── Restore all data ─────────────────────────────────
-  /// Merges backed-up nutrition_logs into current device.
-  /// Returns count of items restored.
-  Future<int> restoreNutritionLogs() async {
+  
+  /// Restore all data components.
+  Future<int> restoreAll() async {
     if (!_isLoggedIn) return 0;
     final uid = _uid!;
 
@@ -54,24 +57,45 @@ class BackupService {
       final backup = await _db.collection('backups').doc(uid).get();
       if (!backup.exists) return 0;
 
-      final logs = backup.data()?['nutrition_logs'] as List? ?? [];
-      if (logs.isEmpty) return 0;
+      final data = backup.data()!;
+      int count = 0;
 
-      final batch = _db.batch();
-      for (final log in logs) {
-        final ref = _db
-            .collection('users')
-            .doc(uid)
-            .collection('nutrition_logs')
-            .doc();
-        batch.set(ref, log);
-      }
-      await batch.commit();
-      return logs.length;
+      // Restore logs
+      count += await _restoreCollection(uid, 'logs', data['nutrition_logs']);
+      
+      // Restore favorites
+      count += await _restoreCollection(uid, 'favorites', data['recipe_favorites']);
+      
+      // Restore custom meals
+      count += await _restoreCollection(uid, 'custom_meals', data['custom_meals']);
+      
+      // Restore streak
+      await restoreStreakData();
+
+      return count;
     } catch (e) {
-      print('Restore nutrition failed: $e');
+      debugPrint('Restore failed: $e');
       return 0;
     }
+  }
+
+  Future<int> _restoreCollection(String uid, String collectionName, dynamic items) async {
+    if (items == null || items is! List || items.isEmpty) return 0;
+    
+    final batch = _db.batch();
+    final colRef = _db.collection('users').doc(uid).collection(collectionName);
+    
+    for (final item in items) {
+      if (item is Map<String, dynamic>) {
+        // Use ID if available, otherwise let Firestore generate
+        final id = item['id'] ?? item['name']?.toString().toLowerCase().replaceAll(' ', '_');
+        final ref = id != null ? colRef.doc(id) : colRef.doc();
+        batch.set(ref, item);
+      }
+    }
+    
+    await batch.commit();
+    return items.length;
   }
 
   /// Restore streak milestones + counts.
@@ -83,13 +107,15 @@ class BackupService {
       final backup = await _db.collection('backups').doc(uid).get();
       if (!backup.exists) return false;
 
-      final streakData = (backup.data()?['streak_data'] as Map?)?.cast<String, dynamic>() ?? {};
+      final streakData =
+          (backup.data()?['streak_data'] as Map?)?.cast<String, dynamic>() ??
+          {};
       if (streakData.isEmpty) return false;
 
       await _db.collection('users').doc(uid).update(streakData);
       return true;
     } catch (e) {
-      print('Restore streak failed: $e');
+      debugPrint('Restore streak failed: $e');
       return false;
     }
   }
@@ -101,7 +127,7 @@ class BackupService {
       await _db.collection('backups').doc(_uid!).delete();
       return true;
     } catch (e) {
-      print('Delete backup failed: $e');
+      debugPrint('Delete backup failed: $e');
       return false;
     }
   }
@@ -113,10 +139,17 @@ class BackupService {
       final backup = await _db.collection('backups').doc(_uid!).get();
       if (!backup.exists) return BackupStatus.noBackup();
 
-      final ts = (backup.data()?['timestamp'] as Timestamp?);
+      final data = backup.data()!;
+      final ts = (data['timestamp'] as Timestamp?);
+      
+      int totalItems = 0;
+      totalItems += (data['nutrition_logs'] as List? ?? []).length;
+      totalItems += (data['recipe_favorites'] as List? ?? []).length;
+      totalItems += (data['custom_meals'] as List? ?? []).length;
+
       return BackupStatus(
         lastBackup: ts?.toDate(),
-        logsCount: (backup.data()?['nutrition_logs'] as List? ?? []).length,
+        logsCount: totalItems,
       );
     } catch (_) {
       return null;
@@ -126,14 +159,23 @@ class BackupService {
   // ── Helpers ───────────────────────────────────────────
 
   Future<List<Map<String, dynamic>>> _collectNutritionLogs(String uid) async {
+    return _collectCollection(uid, 'logs');
+  }
+
+  Future<List<Map<String, dynamic>>> _collectRecipeFavorites(String uid) async {
+    return _collectCollection(uid, 'favorites');
+  }
+
+  Future<List<Map<String, dynamic>>> _collectCustomMeals(String uid) async {
+    return _collectCollection(uid, 'custom_meals');
+  }
+
+  Future<List<Map<String, dynamic>>> _collectCollection(String uid, String col) async {
     try {
-      final snap = await _db
-          .collection('users')
-          .doc(uid)
-          .collection('nutrition_logs')
-          .get();
+      final snap = await _db.collection('users').doc(uid).collection(col).get();
       return snap.docs.map((d) => d.data()).toList();
-    } catch (_) {
+    } catch (e) {
+      debugPrint('Failed to collect $col: $e');
       return [];
     }
   }
@@ -142,7 +184,6 @@ class BackupService {
     try {
       final snap = await _db.collection('users').doc(uid).get();
       final data = snap.data() ?? {};
-      // Only backup streak-related fields
       return {
         'currentStreak': data['currentStreak'] ?? 0,
         'longestStreak': data['longestStreak'] ?? 0,
@@ -153,12 +194,6 @@ class BackupService {
       return {};
     }
   }
-
-  Future<List<String>> _collectRecipeFavorites() async {
-    // Stored in SharedPreferences locally, not in Firestore
-    // This is a placeholder for future Firestore sync if needed
-    return [];
-  }
 }
 
 // ── Data class ─────────────────────────────────────────
@@ -166,10 +201,7 @@ class BackupStatus {
   final DateTime? lastBackup;
   final int logsCount;
 
-  const BackupStatus({
-    required this.lastBackup,
-    required this.logsCount,
-  });
+  const BackupStatus({required this.lastBackup, required this.logsCount});
 
   factory BackupStatus.noBackup() =>
       const BackupStatus(lastBackup: null, logsCount: 0);

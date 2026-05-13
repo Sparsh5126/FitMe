@@ -4,10 +4,9 @@ import 'dart:developer' as dev;
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/food_item.dart';
-import '../models/parsed_meal.dart';
-import 'food_search_service.dart' show FoodSource;
-import 'gemini_service.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/models/parsed_meal.dart';
+import 'package:fitme/features/nutrition/services/gemini_service.dart';
 
 // ── Alias / synonym map ────────────────────────────────────────────────────
 const Map<String, List<String>> _aliases = {
@@ -35,40 +34,120 @@ const Map<String, List<String>> _aliases = {
 
 // ── Plural normalization ───────────────────────────────────────────────────
 const Map<String, String> _plurals = {
-  'rotis': 'roti', 'chapatis': 'chapati', 'parathas': 'paratha',
-  'puris': 'puri', 'idlis': 'idli', 'dosas': 'dosa', 'eggs': 'egg',
-  'pieces': 'piece', 'slices': 'slice', 'bananas': 'banana',
-  'apples': 'apple', 'samosas': 'samosa', 'bowls': 'bowl',
-  'plates': 'plate', 'cups': 'cup', 'katoris': 'katori',
-  'scoops': 'scoop', 'bars': 'bar', 'tbsps': 'tbsp',
-  'tablespoon': 'tbsp', 'tablespoons': 'tbsp',
-  'teaspoon': 'tsp', 'teaspoons': 'tsp', 'tsps': 'tsp',
-  'grams': 'g', 'gram': 'g', 'kilograms': 'kg', 'kilogram': 'kg',
-  'milliliters': 'ml', 'millilitres': 'ml', 'liters': 'l', 'litres': 'l',
+  'rotis': 'roti',
+  'chapatis': 'chapati',
+  'parathas': 'paratha',
+  'puris': 'puri',
+  'idlis': 'idli',
+  'dosas': 'dosa',
+  'eggs': 'egg',
+  'pieces': 'piece',
+  'slices': 'slice',
+  'bananas': 'banana',
+  'apples': 'apple',
+  'samosas': 'samosa',
+  'bowls': 'bowl',
+  'plates': 'plate',
+  'cups': 'cup',
+  'katoris': 'katori',
+  'scoops': 'scoop',
+  'bars': 'bar',
+  'tbsps': 'tbsp',
+  'tablespoon': 'tbsp',
+  'tablespoons': 'tbsp',
+  'teaspoon': 'tsp',
+  'teaspoons': 'tsp',
+  'tsps': 'tsp',
+  'grams': 'g',
+  'gram': 'g',
+  'kilograms': 'kg',
+  'kilogram': 'kg',
+  'milliliters': 'ml',
+  'millilitres': 'ml',
+  'liters': 'l',
+  'litres': 'l',
   'glasses': 'glass',
 };
 
 // ── Word numbers ───────────────────────────────────────────────────────────
 const Map<String, double> _wordNumbers = {
-  'one': 1, 'ek': 1, 'two': 2, 'do': 2, 'three': 3, 'teen': 3,
-  'four': 4, 'char': 4, 'five': 5, 'paanch': 5, 'six': 6,
-  'seven': 7, 'saat': 7, 'eight': 8, 'aath': 8,
-  'half': 0.5, 'aadha': 0.5, 'quarter': 0.25,
+  'one': 1,
+  'ek': 1,
+  'two': 2,
+  'do': 2,
+  'three': 3,
+  'teen': 3,
+  'four': 4,
+  'char': 4,
+  'five': 5,
+  'paanch': 5,
+  'six': 6,
+  'seven': 7,
+  'saat': 7,
+  'eight': 8,
+  'aath': 8,
+  'half': 0.5,
+  'aadha': 0.5,
+  'quarter': 0.25,
 };
 
 const Set<String> _unitWords = {
-  'ml', 'l', 'g', 'kg', 'tbsp', 'tsp', 'scoop', 'slice', 'bar',
-  'bowl', 'plate', 'cup', 'katori', 'glass', 'piece', 'serving',
+  'ml',
+  'l',
+  'g',
+  'kg',
+  'tbsp',
+  'tsp',
+  'scoop',
+  'slice',
+  'bar',
+  'bowl',
+  'plate',
+  'cup',
+  'katori',
+  'glass',
+  'piece',
+  'serving',
 };
 
 const Set<String> _conjunctions = {
-  'and', 'with', 'aur', 'ke', 'plus', 'or', 'n',
+  'and',
+  'with',
+  'aur',
+  'ke',
+  'plus',
+  'or',
+  'n',
 };
 
 const Set<String> _stopwords = {
-  'and', 'with', 'some', 'the', 'a', 'an', 'of', 'in', 'on', 'for',
-  'or', 'to', 'at', 'by', 'is', 'it', 'my', 'had', 'have', 'ate',
-  'eat', 'just', 'little', 'bit', 'small', 'large', 'big',
+  'and',
+  'with',
+  'some',
+  'the',
+  'a',
+  'an',
+  'of',
+  'in',
+  'on',
+  'for',
+  'or',
+  'to',
+  'at',
+  'by',
+  'is',
+  'it',
+  'my',
+  'had',
+  'have',
+  'ate',
+  'eat',
+  'just',
+  'little',
+  'bit',
+  'small',
+  'large',
+  'big',
 };
 
 // ── Cancellation token ─────────────────────────────────────────────────────
@@ -99,23 +178,32 @@ class FoodKnowledgeResolver {
     if (_cachedCommonFoods != null) return _cachedCommonFoods!;
     try {
       final commonStr = await rootBundle.loadString('assets/common_foods.json');
-      final brandStr  = await rootBundle.loadString('assets/brands_india.json');
-      final merged = [...jsonDecode(commonStr) as List, ...jsonDecode(brandStr) as List];
-      _cachedCommonFoods = merged.map((item) => FoodItem(
-        id: item['id'],
-        name: item['name'],
-        calories: item['calories'],
-        protein: item['protein'],
-        carbs: item['carbs'],
-        fats: item['fats'],
-        consumedAmount: (item['consumedAmount'] ?? 1).toDouble(),
-        consumedUnit: item['consumedUnit'] ?? 'serving',
-        servingWeightGrams: item['servingWeightGrams'] != null
-            ? (item['servingWeightGrams'] as num).toDouble() : null,
-        totalServings: item['totalServings'] != null
-            ? (item['totalServings'] as num).toInt() : null,
-        servingDescription: item['servingDescription'] as String?,
-      )).toList();
+      final brandStr = await rootBundle.loadString('assets/brands_india.json');
+      final merged = [
+        ...jsonDecode(commonStr) as List,
+        ...jsonDecode(brandStr) as List,
+      ];
+      _cachedCommonFoods = merged
+          .map(
+            (item) => FoodItem(
+              id: item['id'],
+              name: item['name'],
+              calories: item['calories'],
+              protein: item['protein'],
+              carbs: item['carbs'],
+              fats: item['fats'],
+              consumedAmount: (item['consumedAmount'] ?? 1).toDouble(),
+              consumedUnit: item['consumedUnit'] ?? 'serving',
+              servingWeightGrams: item['servingWeightGrams'] != null
+                  ? (item['servingWeightGrams'] as num).toDouble()
+                  : null,
+              totalServings: item['totalServings'] != null
+                  ? (item['totalServings'] as num).toInt()
+                  : null,
+              servingDescription: item['servingDescription'] as String?,
+            ),
+          )
+          .toList();
       return _cachedCommonFoods!;
     } catch (e) {
       dev.log('[FKR] loadCommonFoods error: $e', name: 'FKR');
@@ -136,11 +224,17 @@ class FoodKnowledgeResolver {
     if (trimmed.isEmpty) return ParsedMeal.empty(trimmed);
 
     final segments = _tokenizeIntoSegments(trimmed);
-    dev.log('[FKR] segments: ${segments.map((s) => s.join(' ')).toList()}', name: 'FKR');
+    dev.log(
+      '[FKR] segments: ${segments.map((s) => s.join(' ')).toList()}',
+      name: 'FKR',
+    );
 
     // Step 1: resolve each segment against local DB (synchronous, fast)
     final local = _resolveLocally(segments, customs, commonFoods, recents);
-    dev.log('[FKR] local resolved: ${local.where((s) => s.isResolved).length}/${local.length}', name: 'FKR');
+    dev.log(
+      '[FKR] local resolved: ${local.where((s) => s.isResolved).length}/${local.length}',
+      name: 'FKR',
+    );
 
     if (cancel?.isCancelled == true) return ParsedMeal.empty(trimmed);
 
@@ -209,9 +303,9 @@ class FoodKnowledgeResolver {
       }
     }
 
-    scoreList(favorites,   0.15);
-    scoreList(recents,     0.08); // demoted from 0.10
-    scoreList(customs,     0.08);
+    scoreList(favorites, 0.15);
+    scoreList(recents, 0.08); // demoted from 0.10
+    scoreList(customs, 0.08);
     scoreList(commonFoods, 0.03);
 
     if (cancel?.isCancelled == true) return [];
@@ -244,7 +338,8 @@ class FoodKnowledgeResolver {
 
   // ── Tokenize input into per-food segments ─────────────────────────────────
   static List<List<String>> _tokenizeIntoSegments(String text) {
-    final rawText = text.toLowerCase()
+    final rawText = text
+        .toLowerCase()
         .replaceAll(',', ' and ')
         .replaceAll('.', ' ');
 
@@ -306,10 +401,19 @@ class FoodKnowledgeResolver {
 
       for (final tok in seg) {
         final num = double.tryParse(tok);
-        if (num != null) { qty = num; continue; }
+        if (num != null) {
+          qty = num;
+          continue;
+        }
         final wordNum = _wordNumbers[tok];
-        if (wordNum != null) { qty = wordNum; continue; }
-        if (_unitWords.contains(tok)) { unit ??= tok; continue; }
+        if (wordNum != null) {
+          qty = wordNum;
+          continue;
+        }
+        if (_unitWords.contains(tok)) {
+          unit ??= tok;
+          continue;
+        }
         foodTokens.add(tok);
       }
 
@@ -328,27 +432,36 @@ class FoodKnowledgeResolver {
         }
       }
 
-      dev.log('[FKR] "$rawInput" → local best: ${best?.food.name} (${best?.score.toStringAsFixed(2)})', name: 'FKR');
+      dev.log(
+        '[FKR] "$rawInput" → local best: ${best?.food.name} (${best?.score.toStringAsFixed(2)})',
+        name: 'FKR',
+      );
 
       if (best != null && !seen.contains(best.food.id)) {
         seen.add(best.food.id);
         final finalUnit = unit ?? best.food.consumedUnit;
         final scaled = _scaleFood(best.food, qty, finalUnit);
-        results.add(ParsedMealSegment(
-          rawInput: rawInput,
-          resolvedFood: scaled,
-          quantity: qty,
-          unit: finalUnit,
-          source: recentSet.containsKey(best.food.id) ? FoodSource.recents : FoodSource.commonDb,
-          confidence: best.score.clamp(0.0, 1.0),
-        ));
+        results.add(
+          ParsedMealSegment(
+            rawInput: rawInput,
+            resolvedFood: scaled,
+            quantity: qty,
+            unit: finalUnit,
+            source: recentSet.containsKey(best.food.id)
+                ? FoodSource.recents
+                : FoodSource.commonDb,
+            confidence: best.score.clamp(0.0, 1.0),
+          ),
+        );
       } else {
         // Not found locally — mark for remote lookup
-        results.add(ParsedMealSegment(
-          rawInput: rawInput,
-          quantity: qty,
-          unit: unit ?? 'serving',
-        ));
+        results.add(
+          ParsedMealSegment(
+            rawInput: rawInput,
+            quantity: qty,
+            unit: unit ?? 'serving',
+          ),
+        );
       }
     }
     return results;
@@ -362,37 +475,48 @@ class FoodKnowledgeResolver {
     final resultMap = <String, _RemoteResult>{};
     if (names.isEmpty) return resultMap;
 
-    await Future.wait(names.map((name) async {
-      if (cancel?.isCancelled == true) return;
-      try {
-        final results = await Future.wait([
-          _safeOff(name, cancel: cancel),
-          _safeUsda(name, cancel: cancel),
-        ]).timeout(const Duration(seconds: 3));
-
+    await Future.wait(
+      names.map((name) async {
         if (cancel?.isCancelled == true) return;
+        try {
+          final results = await Future.wait([
+            _safeOff(name, cancel: cancel),
+            _safeUsda(name, cancel: cancel),
+          ]).timeout(const Duration(seconds: 3));
 
-        final expanded = _expandQuery(name);
-        _ScoredItem? best;
-        FoodSource bestSource = FoodSource.none;
+          if (cancel?.isCancelled == true) return;
 
-        for (final f in results[0]) {
-          final s = _score(expanded, _tokenize(f.name));
-          if (s > (best?.score ?? 0)) { best = _ScoredItem(f, s); bestSource = FoodSource.off; }
-        }
-        for (final f in results[1]) {
-          final s = _score(expanded, _tokenize(f.name));
-          if (s > (best?.score ?? 0)) { best = _ScoredItem(f, s); bestSource = FoodSource.usda; }
-        }
+          final expanded = _expandQuery(name);
+          _ScoredItem? best;
+          FoodSource bestSource = FoodSource.none;
 
-        if (best != null) {
-          dev.log('[FKR] remote "$name" → ${best.food.name} via $bestSource (${best.score.toStringAsFixed(2)})', name: 'FKR');
-          resultMap[name] = _RemoteResult(best.food, bestSource);
+          for (final f in results[0]) {
+            final s = _score(expanded, _tokenize(f.name));
+            if (s > (best?.score ?? 0)) {
+              best = _ScoredItem(f, s);
+              bestSource = FoodSource.off;
+            }
+          }
+          for (final f in results[1]) {
+            final s = _score(expanded, _tokenize(f.name));
+            if (s > (best?.score ?? 0)) {
+              best = _ScoredItem(f, s);
+              bestSource = FoodSource.usda;
+            }
+          }
+
+          if (best != null) {
+            dev.log(
+              '[FKR] remote "$name" → ${best.food.name} via $bestSource (${best.score.toStringAsFixed(2)})',
+              name: 'FKR',
+            );
+            resultMap[name] = _RemoteResult(best.food, bestSource);
+          }
+        } catch (e) {
+          dev.log('[FKR] remote "$name" error: $e', name: 'FKR');
         }
-      } catch (e) {
-        dev.log('[FKR] remote "$name" error: $e', name: 'FKR');
-      }
-    }));
+      }),
+    );
 
     return resultMap;
   }
@@ -402,7 +526,10 @@ class FoodKnowledgeResolver {
       GeminiService.parseFoodSafe(input);
 
   // ── OFF search ────────────────────────────────────────────────────────────
-  static Future<List<FoodItem>> _safeOff(String query, {CancelToken? cancel}) async {
+  static Future<List<FoodItem>> _safeOff(
+    String query, {
+    CancelToken? cancel,
+  }) async {
     if (cancel?.isCancelled == true) return [];
     try {
       final uri = Uri.parse(
@@ -426,16 +553,18 @@ class FoodKnowledgeResolver {
         final n = (p['nutriments'] as Map?) ?? {};
         final cal = _nMap(n, ['energy-kcal_100g', 'energy_100g']);
         if (cal == 0) continue;
-        results.add(FoodItem(
-          id: 'off_${name.toLowerCase().replaceAll(' ', '_')}',
-          name: _capitalize(name),
-          calories: cal,
-          protein: _nMap(n, ['proteins_100g']),
-          carbs: _nMap(n, ['carbohydrates_100g']),
-          fats: _nMap(n, ['fat_100g']),
-          consumedAmount: 100,
-          consumedUnit: 'g',
-        ));
+        results.add(
+          FoodItem(
+            id: 'off_${name.toLowerCase().replaceAll(' ', '_')}',
+            name: _capitalize(name),
+            calories: cal,
+            protein: _nMap(n, ['proteins_100g']),
+            carbs: _nMap(n, ['carbohydrates_100g']),
+            fats: _nMap(n, ['fat_100g']),
+            consumedAmount: 100,
+            consumedUnit: 'g',
+          ),
+        );
         if (results.length >= 6) break;
       }
       dev.log('[FKR] OFF "$query": ${results.length} results', name: 'FKR');
@@ -447,28 +576,46 @@ class FoodKnowledgeResolver {
   }
 
   // ── USDA search ───────────────────────────────────────────────────────────
-  static Future<List<FoodItem>> _safeUsda(String query, {CancelToken? cancel}) async {
+  static Future<List<FoodItem>> _safeUsda(
+    String query, {
+    CancelToken? cancel,
+  }) async {
     if (cancel?.isCancelled == true || _usdaKey.isEmpty) return [];
     try {
       final uri = Uri.parse(
-          'https://api.nal.usda.gov/fdc/v1/foods/search'
-          '?query=${Uri.encodeComponent(query)}&pageSize=6&api_key=$_usdaKey');
+        'https://api.nal.usda.gov/fdc/v1/foods/search'
+        '?query=${Uri.encodeComponent(query)}&pageSize=6&api_key=$_usdaKey',
+      );
       final resp = await http.get(uri).timeout(const Duration(seconds: 3));
       if (cancel?.isCancelled == true) return [];
       if (resp.statusCode != 200) return [];
       final data = jsonDecode(resp.body);
       final foods = (data['foods'] as List? ?? []);
-      return foods.map((f) {
-        final nutrients = (f['foodNutrients'] as List? ?? []);
-        int n(int id) => ((nutrients.firstWhere(
-            (x) => x['nutrientId'] == id, orElse: () => {'value': 0})['value'] ?? 0) as num).round();
-        return FoodItem(
-          id: 'usda_${f['fdcId']}',
-          name: f['description'] ?? 'Unknown',
-          calories: n(1008), protein: n(1003), carbs: n(1005), fats: n(1004),
-          consumedAmount: 100, consumedUnit: 'g',
-        );
-      }).where((f) => f.calories > 0).take(6).toList();
+      return foods
+          .map((f) {
+            final nutrients = (f['foodNutrients'] as List? ?? []);
+            int n(int id) =>
+                ((nutrients.firstWhere(
+                              (x) => x['nutrientId'] == id,
+                              orElse: () => {'value': 0},
+                            )['value'] ??
+                            0)
+                        as num)
+                    .round();
+            return FoodItem(
+              id: 'usda_${f['fdcId']}',
+              name: f['description'] ?? 'Unknown',
+              calories: n(1008),
+              protein: n(1003),
+              carbs: n(1005),
+              fats: n(1004),
+              consumedAmount: 100,
+              consumedUnit: 'g',
+            );
+          })
+          .where((f) => f.calories > 0)
+          .take(6)
+          .toList();
     } catch (e) {
       dev.log('[FKR] USDA error for "$query": $e', name: 'FKR');
       return [];
@@ -528,11 +675,21 @@ class FoodKnowledgeResolver {
     if (qTokens.isEmpty || fTokens.isEmpty) return 0;
     int fHits = 0;
     for (final fw in fTokens) {
-      if (qTokens.any((qw) => qw == fw || fw.contains(qw) || qw.contains(fw) || _lev(qw, fw) <= 1)) fHits++;
+      if (qTokens.any(
+        (qw) =>
+            qw == fw || fw.contains(qw) || qw.contains(fw) || _lev(qw, fw) <= 1,
+      )) {
+        fHits++;
+      }
     }
     int qHits = 0;
     for (final qw in qTokens) {
-      if (fTokens.any((fw) => qw == fw || fw.contains(qw) || qw.contains(fw) || _lev(qw, fw) <= 1)) qHits++;
+      if (fTokens.any(
+        (fw) =>
+            qw == fw || fw.contains(qw) || qw.contains(fw) || _lev(qw, fw) <= 1,
+      )) {
+        qHits++;
+      }
     }
     return (fHits / fTokens.length) * 0.65 + (qHits / qTokens.length) * 0.35;
   }
@@ -542,13 +699,26 @@ class FoodKnowledgeResolver {
     if (a.isEmpty) return b.length;
     if (b.isEmpty) return a.length;
     if ((a.length - b.length).abs() > 2) return 99;
-    final dp = List.generate(a.length + 1, (i) => List.generate(b.length + 1, (j) => 0));
-    for (int i = 0; i <= a.length; i++) dp[i][0] = i;
-    for (int j = 0; j <= b.length; j++) dp[0][j] = j;
+    final dp = List.generate(
+      a.length + 1,
+      (i) => List.generate(b.length + 1, (j) => 0),
+    );
+    for (int i = 0; i <= a.length; i++) {
+      dp[i][0] = i;
+    }
+    for (int j = 0; j <= b.length; j++) {
+      dp[0][j] = j;
+    }
     for (int i = 1; i <= a.length; i++) {
       for (int j = 1; j <= b.length; j++) {
-        dp[i][j] = a[i-1] == b[j-1] ? dp[i-1][j-1]
-            : 1 + [dp[i-1][j], dp[i][j-1], dp[i-1][j-1]].reduce((x, y) => x < y ? x : y);
+        dp[i][j] = a[i - 1] == b[j - 1]
+            ? dp[i - 1][j - 1]
+            : 1 +
+                  [
+                    dp[i - 1][j],
+                    dp[i][j - 1],
+                    dp[i - 1][j - 1],
+                  ].reduce((x, y) => x < y ? x : y);
       }
     }
     return dp[a.length][b.length];
@@ -562,7 +732,8 @@ class FoodKnowledgeResolver {
     return 0;
   }
 
-  static String _capitalize(String s) => s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+  static String _capitalize(String s) =>
+      s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
 }
 
 class _ScoredItem {

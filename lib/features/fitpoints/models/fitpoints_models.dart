@@ -6,26 +6,48 @@ import '../../nutrition/models/food_item.dart';
 enum StreakTier {
   lightDumbbell, // 1x
   heavyDumbbell, // 1.5x
-  ironBeast, // 2.5x
-  titan, // 3.5x
-  legendary, // 5x
+  barbell, // 2x
+  onePlateBarbell, // 3x
+  twoPlateBarbell, // 5x
+  fourPlateBarbell; // 8x
+
+  static const maxLevel = StreakTier.fourPlateBarbell;
 }
 
+typedef ConsistencyTier = StreakTier;
+typedef StreakLevel = StreakTier;
+
 extension StreakTierExtension on StreakTier {
-  String get displayName => switch (this) {
+  /// Displayed on the Streak Page (Weight-based)
+  String get streakLabel => switch (this) {
+        StreakTier.lightDumbbell => 'Light Dumbbell',
+        StreakTier.heavyDumbbell => 'Heavy Dumbbell',
+        StreakTier.barbell => 'Barbell',
+        StreakTier.onePlateBarbell => '1 Plate Barbell',
+        StreakTier.twoPlateBarbell => '2 Plate Barbell',
+        StreakTier.fourPlateBarbell => '4 Plate Barbell',
+      };
+
+  /// Displayed on Insights & Award Popups (Metal-based)
+  String get efficiencyLabel => switch (this) {
         StreakTier.lightDumbbell => 'Bronze Efficiency',
         StreakTier.heavyDumbbell => 'Silver Efficiency',
-        StreakTier.ironBeast => 'Gold Efficiency',
-        StreakTier.titan => 'Platinum Efficiency',
-        StreakTier.legendary => 'Diamond Efficiency',
+        StreakTier.barbell => 'Gold Efficiency',
+        StreakTier.onePlateBarbell => 'Platinum Efficiency',
+        StreakTier.twoPlateBarbell => 'Diamond Efficiency',
+        StreakTier.fourPlateBarbell => 'Diamond Efficiency',
       };
+
+  /// Legacy display name for backward compatibility
+  String get displayName => efficiencyLabel;
 
   double get multiplier => switch (this) {
         StreakTier.lightDumbbell => 1.0,
         StreakTier.heavyDumbbell => 1.5,
-        StreakTier.ironBeast => 2.5,
-        StreakTier.titan => 3.5,
-        StreakTier.legendary => 5.0,
+        StreakTier.barbell => 2.0,
+        StreakTier.onePlateBarbell => 3.0,
+        StreakTier.twoPlateBarbell => 5.0,
+        StreakTier.fourPlateBarbell => 5.0,
       };
 }
 
@@ -161,22 +183,38 @@ class FitPointsRecord {
         'isGuest': isGuest,
       };
 
-  factory FitPointsRecord.fromJson(Map<String, dynamic> json) =>
-      FitPointsRecord(
-        userId: json['userId'] as String,
-        lifetimePoints: (json['lifetimePoints'] as num).toDouble(),
-        currentBalance: (json['currentBalance'] as num).toDouble(),
-        currentTier: StreakTier.values.byName(json['currentTier'] as String),
-        streakDays: json['streakDays'] as int,
-        momentumScore: (json['momentumScore'] as num).toDouble(),
-        lastActiveDate: DateTime.parse(json['lastActiveDate'] as String),
-        dailyEarnings: Map<String, double>.from(
-          (json['dailyEarnings'] as Map).map(
-            (k, v) => MapEntry(k as String, (v as num).toDouble()),
-          ),
-        ),
-        isGuest: json['isGuest'] as bool,
+  factory FitPointsRecord.fromJson(Map<String, dynamic> json) {
+    try {
+      return FitPointsRecord(
+        userId: json['userId'] as String? ?? '',
+        lifetimePoints: (json['lifetimePoints'] as num? ??
+                json['currentBalance'] as num? ??
+                0.0)
+            .toDouble(),
+        currentBalance: (json['currentBalance'] as num? ?? 0.0).toDouble(),
+        currentTier: json['currentTier'] != null
+            ? StreakTier.values.byName(json['currentTier'] as String)
+            : StreakTier.lightDumbbell,
+        streakDays: json['streakDays'] as int? ?? 0,
+        momentumScore: (json['momentumScore'] as num? ?? 0.0).toDouble(),
+        lastActiveDate: json['lastActiveDate'] != null
+            ? DateTime.parse(json['lastActiveDate'] as String)
+            : DateTime.now(),
+        dailyEarnings: json['dailyEarnings'] != null
+            ? Map<String, double>.from(
+                (json['dailyEarnings'] as Map).map(
+                  (k, v) => MapEntry(k as String, (v as num).toDouble()),
+                ),
+              )
+            : {},
+        isGuest: json['isGuest'] as bool? ?? false,
       );
+    } catch (e) {
+      debugPrint('[FitPointsRecord] Error parsing JSON: $e');
+      // Return a basic record as fallback instead of crashing the migration
+      return FitPointsRecord.newGuest(json['userId'] as String? ?? 'error');
+    }
+  }
 
   factory FitPointsRecord.newGuest(String guestId) => FitPointsRecord(
         userId: guestId,
@@ -435,6 +473,7 @@ class ConsistencySnapshot {
   final int monthlyActiveDays;
   final double momentum;
   final double fitPoints;
+  final double lifetimePoints;
   final StreakTier consistencyTier;
   final Set<String> hitDays;
   final DateTime lastCalculated;
@@ -446,10 +485,13 @@ class ConsistencySnapshot {
     required this.monthlyActiveDays,
     required this.momentum,
     required this.fitPoints,
+    required this.lifetimePoints,
     required this.consistencyTier,
     required this.hitDays,
     required this.lastCalculated,
   });
+
+  StreakLevel get streakLevel => consistencyTier;
 
   static ConsistencySnapshot empty() => ConsistencySnapshot(
         currentStreak: 0,
@@ -458,31 +500,64 @@ class ConsistencySnapshot {
         monthlyActiveDays: 0,
         momentum: 0,
         fitPoints: 0,
+        lifetimePoints: 0,
         consistencyTier: StreakTier.lightDumbbell,
         hitDays: {},
         lastCalculated: DateTime.now(),
       );
 
   double get levelProgress {
-    final thresholds = [0, 8, 22, 45, 90, 180];
+    final thresholds = [0, 8, 22, 45, 90, 150, 180];
     final idx = consistencyTier.index;
     final current = currentStreak;
     final start = thresholds[idx];
-    final end = idx + 1 < thresholds.length ? thresholds[idx + 1] : 365;
+    final end = idx + 1 < thresholds.length ? thresholds[idx + 1] : thresholds.last;
     return ((current - start) / (end - start)).clamp(0.0, 1.0);
   }
 
   String get nextLevelLabel {
-    final labels = ['Light Dumbbell', 'Heavy Dumbbell', 'Barbell', '1-Plate Barbell', '2-Plate Barbell', '4-Plate Barbell'];
-    final idx = consistencyTier.index;
-    return idx + 1 < labels.length ? labels[idx + 1] : 'Max Level';
+    if (consistencyTier == StreakTier.maxLevel) return 'Max Efficiency';
+    final nextTier = StreakTier.values[consistencyTier.index + 1];
+    return nextTier.efficiencyLabel;
   }
 
   int get daysToNextLevel {
-    final thresholds = [0, 8, 22, 45, 90, 180];
+    final thresholds = [0, 8, 22, 45, 90, 150, 180];
     final idx = consistencyTier.index;
     if (idx + 1 >= thresholds.length) return 0;
     return thresholds[idx + 1] - currentStreak;
+  }
+}
+
+// ─────────────────────────────────────────────
+// ADHERENCE EVALUATOR
+// ─────────────────────────────────────────────
+
+enum AdherenceLevel {
+  perfect, // ±10% cals, ±15% protein
+  good, // ±20% cals
+  fair, // Logged meaningful cals but missed targets
+  poor, // Very few cals or no logs
+}
+
+class AdherenceEvaluator {
+  static AdherenceLevel evaluate({
+    required List<MealLogEntry> logs,
+    required double calorieTarget,
+    required double proteinTarget,
+  }) {
+    if (logs.isEmpty) return AdherenceLevel.poor;
+
+    final totalCals = logs.fold<double>(0, (s, m) => s + m.calories);
+    final totalPro = logs.fold<double>(0, (s, m) => s + m.proteinGrams);
+
+    final calDiff = (totalCals - calorieTarget).abs() / calorieTarget;
+    final proDiff = (totalPro - proteinTarget).abs() / proteinTarget;
+
+    if (calDiff <= 0.1 && proDiff <= 0.15) return AdherenceLevel.perfect;
+    if (calDiff <= 0.2) return AdherenceLevel.good;
+    if (totalCals >= 300) return AdherenceLevel.fair;
+    return AdherenceLevel.poor;
   }
 }
 
@@ -499,60 +574,47 @@ class ActiveDayEvaluator {
   static const int _minLogsForActivity = 1;
 
   /// Unified logic to determine if a day was "active" for consistency purposes.
-  /// A day is active if it has:
-  /// - Meaningful nutrition logging (cumulative calories + sufficient logs), OR
-  /// - Meaningful workout activity, OR
-  /// - Meaningful adherence completion
-  ///
-  /// NOT:
-  /// - App opens
-  /// - Tiny spam logs (micro-calories)
-  /// - Random edits
-  static bool isActiveDay(List<FoodItem> logs) {
-    if (logs.isEmpty) return false;
-
-    // Filter out spam/junk logs
-    final meaningfulLogs = logs.where((item) {
-      final name = item.name.toLowerCase();
-      // Exclude pure water/hydration-only items
-      if (name == 'water' || name.contains('hydration')) {
-        return false;
-      }
-      // Exclude micro-spam (very low calorie items)
-      if (item.calories < _minCaloriesPerLog) {
-        return false;
-      }
-      return true;
-    }).toList();
-
+  static bool isActiveDay(List<FoodItem> logs, {List<dynamic>? workouts}) {
     // Path 1: Meaningful nutrition logging
-    if (meaningfulLogs.length >= _minLogsForActivity) {
-      final totalCalories = meaningfulLogs.fold<double>(0, (s, item) => s + item.calories);
-      if (totalCalories >= _minDailyCalories) {
-        debugPrint('[ActiveDayEvaluator] Active via nutrition: ${meaningfulLogs.length} logs, ${totalCalories.toStringAsFixed(0)} cals');
+    if (logs.isNotEmpty) {
+      final meaningfulLogs = logs.where((item) {
+        final name = item.name.toLowerCase();
+        if (name == 'water' || name.contains('hydration')) return false;
+        if (item.calories < _minCaloriesPerLog) return false;
         return true;
+      }).toList();
+
+      if (meaningfulLogs.length >= _minLogsForActivity) {
+        final totalCalories = meaningfulLogs.fold<double>(0, (s, item) => s + item.calories);
+        if (totalCalories >= _minDailyCalories) {
+          debugPrint('[ActiveDayEvaluator] Active via nutrition: ${meaningfulLogs.length} logs, ${totalCalories.toStringAsFixed(0)} cals');
+          return true;
+        }
       }
     }
 
-    // Path 2: TODO - Meaningful workout activity (when workouts are logged)
-    // if (workouts.isNotEmpty && _hasCompletedWorkout(workouts)) {
-    //   debugPrint('[ActiveDayEvaluator] Active via workout');
-    //   return true;
-    // }
-
-    // Path 3: TODO - Meaningful adherence completion (when adherence tracking is active)
-    // if (adherence.completionScore >= 0.7) {
-    //   debugPrint('[ActiveDayEvaluator] Active via adherence');
-    //   return true;
-    // }
+    // Path 2: Meaningful workout activity
+    if (workouts != null && workouts.isNotEmpty) {
+      if (_hasCompletedWorkout(workouts)) {
+        debugPrint('[ActiveDayEvaluator] Active via workout: ${workouts.length} sessions');
+        return true;
+      }
+    }
 
     return false;
   }
 
   /// Helper: check if a day has meaningful exercise activity
-  /// (not just a walk, must be structured workout)
   static bool _hasCompletedWorkout(List<dynamic> workouts) {
-    // TODO: Implement once workout structure is available
+    for (final w in workouts) {
+      // Duck typing or explicit check depending on model availability
+      // Assuming w has 'isCompleted' or similar
+      try {
+        if (w.isCompleted == true) return true;
+        if (w.totalVolume > 0) return true;
+        if (w.totalSets > 0) return true;
+      } catch (_) {}
+    }
     return false;
   }
 

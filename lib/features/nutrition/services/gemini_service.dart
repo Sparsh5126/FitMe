@@ -3,14 +3,14 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/food_item.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
 
 class GeminiService {
   static String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
 
   // Text model
   static String get _textUrl =>
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=$_apiKey';
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=$_apiKey';
 
   // Vision model (same endpoint – flash is multimodal)
   static String get _visionUrl => _textUrl;
@@ -58,7 +58,6 @@ Rules:
 - Do NOT return markdown, prose, or anything other than the JSON array.
 ''';
 
-
   // ── Text logging ──────────────────────────────────────────────────────────
 
   /// Parse a natural language description. Throws on API errors.
@@ -68,9 +67,9 @@ Rules:
       'contents': [
         {
           'parts': [
-            {'text': '$_systemPrompt\n\nUser input: $input'}
-          ]
-        }
+            {'text': '$_systemPrompt\n\nUser input: $input'},
+          ],
+        },
       ],
       'generationConfig': {'temperature': 0.1, 'maxOutputTokens': 1024},
     });
@@ -103,15 +102,15 @@ Rules:
       'contents': [
         {
           'parts': [
-            {'text': '$_systemPrompt\n\nIdentify all food items visible in this photo and return their nutrition data.'},
             {
-              'inline_data': {
-                'mime_type': mimeType,
-                'data': base64Image,
-              }
-            }
-          ]
-        }
+              'text':
+                  '$_systemPrompt\n\nIdentify all food items visible in this photo and return their nutrition data.',
+            },
+            {
+              'inline_data': {'mime_type': mimeType, 'data': base64Image},
+            },
+          ],
+        },
       ],
       'generationConfig': {'temperature': 0.1, 'maxOutputTokens': 1024},
     });
@@ -139,15 +138,19 @@ Rules:
   static void _assertApiKey() {
     if (_apiKey.isEmpty) {
       throw Exception(
-          'GEMINI_API_KEY is not set in .env. Add it and restart the app.');
+        'GEMINI_API_KEY is not set in .env. Add it and restart the app.',
+      );
     }
   }
 
   static Future<String> _post(String url, String body) async {
     debugPrint('[GeminiService] POST');
     final response = await http
-        .post(Uri.parse(url),
-            headers: {'Content-Type': 'application/json'}, body: body)
+        .post(
+          Uri.parse(url),
+          headers: {'Content-Type': 'application/json'},
+          body: body,
+        )
         .timeout(const Duration(seconds: 10));
     debugPrint('[GeminiService] status: ${response.statusCode}');
     if (response.statusCode != 200) {
@@ -166,8 +169,7 @@ Rules:
       return [];
     }
 
-    final text =
-        candidates[0]['content']['parts'][0]['text'] as String? ?? '';
+    final text = candidates[0]['content']['parts'][0]['text'] as String? ?? '';
     debugPrint('[GeminiService] raw text: $text');
 
     // Strip any accidental markdown fences
@@ -189,22 +191,26 @@ Rules:
 
     final List parsed = jsonDecode(jsonStr);
 
-    return parsed.map((item) {
-      final id = 'gemini_${DateTime.now().microsecondsSinceEpoch}_${item['name'].hashCode}';
-      return FoodItem(
-        id: id,
-        name: item['name'] ?? 'Unknown',
-        calories: _toInt(item['calories']),
-        protein: _toInt(item['protein']),
-        carbs: _toInt(item['carbs']),
-        fats: _toInt(item['fats']),
-        consumedAmount: item['consumedAmount'] != null
-            ? (item['consumedAmount'] as num).toDouble()
-            : 1.0,
-        consumedUnit: item['consumedUnit'] as String? ?? 'serving',
-        isAiLogged: true,
-      );
-    }).where((f) => f.calories > 0).toList();
+    return parsed
+        .map((item) {
+          final id =
+              'gemini_${DateTime.now().microsecondsSinceEpoch}_${item['name'].hashCode}';
+          return FoodItem(
+            id: id,
+            name: item['name'] ?? 'Unknown',
+            calories: _toInt(item['calories']),
+            protein: _toInt(item['protein']),
+            carbs: _toInt(item['carbs']),
+            fats: _toInt(item['fats']),
+            consumedAmount: item['consumedAmount'] != null
+                ? (item['consumedAmount'] as num).toDouble()
+                : 1.0,
+            consumedUnit: item['consumedUnit'] as String? ?? 'serving',
+            isAiLogged: true,
+          );
+        })
+        .where((f) => f.calories > 0)
+        .toList();
   }
 
   static int _toInt(dynamic v) {

@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/models/user_profile.dart';
-import '../../../core/widgets/goal_pace_slider.dart';
-import '../../dashboard/providers/user_provider.dart';
-import '../../auth/providers/auth_provider.dart';
-import '../../nutrition/services/local_nutrition_service.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/models/user_profile.dart';
+import 'package:fitme/core/widgets/goal_pace_slider.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/auth/providers/auth_provider.dart';
+import 'package:fitme/features/nutrition/services/local_nutrition_service.dart';
+import 'package:fitme/features/gamification/screens/wrapped_screen.dart';
+import 'package:fitme/features/nutrition/services/migration_service.dart';
+import 'package:fitme/features/fitpoints/services/fitpoints_service.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
+
 class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
@@ -20,10 +24,12 @@ class ProfileScreen extends ConsumerWidget {
       backgroundColor: AppTheme.background,
       body: SafeArea(
         child: profileAsync.when(
-          loading: () =>
-              const Center(child: CircularProgressIndicator(color: AppTheme.accent)),
-          error: (e, _) =>
-              Center(child: Text('$e', style: const TextStyle(color: Colors.red))),
+          loading: () => const Center(
+            child: CircularProgressIndicator(color: AppTheme.accent),
+          ),
+          error: (e, _) => Center(
+            child: Text('$e', style: const TextStyle(color: Colors.red)),
+          ),
           data: (profile) {
             if (profile == null) return const SizedBox();
             return SingleChildScrollView(
@@ -33,11 +39,14 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Profile',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.w900,
-                            fontSize: 26)),
+                    const Text(
+                      'Profile',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 26,
+                      ),
+                    ),
                     const SizedBox(height: 20),
                     _AccountCard(profile: profile),
                     const SizedBox(height: 20),
@@ -45,26 +54,62 @@ class ProfileScreen extends ConsumerWidget {
                     const SizedBox(height: 24),
                     const _SectionHeader('Personal Details'),
                     const SizedBox(height: 12),
-                    _DetailTile(icon: Icons.cake_rounded, label: 'Age', value: '${profile.age} years'),
-                    _DetailTile(icon: Icons.height_rounded, label: 'Height', value: '${profile.height.toStringAsFixed(0)} cm'),
-                    _DetailTile(icon: Icons.monitor_weight_rounded, label: 'Current Weight', value: '${profile.weight} kg'),
-                    _DetailTile(icon: Icons.flag_rounded, label: 'Goal Weight', value: '${profile.goalWeight} kg'),
-                    _DetailTile(icon: Icons.directions_run_rounded, label: 'Activity Level', value: _activityLabel(profile.activityLevel)),
-                    _DetailTile(icon: Icons.restaurant_rounded, label: 'Diet Type', value: _capitalize(profile.dietType)),
-                    _DetailTile(icon: Icons.fitness_center_rounded, label: 'App Use', value: _appUseLabel(profile.appUse)),
+                    _DetailTile(
+                      icon: Icons.cake_rounded,
+                      label: 'Age',
+                      value: '${profile.age} years',
+                    ),
+                    _DetailTile(
+                      icon: Icons.height_rounded,
+                      label: 'Height',
+                      value: '${profile.height.toStringAsFixed(0)} cm',
+                    ),
+                    _DetailTile(
+                      icon: Icons.monitor_weight_rounded,
+                      label: 'Current Weight',
+                      value: '${profile.weight} kg',
+                    ),
+                    _DetailTile(
+                      icon: Icons.flag_rounded,
+                      label: 'Goal Weight',
+                      value: '${profile.goalWeight} kg',
+                    ),
+                    _DetailTile(
+                      icon: Icons.directions_run_rounded,
+                      label: 'Activity Level',
+                      value: _activityLabel(profile.activityLevel),
+                    ),
+                    _DetailTile(
+                      icon: Icons.restaurant_rounded,
+                      label: 'Diet Type',
+                      value: _capitalize(profile.dietType),
+                    ),
+                    _DetailTile(
+                      icon: Icons.fitness_center_rounded,
+                      label: 'App Use',
+                      value: _appUseLabel(profile.appUse),
+                    ),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const _SectionHeader('Daily Macro Goals'),
                         TextButton.icon(
-                          onPressed: () => _showEditGoals(context, profile, ref),
-                          icon: const Icon(Icons.tune_rounded, size: 15, color: AppTheme.accent),
-                          label: const Text('Edit Goals',
-                              style: TextStyle(
-                                  color: AppTheme.accent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 13)),
+                          onPressed: () =>
+                              _showEditGoals(context, profile, ref),
+                          icon: const Icon(
+                            Icons.tune_rounded,
+                            size: 15,
+                            color: AppTheme.accent,
+                          ),
+                          label: const Text(
+                            'Edit Goals',
+                            style: TextStyle(
+                              color: AppTheme.accent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 13,
+                            ),
+                          ),
                           style: TextButton.styleFrom(padding: EdgeInsets.zero),
                         ),
                       ],
@@ -81,13 +126,18 @@ class ProfileScreen extends ConsumerWidget {
                         decoration: BoxDecoration(
                           color: AppTheme.accent.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(14),
-                          border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+                          border: Border.all(
+                            color: AppTheme.accent.withOpacity(0.3),
+                          ),
                         ),
-                        child: Text('"${profile.mantra}"',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontStyle: FontStyle.italic)),
+                        child: Text(
+                          '"${profile.mantra}"',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 15,
+                            fontStyle: FontStyle.italic,
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 24),
                     ],
@@ -97,17 +147,49 @@ class ProfileScreen extends ConsumerWidget {
                       child: ElevatedButton.icon(
                         onPressed: () => _showEditSheet(context, profile, ref),
                         icon: const Icon(Icons.edit_rounded, size: 18),
-                        label: const Text('Edit Profile',
-                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        label: const Text(
+                          'Edit Profile',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppTheme.surface,
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14)),
+                            borderRadius: BorderRadius.circular(14),
+                          ),
                           elevation: 0,
                         ),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton.icon(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                const Scaffold(body: WrappedScreen()),
+                          ),
+                        ),
+                        icon: const Icon(Icons.auto_awesome_mosaic_rounded,
+                            size: 18),
+                        label: const Text(
+                          'Debug: Show My Wrapped',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.accent,
+                          side: const BorderSide(color: AppTheme.accent),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(14),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    const _MigrateFitPointsTile(),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -119,7 +201,11 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditGoals(BuildContext context, UserProfile profile, WidgetRef ref) {
+  void _showEditGoals(
+    BuildContext context,
+    UserProfile profile,
+    WidgetRef ref,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -128,7 +214,11 @@ class ProfileScreen extends ConsumerWidget {
     );
   }
 
-  void _showEditSheet(BuildContext context, UserProfile profile, WidgetRef ref) {
+  void _showEditSheet(
+    BuildContext context,
+    UserProfile profile,
+    WidgetRef ref,
+  ) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -149,12 +239,131 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   String _appUseLabel(String use) {
-    const map = {'both': 'Macros + Gym', 'macros': 'Macros Only', 'gym': 'Gym Only'};
+    const map = {
+      'both': 'Macros + Gym',
+      'macros': 'Macros Only',
+      'gym': 'Gym Only',
+    };
     return map[use] ?? use;
   }
 
   String _capitalize(String s) =>
       s.isEmpty ? s : s[0].toUpperCase() + s.substring(1);
+}
+
+// ─────────────────────────────────────────────
+// MANUAL MIGRATION TILE
+// ─────────────────────────────────────────────
+class _MigrateFitPointsTile extends ConsumerStatefulWidget {
+  const _MigrateFitPointsTile();
+
+  @override
+  ConsumerState<_MigrateFitPointsTile> createState() => _MigrateFitPointsTileState();
+}
+
+class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
+  FitPointsRecord? _detectedGuestRecord;
+  bool _migrating = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _check();
+  }
+
+  Future<void> _check() async {
+    final data = await LocalNutritionService.getFitPointsRecord();
+    if (mounted) {
+      setState(() {
+        _detectedGuestRecord = data != null ? FitPointsRecord.fromJson(data) : null;
+      });
+    }
+  }
+
+  Future<void> _doMigrate() async {
+    final user = ref.read(authNotifierProvider).value;
+    if (user == null || _detectedGuestRecord == null) return;
+
+    setState(() => _migrating = true);
+    try {
+      final fpService = FitPointsService();
+      final accountFP = await fpService.getRecord(user.uid, false);
+      
+      final merged = fpService.migrateGuestToAccount(
+        guestRecord: _detectedGuestRecord!,
+        accountRecord: accountFP,
+      );
+      
+      await fpService.saveRecord(merged);
+      await LocalNutritionService.clearAll();
+      
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Merged ${_detectedGuestRecord!.lifetimePoints.toInt()} FP into your account!')),
+        );
+      }
+      await _check();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Recovery failed: $e')),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _migrating = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_detectedGuestRecord == null || ref.watch(isGuestProvider)) return const SizedBox();
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.accent.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.stars_rounded, color: AppTheme.accent),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  'Found ${_detectedGuestRecord!.lifetimePoints.toInt()} un-synced FitPoints from your guest session.',
+                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: _migrating ? null : _doMigrate,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppTheme.accent,
+                foregroundColor: Colors.black,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
+              child: _migrating
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                    )
+                  : const Text('Sync FitPoints Now'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 // ─────────────────────────────────────────────
@@ -169,7 +378,9 @@ class _AccountCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-          color: AppTheme.surface, borderRadius: BorderRadius.circular(18)),
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(18),
+      ),
       child: Row(
         children: [
           Container(
@@ -183,9 +394,10 @@ class _AccountCard extends StatelessWidget {
             child: Text(
               profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
               style: const TextStyle(
-                  color: AppTheme.accent,
-                  fontSize: 26,
-                  fontWeight: FontWeight.w900),
+                color: AppTheme.accent,
+                fontSize: 26,
+                fontWeight: FontWeight.w900,
+              ),
             ),
           ),
           const SizedBox(width: 16),
@@ -193,19 +405,27 @@ class _AccountCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(profile.name,
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold)),
+                Text(
+                  profile.name,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 4),
                 Text(
-                    'BMI: ${profile.bmi.toStringAsFixed(1)} • ${profile.bmiCategory}',
-                    style: const TextStyle(
-                        color: AppTheme.textSecondary, fontSize: 13)),
+                  'BMI: ${profile.bmi.toStringAsFixed(1)} • ${profile.bmiCategory}',
+                  style: const TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 13,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                const Text('Anonymous Account',
-                    style: TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                const Text(
+                  'Anonymous Account',
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                ),
               ],
             ),
           ),
@@ -230,19 +450,22 @@ class _StatsRow extends StatelessWidget {
     return Row(
       children: [
         _StatTile(
-            label: isLosing ? 'To Lose' : 'To Gain',
-            value: '${toGo.toStringAsFixed(1)} kg',
-            color: AppTheme.accent),
+          label: isLosing ? 'To Lose' : 'To Gain',
+          value: '${toGo.toStringAsFixed(1)} kg',
+          color: AppTheme.accent,
+        ),
         const SizedBox(width: 12),
         _StatTile(
-            label: 'Daily Calories',
-            value: '${profile.dynamicCalories}',
-            color: Colors.orangeAccent),
+          label: 'Daily Calories',
+          value: '${profile.dynamicCalories}',
+          color: Colors.orangeAccent,
+        ),
         const SizedBox(width: 12),
         _StatTile(
-            label: 'Protein Goal',
-            value: '${profile.dynamicProtein}g',
-            color: Colors.blueAccent),
+          label: 'Protein Goal',
+          value: '${profile.dynamicProtein}g',
+          color: Colors.blueAccent,
+        ),
       ],
     );
   }
@@ -252,7 +475,11 @@ class _StatTile extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
-  const _StatTile({required this.label, required this.value, required this.color});
+  const _StatTile({
+    required this.label,
+    required this.value,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -260,17 +487,28 @@ class _StatTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-            color: AppTheme.surface, borderRadius: BorderRadius.circular(14)),
+          color: AppTheme.surface,
+          borderRadius: BorderRadius.circular(14),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(value,
-                style: TextStyle(
-                    color: color, fontSize: 18, fontWeight: FontWeight.w900)),
+            Text(
+              value,
+              style: TextStyle(
+                color: color,
+                fontSize: 18,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
             const SizedBox(height: 2),
-            Text(label,
-                style: const TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 11)),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+              ),
+            ),
           ],
         ),
       ),
@@ -287,15 +525,17 @@ class _MacroGoalRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      _MacroTile('Protein', '${profile.dynamicProtein}g', Colors.blueAccent),
-      const SizedBox(width: 10),
-      _MacroTile('Carbs', '${profile.dynamicCarbs}g', Colors.orangeAccent),
-      const SizedBox(width: 10),
-      _MacroTile('Fats', '${profile.dynamicFats}g', Colors.purpleAccent),
-      const SizedBox(width: 10),
-      _MacroTile('Calories', '${profile.dynamicCalories}', AppTheme.accent),
-    ]);
+    return Row(
+      children: [
+        _MacroTile('Protein', '${profile.dynamicProtein}g', Colors.blueAccent),
+        const SizedBox(width: 10),
+        _MacroTile('Carbs', '${profile.dynamicCarbs}g', Colors.orangeAccent),
+        const SizedBox(width: 10),
+        _MacroTile('Fats', '${profile.dynamicFats}g', Colors.purpleAccent),
+        const SizedBox(width: 10),
+        _MacroTile('Calories', '${profile.dynamicCalories}', AppTheme.accent),
+      ],
+    );
   }
 }
 
@@ -320,14 +560,21 @@ class _MacroTile extends StatelessWidget {
           ),
           child: Column(
             children: [
-              Text(value,
-                  style: TextStyle(
-                      color: color,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 14)),
-              Text(label,
-                  style: const TextStyle(
-                      color: AppTheme.textSecondary, fontSize: 10)),
+              Text(
+                value,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 14,
+                ),
+              ),
+              Text(
+                label,
+                style: const TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 10,
+                ),
+              ),
             ],
           ),
         ),
@@ -343,7 +590,11 @@ class _DetailTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
-  const _DetailTile({required this.icon, required this.label, required this.value});
+  const _DetailTile({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -351,16 +602,22 @@ class _DetailTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-          color: AppTheme.surface, borderRadius: BorderRadius.circular(12)),
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Row(
         children: [
           Icon(icon, color: AppTheme.textSecondary, size: 18),
           const SizedBox(width: 12),
           Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
           const Spacer(),
-          Text(value,
-              style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
         ],
       ),
     );
@@ -399,8 +656,9 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     _ageCtrl = TextEditingController(text: widget.profile.age.toString());
     _heightCtrl = TextEditingController(text: widget.profile.height.toString());
     _weightCtrl = TextEditingController(text: widget.profile.weight.toString());
-    _goalWeightCtrl =
-        TextEditingController(text: widget.profile.goalWeight.toString());
+    _goalWeightCtrl = TextEditingController(
+      text: widget.profile.goalWeight.toString(),
+    );
     _mantraCtrl = TextEditingController(text: widget.profile.mantra);
     _gender = widget.profile.gender;
     _activityLevel = widget.profile.activityLevel;
@@ -435,7 +693,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
       appUse: _appUse,
       mantra: _mantraCtrl.text.trim(),
     );
-    
+
     final isGuest = widget.ref.read(isGuestProvider);
     if (isGuest) {
       await LocalNutritionService.saveProfile(updated);
@@ -463,41 +721,65 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Center(
-                child: Container(
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                        color: AppTheme.surface,
-                        borderRadius: BorderRadius.circular(2)))),
+              child: Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
-            const Text('Edit Profile',
-                style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18)),
+            const Text(
+              'Edit Profile',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
             const SizedBox(height: 20),
             _EditField(label: 'Name', controller: _nameCtrl, numeric: false),
             const SizedBox(height: 14),
-            Row(children: [
-              Expanded(child: _EditField(label: 'Age', controller: _ageCtrl)),
-              const SizedBox(width: 14),
-              Expanded(
+            Row(
+              children: [
+                Expanded(
+                  child: _EditField(label: 'Age', controller: _ageCtrl),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
                   child: _EditField(
-                      label: 'Height (cm)', controller: _heightCtrl)),
-            ]),
+                    label: 'Height (cm)',
+                    controller: _heightCtrl,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 14),
-            Row(children: [
-              Expanded(
+            Row(
+              children: [
+                Expanded(
                   child: _EditField(
-                      label: 'Current Weight (kg)', controller: _weightCtrl)),
-              const SizedBox(width: 14),
-              Expanded(
+                    label: 'Current Weight (kg)',
+                    controller: _weightCtrl,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
                   child: _EditField(
-                      label: 'Goal Weight (kg)', controller: _goalWeightCtrl)),
-            ]),
+                    label: 'Goal Weight (kg)',
+                    controller: _goalWeightCtrl,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 14),
             _EditField(
-                label: 'Your Mantra', controller: _mantraCtrl, numeric: false),
+              label: 'Your Mantra',
+              controller: _mantraCtrl,
+              numeric: false,
+            ),
             const SizedBox(height: 14),
             _DropdownField(
               label: 'Gender',
@@ -553,15 +835,22 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                   backgroundColor: AppTheme.accent,
                   foregroundColor: AppTheme.background,
                   shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14)),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
                   elevation: 0,
                 ),
                 child: _saving
                     ? const CircularProgressIndicator(
-                        color: AppTheme.background, strokeWidth: 2)
-                    : const Text('Save Changes',
+                        color: AppTheme.background,
+                        strokeWidth: 2,
+                      )
+                    : const Text(
+                        'Save Changes',
                         style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 15)),
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
               ),
             ),
           ],
@@ -575,8 +864,11 @@ class _EditField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final bool numeric;
-  const _EditField(
-      {required this.label, required this.controller, this.numeric = true});
+  const _EditField({
+    required this.label,
+    required this.controller,
+    this.numeric = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -595,11 +887,14 @@ class _EditField extends StatelessWidget {
         filled: true,
         fillColor: AppTheme.surface,
         // Issue 2: proper contentPadding so label + value don't overlap/clip
-        contentPadding:
-            const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 18,
+        ),
         border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: BorderSide.none),
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
@@ -618,9 +913,14 @@ class _SectionHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(title,
-        style: const TextStyle(
-            color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16));
+    return Text(
+      title,
+      style: const TextStyle(
+        color: Colors.white,
+        fontWeight: FontWeight.w900,
+        fontSize: 16,
+      ),
+    );
   }
 }
 
@@ -630,33 +930,38 @@ class _DropdownField extends StatelessWidget {
   final List<DropdownMenuItem<String>> items;
   final ValueChanged<String?> onChanged;
 
-  const _DropdownField(
-      {required this.label,
-      required this.value,
-      required this.items,
-      required this.onChanged});
+  const _DropdownField({
+    required this.label,
+    required this.value,
+    required this.items,
+    required this.onChanged,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label,
-            style: const TextStyle(
-                color: AppTheme.textSecondary, fontSize: 13)),
+        Text(
+          label,
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+        ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: value,
+          initialValue: value,
           dropdownColor: AppTheme.surface,
           style: const TextStyle(color: Colors.white),
           decoration: InputDecoration(
             filled: true,
             fillColor: AppTheme.surface,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 18,
+            ),
             border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: BorderSide.none),
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
           ),
           items: items,
           onChanged: onChanged,
@@ -694,8 +999,9 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
     _pace = widget.profile.goalPace;
     _manualCals = widget.profile.dynamicCalories;
     _paceCals = widget.profile.dynamicCalories;
-    _calsCtrl =
-        TextEditingController(text: widget.profile.dynamicCalories.toString());
+    _calsCtrl = TextEditingController(
+      text: widget.profile.dynamicCalories.toString(),
+    );
   }
 
   @override
@@ -707,18 +1013,19 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
 
   Map<String, int> _computeMacros(int targetCals) {
     final p = widget.profile;
-    double proteinMult =
-        (p.appUse == 'gym' || p.appUse == 'both') ? 2.0 : 1.6;
+    double proteinMult = (p.appUse == 'gym' || p.appUse == 'both') ? 2.0 : 1.6;
     if (p.dietType == 'nonveg') proteinMult += 0.1;
     final protein = (p.weight * proteinMult).round().clamp(100, 300);
     final fats = ((targetCals * 0.25) / 9).round();
-    final carbs =
-        ((targetCals - protein * 4 - fats * 9) / 4).round().clamp(50, 500);
+    final carbs = ((targetCals - protein * 4 - fats * 9) / 4).round().clamp(
+      50,
+      500,
+    );
     return {
       'calories': targetCals,
       'protein': protein,
       'carbs': carbs,
-      'fats': fats
+      'fats': fats,
     };
   }
 
@@ -726,7 +1033,7 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
     setState(() => _saving = true);
     final finalCals = _tabCtrl.index == 0 ? _manualCals : _paceCals;
     final m = _computeMacros(finalCals);
-    
+
     final isGuest = widget.ref.read(isGuestProvider);
     if (isGuest) {
       final updated = widget.profile.copyWith(
@@ -742,12 +1049,12 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
           .collection('users')
           .doc(widget.profile.uid)
           .update({
-        'dynamicCalories': m['calories'],
-        'dynamicProtein': m['protein'],
-        'dynamicCarbs': m['carbs'],
-        'dynamicFats': m['fats'],
-        'goalPace': _pace,
-      });
+            'dynamicCalories': m['calories'],
+            'dynamicProtein': m['protein'],
+            'dynamicCarbs': m['carbs'],
+            'dynamicFats': m['fats'],
+            'goalPace': _pace,
+          });
     }
     widget.ref.invalidate(userProfileProvider);
     if (mounted) Navigator.pop(context);
@@ -765,127 +1072,191 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Center(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
               child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(2)))),
-          const SizedBox(height: 16),
-          const Text('Edit Goals',
-              style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 18)),
-          const SizedBox(height: 4),
-          Text(
-              '${UserProfile.paceLabel(p.goalPace)} pace  •  ${p.dynamicCalories} kcal/day',
-              style:
-                  const TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
-          const SizedBox(height: 16),
-          TabBar(
-            controller: _tabCtrl,
-            indicatorColor: AppTheme.accent,
-            indicatorWeight: 2,
-            dividerColor: Colors.transparent,
-            labelColor: AppTheme.accent,
-            unselectedLabelColor: AppTheme.textSecondary,
-            labelStyle:
-                const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            tabs: const [Tab(text: 'Manual'), Tab(text: 'By Pace')],
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            height: 320,
-            child: TabBarView(controller: _tabCtrl, children: [
-              // ── Manual tab ────────────────────────────────────────
-              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                const SizedBox(height: 16),
-                // Issue 2: Fixed Target Cal field — proper height & padding
-                TextField(
-                  controller: _calsCtrl,
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                  style: const TextStyle(color: Colors.white, fontSize: 16),
-                  decoration: InputDecoration(
-                    labelText: 'Target Calories',
-                    suffixText: 'kcal/day',
-                    suffixStyle:
-                        const TextStyle(color: AppTheme.textSecondary),
-                    labelStyle:
-                        const TextStyle(color: AppTheme.textSecondary),
-                    filled: true,
-                    fillColor: AppTheme.surface,
-                    // Key fix: explicit contentPadding keeps text vertically
-                    // centered and prevents the label from being clipped
-                    contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16, vertical: 20),
-                    border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide:
-                          const BorderSide(color: AppTheme.accent, width: 1.5),
-                    ),
-                  ),
-                  onChanged: (v) => setState(
-                      () => _manualCals = int.tryParse(v) ?? _manualCals),
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: AppTheme.surface,
+                  borderRadius: BorderRadius.circular(2),
                 ),
-                const SizedBox(height: 16),
-                if (_manualCals > 0) ...[
-                  const Text('Auto macro split:',
-                      style: TextStyle(
-                          color: AppTheme.textSecondary, fontSize: 12)),
-                  const SizedBox(height: 10),
-                  Builder(builder: (_) {
-                    final m = _computeMacros(_manualCals);
-                    return Row(children: [
-                      _GoalChip('Protein', '${m['protein']}g', Colors.blueAccent),
-                      const SizedBox(width: 8),
-                      _GoalChip('Carbs', '${m['carbs']}g', Colors.orangeAccent),
-                      const SizedBox(width: 8),
-                      _GoalChip('Fats', '${m['fats']}g', Colors.purpleAccent),
-                    ]);
-                  }),
-                ],
-              ]),
-
-              // ── Pace tab ──────────────────────────────────────────
-              GoalPaceSlider(
-                weight: p.weight,
-                goalWeight: p.goalWeight,
-                tdee: p.tdee,
-                initialPace: _pace,
-                onPaceChanged: (pace) => setState(() => _pace = pace),
-                onCaloriesChanged: (cals) => setState(() => _paceCals = cals),
               ),
-            ]),
-          ),
-          const SizedBox(height: 24),
-          SizedBox(
-            width: double.infinity,
-            height: 52,
-            child: ElevatedButton(
-              onPressed: _saving ? null : _save,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accent,
-                foregroundColor: AppTheme.background,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(14)),
-                elevation: 0,
-              ),
-              child: _saving
-                  ? const CircularProgressIndicator(
-                      color: AppTheme.background, strokeWidth: 2)
-                  : const Text('Save Goals',
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 15)),
             ),
-          ),
-        ]),
+            const SizedBox(height: 16),
+            const Text(
+              'Edit Goals',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 18,
+              ),
+            ),
+            const SizedBox(height: 4),
+            Text(
+              '${UserProfile.paceLabel(p.goalPace)} pace  •  ${p.dynamicCalories} kcal/day',
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 13,
+              ),
+            ),
+            const SizedBox(height: 16),
+            TabBar(
+              controller: _tabCtrl,
+              indicatorColor: AppTheme.accent,
+              indicatorWeight: 2,
+              dividerColor: Colors.transparent,
+              labelColor: AppTheme.accent,
+              unselectedLabelColor: AppTheme.textSecondary,
+              labelStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 13,
+              ),
+              tabs: const [
+                Tab(text: 'Manual'),
+                Tab(text: 'By Pace'),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              height: 320,
+              child: TabBarView(
+                controller: _tabCtrl,
+                children: [
+                  // ── Manual tab ────────────────────────────────────────
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 16),
+                      // Issue 2: Fixed Target Cal field — proper height & padding
+                      TextField(
+                        controller: _calsCtrl,
+                        keyboardType: TextInputType.number,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                        ],
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 16,
+                        ),
+                        decoration: InputDecoration(
+                          labelText: 'Target Calories',
+                          suffixText: 'kcal/day',
+                          suffixStyle: const TextStyle(
+                            color: AppTheme.textSecondary,
+                          ),
+                          labelStyle: const TextStyle(
+                            color: AppTheme.textSecondary,
+                          ),
+                          filled: true,
+                          fillColor: AppTheme.surface,
+                          // Key fix: explicit contentPadding keeps text vertically
+                          // centered and prevents the label from being clipped
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 20,
+                          ),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppTheme.accent,
+                              width: 1.5,
+                            ),
+                          ),
+                        ),
+                        onChanged: (v) => setState(
+                          () => _manualCals = int.tryParse(v) ?? _manualCals,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      if (_manualCals > 0) ...[
+                        const Text(
+                          'Auto macro split:',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Builder(
+                          builder: (_) {
+                            final m = _computeMacros(_manualCals);
+                            return Row(
+                              children: [
+                                _GoalChip(
+                                  'Protein',
+                                  '${m['protein']}g',
+                                  Colors.blueAccent,
+                                ),
+                                const SizedBox(width: 8),
+                                _GoalChip(
+                                  'Carbs',
+                                  '${m['carbs']}g',
+                                  Colors.orangeAccent,
+                                ),
+                                const SizedBox(width: 8),
+                                _GoalChip(
+                                  'Fats',
+                                  '${m['fats']}g',
+                                  Colors.purpleAccent,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
+                    ],
+                  ),
+
+                  // ── Pace tab ──────────────────────────────────────────
+                  GoalPaceSlider(
+                    weight: p.weight,
+                    goalWeight: p.goalWeight,
+                    tdee: p.tdee,
+                    initialPace: _pace,
+                    onPaceChanged: (pace) => setState(() => _pace = pace),
+                    onCaloriesChanged: (cals) =>
+                        setState(() => _paceCals = cals),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 52,
+              child: ElevatedButton(
+                onPressed: _saving ? null : _save,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  foregroundColor: AppTheme.background,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  elevation: 0,
+                ),
+                child: _saving
+                    ? const CircularProgressIndicator(
+                        color: AppTheme.background,
+                        strokeWidth: 2,
+                      )
+                    : const Text(
+                        'Save Goals',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15,
+                        ),
+                      ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -898,23 +1269,29 @@ class _GoalChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Expanded(
-        child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          decoration: BoxDecoration(
-            color: color.withOpacity(0.1),
-            borderRadius: BorderRadius.circular(10),
-            border: Border.all(color: color.withOpacity(0.25)),
+    child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 10),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: color.withOpacity(0.25)),
+      ),
+      child: Column(
+        children: [
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 14,
+            ),
           ),
-          child: Column(children: [
-            Text(value,
-                style: TextStyle(
-                    color: color,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14)),
-            Text(label,
-                style: const TextStyle(
-                    color: AppTheme.textSecondary, fontSize: 10)),
-          ]),
-        ),
-      );
+          Text(
+            label,
+            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+          ),
+        ],
+      ),
+    ),
+  );
 }

@@ -1,15 +1,19 @@
+import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../../core/theme/app_theme.dart';
-import '../../../core/models/user_profile.dart';
-import '../../dashboard/providers/user_provider.dart';
-import '../../nutrition/models/food_item.dart';
-import '../../nutrition/repositories/nutrition_repository.dart';
+import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/models/user_profile.dart';
+import 'package:fitme/features/dashboard/providers/user_provider.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/repositories/nutrition_repository.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
 
 final wrappedDataProvider = FutureProvider<WrappedData>((ref) async {
   final profile = ref.read(userProfileProvider).value;
@@ -33,17 +37,31 @@ class WrappedScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back_rounded, color: Colors.white),
+                    icon: const Icon(
+                      Icons.arrow_back_rounded,
+                      color: Colors.white,
+                    ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text('FitMe Wrapped', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                  const Text(
+                    'FitMe Wrapped',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
                 ],
               ),
             ),
             Expanded(
               child: dataAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator(color: AppTheme.accent)),
-                error: (e, _) => Center(child: Text('$e', style: const TextStyle(color: Colors.red))),
+                loading: () => const Center(
+                  child: CircularProgressIndicator(color: AppTheme.accent),
+                ),
+                error: (e, _) => Center(
+                  child: Text('$e', style: const TextStyle(color: Colors.red)),
+                ),
                 data: (data) => _WrappedContent(data: data),
               ),
             ),
@@ -70,18 +88,30 @@ class _WrappedContentState extends State<_WrappedContent> {
     setState(() => _sharing = true);
     try {
       // Capture widget as image
-      final boundary = _repaintKey.currentContext?.findRenderObject() as RenderRepaintBoundary?;
+      final boundary =
+          _repaintKey.currentContext?.findRenderObject()
+              as RenderRepaintBoundary?;
       if (boundary == null) return;
       final image = await boundary.toImage(pixelRatio: 3.0);
       final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
       if (byteData == null) return;
+      final bytes = byteData.buffer.asUint8List();
 
-      // TODO: use share_plus package to share the image bytes
-      // Share.shareXFiles([XFile.fromData(byteData.buffer.asUint8List(), mimeType: 'image/png')]);
+      final tempDir = await getTemporaryDirectory();
+      final file = await File('${tempDir.path}/fitme_wrapped.png').create();
+      await file.writeAsBytes(bytes);
 
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: 'Check out my FitMe Wrapped! 💪🐦‍🔥 #FitMeWrapped',
+      );
+    } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Ready to share! (wire share_plus)'), behavior: SnackBarBehavior.floating),
+          SnackBar(
+            content: Text('Failed to share: $e'),
+            backgroundColor: Colors.redAccent,
+          ),
         );
       }
     } finally {
@@ -111,11 +141,16 @@ class _WrappedContentState extends State<_WrappedContent> {
             child: ElevatedButton.icon(
               onPressed: _sharing ? null : _share,
               icon: const Icon(Icons.share_rounded, size: 18),
-              label: const Text('Share My Wrapped', style: TextStyle(fontWeight: FontWeight.bold)),
+              label: const Text(
+                'Share My Wrapped',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppTheme.accent,
                 foregroundColor: AppTheme.background,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
                 elevation: 0,
               ),
             ),
@@ -164,8 +199,22 @@ class _WrappedCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('FitMe', style: TextStyle(color: AppTheme.accent, fontWeight: FontWeight.w900, fontSize: 22, letterSpacing: 1)),
-                  Text('Wrapped ${data.periodLabel}', style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+                  const Text(
+                    'FitMe',
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 22,
+                      letterSpacing: 1,
+                    ),
+                  ),
+                  Text(
+                    'Wrapped ${data.periodLabel}',
+                    style: const TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 12,
+                    ),
+                  ),
                 ],
               ),
               const Text('💪', style: TextStyle(fontSize: 32)),
@@ -175,20 +224,45 @@ class _WrappedCard extends StatelessWidget {
           const SizedBox(height: 24),
 
           // Name
-          Text(data.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 28)),
+          Text(
+            data.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.w900,
+              fontSize: 28,
+            ),
+          ),
           const SizedBox(height: 4),
-          Text('Here\'s your journey', style: TextStyle(color: AppTheme.accent.withOpacity(0.8), fontSize: 13)),
+          Text(
+            'Here\'s your journey',
+            style: TextStyle(
+              color: AppTheme.accent.withOpacity(0.8),
+              fontSize: 13,
+            ),
+          ),
 
           const SizedBox(height: 24),
 
           // Big stats
           Row(
             children: [
-              _BigStat(value: '${data.totalProtein}g', label: 'Protein\nConsumed', color: Colors.blueAccent),
+              _BigStat(
+                value: '${data.totalProtein}g',
+                label: 'Protein\nConsumed',
+                color: Colors.blueAccent,
+              ),
               const SizedBox(width: 12),
-              _BigStat(value: '${data.daysLogged}', label: 'Days\nLogged', color: AppTheme.accent),
+              _BigStat(
+                value: '${data.daysLogged}',
+                label: 'Days\nLogged',
+                color: AppTheme.accent,
+              ),
               const SizedBox(width: 12),
-              _BigStat(value: '${data.longestStreak}d', label: 'Longest\nStreak', color: Colors.purpleAccent),
+              _BigStat(
+                value: '${data.longestStreak}d',
+                label: 'Longest\nStreak',
+                color: Colors.purpleAccent,
+              ),
             ],
           ),
 
@@ -203,8 +277,15 @@ class _WrappedCard extends StatelessWidget {
                   painter: _MiniDumbbellPainter(level: data.dumbbellLevel),
                 ),
                 const SizedBox(height: 6),
-                Text(data.dumbbellLabel,
-                    style: const TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold, fontSize: 12, letterSpacing: 1)),
+                Text(
+                  data.dumbbellLabel,
+                  style: const TextStyle(
+                    color: AppTheme.accent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                    letterSpacing: 1,
+                  ),
+                ),
               ],
             ),
           ),
@@ -217,7 +298,7 @@ class _WrappedCard extends StatelessWidget {
             children: [
               _SmallStat('${data.totalCalories}', 'kcal total'),
               _SmallStat('${data.workoutsCompleted}', 'workouts'),
-              _SmallStat('${data.fitPoints}', 'FitPoints'),
+              _SmallStat('${data.fitPoints}', 'FitPoints 🐦‍🔥'),
               _SmallStat('${data.macroGoalHits}', 'macro wins'),
             ],
           ),
@@ -226,7 +307,14 @@ class _WrappedCard extends StatelessWidget {
 
           // Footer
           const Center(
-            child: Text('fitme.app', style: TextStyle(color: AppTheme.textSecondary, fontSize: 11, letterSpacing: 1)),
+            child: Text(
+              'fitme.app',
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 11,
+                letterSpacing: 1,
+              ),
+            ),
           ),
         ],
       ),
@@ -238,7 +326,11 @@ class _BigStat extends StatelessWidget {
   final String value;
   final String label;
   final Color color;
-  const _BigStat({required this.value, required this.label, required this.color});
+  const _BigStat({
+    required this.value,
+    required this.label,
+    required this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -252,10 +344,24 @@ class _BigStat extends StatelessWidget {
         ),
         child: Column(
           children: [
-            Text(value, style: TextStyle(color: color, fontWeight: FontWeight.w900, fontSize: 20)),
+            Text(
+              value,
+              style: TextStyle(
+                color: color,
+                fontWeight: FontWeight.w900,
+                fontSize: 20,
+              ),
+            ),
             const SizedBox(height: 4),
-            Text(label, textAlign: TextAlign.center,
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10, height: 1.3)),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 10,
+                height: 1.3,
+              ),
+            ),
           ],
         ),
       ),
@@ -272,8 +378,18 @@ class _SmallStat extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(value, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w900, fontSize: 16)),
-        Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
+        Text(
+          value,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.w900,
+            fontSize: 16,
+          ),
+        ),
+        Text(
+          label,
+          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+        ),
       ],
     );
   }
@@ -290,11 +406,21 @@ class _DetailedStats extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(16)),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Full Breakdown', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
+          const Text(
+            'Full Breakdown',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 15,
+            ),
+          ),
           const SizedBox(height: 16),
           _Row('Total Protein', '${data.totalProtein}g', Colors.blueAccent),
           _Row('Total Carbs', '${data.totalCarbs}g', Colors.orangeAccent),
@@ -307,7 +433,7 @@ class _DetailedStats extends StatelessWidget {
           _Row('Current Streak Level', data.dumbbellLabel, AppTheme.accent),
           const Divider(color: AppTheme.background, height: 24),
           _Row('Workouts Completed', '${data.workoutsCompleted}', Colors.white),
-          _Row('FitPoints Earned', '${data.fitPoints} pts', AppTheme.accent),
+          _Row('FitPoints Earned', '${data.fitPoints} 🐦‍🔥', AppTheme.accent),
         ],
       ),
     );
@@ -328,7 +454,10 @@ class _Row extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
-          Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold)),
+          Text(
+            value,
+            style: TextStyle(color: color, fontWeight: FontWeight.bold),
+          ),
         ],
       ),
     );
@@ -345,9 +474,17 @@ class _MiniDumbbellPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final color = AppTheme.accent;
-    final active = Paint()..color = color..style = PaintingStyle.fill;
-    final dim = Paint()..color = color.withOpacity(0.15)..style = PaintingStyle.fill;
-    final bar = Paint()..color = color..strokeWidth = 6..strokeCap = StrokeCap.round..style = PaintingStyle.stroke;
+    final active = Paint()
+      ..color = color
+      ..style = PaintingStyle.fill;
+    final dim = Paint()
+      ..color = color.withOpacity(0.15)
+      ..style = PaintingStyle.fill;
+    final bar = Paint()
+      ..color = color
+      ..strokeWidth = 6
+      ..strokeCap = StrokeCap.round
+      ..style = PaintingStyle.stroke;
 
     final cx = size.width / 2;
     final cy = size.height / 2;
@@ -364,8 +501,13 @@ class _MiniDumbbellPainter extends CustomPainter {
   }
 
   void _p(Canvas c, double x, double cy, double w, double h, Paint p) {
-    c.drawRRect(RRect.fromRectAndRadius(
-        Rect.fromCenter(center: Offset(x, cy), width: w, height: h), const Radius.circular(2)), p);
+    c.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromCenter(center: Offset(x, cy), width: w, height: h),
+        const Radius.circular(2),
+      ),
+      p,
+    );
   }
 
   @override
@@ -391,12 +533,18 @@ class WrappedData {
   final String dumbbellLabel;
 
   const WrappedData({
-    required this.name, required this.periodLabel,
-    required this.totalProtein, required this.totalCarbs,
-    required this.totalFats, required this.totalCalories,
-    required this.daysLogged, required this.macroGoalHits,
-    required this.longestStreak, required this.workoutsCompleted,
-    required this.fitPoints, required this.dumbbellLevel,
+    required this.name,
+    required this.periodLabel,
+    required this.totalProtein,
+    required this.totalCarbs,
+    required this.totalFats,
+    required this.totalCalories,
+    required this.daysLogged,
+    required this.macroGoalHits,
+    required this.longestStreak,
+    required this.workoutsCompleted,
+    required this.fitPoints,
+    required this.dumbbellLevel,
     required this.dumbbellLabel,
   });
 
@@ -417,8 +565,10 @@ class WrappedData {
 
       daysLogged++;
       for (final l in logs) {
-        totalPro += l.protein; totalCarbs += l.carbs;
-        totalFats += l.fats; totalCals += l.calories;
+        totalPro += l.protein;
+        totalCarbs += l.carbs;
+        totalFats += l.fats;
+        totalCals += l.calories;
       }
 
       final dayPro = logs.fold<int>(0, (s, l) => s + l.protein);
@@ -426,20 +576,42 @@ class WrappedData {
     }
 
     // Read Firestore extras
-    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
+    
+    // Correct FitPoints retrieval from subcollection
+    final fpDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('gamification')
+        .doc('fitpoints')
+        .get();
+    
     final data = doc.data() ?? {};
+    final fpData = fpDoc.data() ?? {};
+    
     final longest = data['longestStreak'] as int? ?? 0;
-    final points = data['fitPoints'] as int? ?? 0;
+    final points = (fpData['lifetimePoints'] as num?)?.toInt() ?? 0;
     final workouts = data['workoutsCompleted'] as int? ?? 0;
     final streak = data['currentStreak'] as int? ?? 0;
 
-    // Dumbbell level
+    // Dumbbell level (mapped to StreakLevel)
     int level = 0;
-    if (streak >= 61) level = 3;
-    else if (streak >= 22) level = 2;
-    else if (streak >= 8) level = 1;
+    if (streak >= 180) {
+      level = 5;
+    } else if (streak >= 90) {
+      level = 4;
+    } else if (streak >= 45) {
+      level = 3;
+    } else if (streak >= 22) {
+      level = 2;
+    } else if (streak >= 8) {
+      level = 1;
+    }
 
-    const labels = ['Light Dumbbell', 'Heavy Dumbbell', 'Barbell', 'Loaded Barbell'];
+    final streakLevel = StreakLevel.values[level];
 
     return WrappedData(
       name: profile.name,
@@ -454,14 +626,23 @@ class WrappedData {
       workoutsCompleted: workouts,
       fitPoints: points,
       dumbbellLevel: level,
-      dumbbellLabel: labels[level],
+      dumbbellLabel: streakLevel.displayName,
     );
   }
 
   static WrappedData _empty() => const WrappedData(
-    name: '', periodLabel: '6 Months',
-    totalProtein: 0, totalCarbs: 0, totalFats: 0, totalCalories: 0,
-    daysLogged: 0, macroGoalHits: 0, longestStreak: 0,
-    workoutsCompleted: 0, fitPoints: 0, dumbbellLevel: 0, dumbbellLabel: 'Light Dumbbell',
+    name: '',
+    periodLabel: '6 Months',
+    totalProtein: 0,
+    totalCarbs: 0,
+    totalFats: 0,
+    totalCalories: 0,
+    daysLogged: 0,
+    macroGoalHits: 0,
+    longestStreak: 0,
+    workoutsCompleted: 0,
+    fitPoints: 0,
+    dumbbellLevel: 0,
+    dumbbellLabel: 'Light Dumbbell',
   );
 }

@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../nutrition/models/food_item.dart';
-import '../../../core/models/user_profile.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
+import 'package:fitme/core/models/user_profile.dart';
 
 class DietAnalysisResult {
   final String proteinGaps;
@@ -34,7 +34,10 @@ class DietAnalysisResult {
 class DietAnalysisService {
   static String get _apiKey => dotenv.env['GEMINI_API_KEY'] ?? '';
 
-  static Future<DietAnalysisResult?> analyze7Days(List<FoodItem> logs, UserProfile profile) async {
+  static Future<DietAnalysisResult?> analyze7Days(
+    List<FoodItem> logs,
+    UserProfile profile,
+  ) async {
     if (_apiKey.isEmpty || logs.isEmpty) return null;
 
     final logsByDate = <String, List<Map<String, dynamic>>>{};
@@ -42,11 +45,10 @@ class DietAnalysisService {
       if (!logsByDate.containsKey(food.dateString)) {
         logsByDate[food.dateString] = [];
       }
-      final timeStr = DateTime.fromMillisecondsSinceEpoch(food.timestamp)
-          .toLocal()
-          .toString()
-          .substring(11, 16); 
-          
+      final timeStr = DateTime.fromMillisecondsSinceEpoch(
+        food.timestamp,
+      ).toLocal().toString().substring(11, 16);
+
       logsByDate[food.dateString]!.add({
         'name': food.name,
         'time': timeStr,
@@ -57,7 +59,8 @@ class DietAnalysisService {
       });
     }
 
-    final prompt = '''
+    final prompt =
+        '''
 Analyze the user's 7-day food logs against their profile goals and provide specific, actionable insights. Speak directly to the user (e.g., "You fell short...", "Try adding..."). Keep it concise and highly specific to the foods logged.
 
 User Profile:
@@ -77,7 +80,7 @@ Identify and return exactly these 5 keys in valid JSON format:
 ''';
 
     final config = {
-      'temperature': 0.2, 
+      'temperature': 0.2,
       'responseMimeType': 'application/json',
       'responseSchema': {
         'type': 'OBJECT',
@@ -86,14 +89,27 @@ Identify and return exactly these 5 keys in valid JSON format:
           'calorieTrends': {'type': 'STRING'},
           'mealTiming': {'type': 'STRING'},
           'junkFrequency': {'type': 'STRING'},
-          'micronutrientWarnings': {'type': 'STRING'}
+          'micronutrientWarnings': {'type': 'STRING'},
         },
-        'required': ['proteinGaps', 'calorieTrends', 'mealTiming', 'junkFrequency', 'micronutrientWarnings']
-      }
+        'required': [
+          'proteinGaps',
+          'calorieTrends',
+          'mealTiming',
+          'junkFrequency',
+          'micronutrientWarnings',
+        ],
+      },
     };
 
     final body = jsonEncode({
-      'contents': [{'role': 'user', 'parts': [{'text': prompt}]}],
+      'contents': [
+        {
+          'role': 'user',
+          'parts': [
+            {'text': prompt},
+          ],
+        },
+      ],
       'generationConfig': config,
     });
 
@@ -108,49 +124,61 @@ Identify and return exactly these 5 keys in valid JSON format:
     return null;
   }
 
-// ── SMART FALLBACK ROUTING ──────────────────────────────────────────────
+  // ── SMART FALLBACK ROUTING ──────────────────────────────────────────────
   static Future<String> _postWithFallback(String body) async {
-    final List<int> delays = [1, 2]; 
+    final List<int> delays = [1, 2];
     // Changed fallback from 1.5-pro to 1.5-flash to avoid the 404 error
     final models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
 
     for (String model in models) {
-      final url = 'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_apiKey';
+      final url =
+          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_apiKey';
 
       for (int i = 0; i <= delays.length; i++) {
         try {
           final response = await http
-              .post(Uri.parse(url),
-                  headers: {'Content-Type': 'application/json'}, body: body)
+              .post(
+                Uri.parse(url),
+                headers: {'Content-Type': 'application/json'},
+                body: body,
+              )
               // INCREASED TIMEOUT TO 35 SECONDS FOR COMPLEX JSON GENERATION
-              .timeout(const Duration(seconds: 35)); 
-              
+              .timeout(const Duration(seconds: 35));
+
           if (response.statusCode == 200) {
             return response.body;
           }
 
-          debugPrint('⚠️ [Diet AI] $model Attempt ${i + 1} failed. Status: ${response.statusCode}');
+          debugPrint(
+            '⚠️ [Diet AI] $model Attempt ${i + 1} failed. Status: ${response.statusCode}',
+          );
 
-          if (response.statusCode == 429 && response.body.contains('limit: 0')) {
-              throw Exception('API Quota exhausted. Try a different API key.');
+          if (response.statusCode == 429 &&
+              response.body.contains('limit: 0')) {
+            throw Exception('API Quota exhausted. Try a different API key.');
           }
 
-          if ((response.statusCode == 503 || response.statusCode == 404) && i == delays.length) {
-             debugPrint('🔄 [Diet AI] $model unavailable. Switching to fallback...');
-             break; 
+          if ((response.statusCode == 503 || response.statusCode == 404) &&
+              i == delays.length) {
+            debugPrint(
+              '🔄 [Diet AI] $model unavailable. Switching to fallback...',
+            );
+            break;
           }
 
           if (i == delays.length && model == models.last) {
-             throw Exception('Gemini API error ${response.statusCode}: ${response.body}');
+            throw Exception(
+              'Gemini API error ${response.statusCode}: ${response.body}',
+            );
           }
-          
+
           if (i < delays.length) {
             await Future.delayed(Duration(seconds: delays[i]));
           }
         } catch (e) {
           debugPrint('⚠️ [Diet AI] $model network/timeout error: $e');
           if (i == delays.length && model == models.last) rethrow;
-          
+
           if (i < delays.length) {
             await Future.delayed(Duration(seconds: delays[i]));
           }

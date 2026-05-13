@@ -9,7 +9,6 @@ import '../../nutrition/models/food_item.dart';
 class ConsistencyEngine {
   // ─── Logging Quality ───────────────────────────────────────────────────────
 
-  /// Evaluates the quality of today's meal logs collectively.
   LoggingQuality evaluateLoggingQuality({
     required List<MealLogEntry> todayLogs,
     required double dailyCalorieTarget,
@@ -17,57 +16,18 @@ class ConsistencyEngine {
   }) {
     if (todayLogs.isEmpty) return LoggingQuality.poor;
 
-    final qualityScore = _computeLoggingQualityScore(
+    final adherence = AdherenceEvaluator.evaluate(
       logs: todayLogs,
       calorieTarget: dailyCalorieTarget,
       proteinTarget: dailyProteinTarget,
     );
 
-    _log('Logging quality score: ${qualityScore.toStringAsFixed(2)}');
-
-    if (qualityScore >= 0.75) return LoggingQuality.high;
-    if (qualityScore >= 0.4) return LoggingQuality.normal;
+    if (adherence == AdherenceLevel.perfect) return LoggingQuality.high;
+    if (adherence == AdherenceLevel.good) return LoggingQuality.normal;
     return LoggingQuality.poor;
   }
 
-  double _computeLoggingQualityScore({
-    required List<MealLogEntry> logs,
-    required double calorieTarget,
-    required double proteinTarget,
-  }) {
-    double score = 0.0;
 
-    // 1. Calorie coverage (max 0.3)
-    final totalCals = logs.fold<double>(0, (s, m) => s + m.calories);
-    final calRatio = (totalCals / calorieTarget).clamp(0.0, 1.0);
-    score += calRatio * 0.3;
-
-    // 2. Protein coverage (max 0.2)
-    final totalProtein = logs.fold<double>(0, (s, m) => s + m.proteinGrams);
-    final proteinRatio = (totalProtein / proteinTarget).clamp(0.0, 1.0);
-    score += proteinRatio * 0.2;
-
-    // 3. Log count realism: 3–8 logs is healthy range (max 0.2)
-    final logCount = logs.length;
-    final countScore = logCount >= 3 ? (logCount <= 8 ? 1.0 : 0.6) : logCount / 3.0;
-    score += countScore * 0.2;
-
-    // 4. Time spread: prefer logs spread across day (max 0.15)
-    score += _timeSpreadScore(logs) * 0.15;
-
-    // 5. Meal uniqueness: penalise identical duplicates (max 0.15)
-    score += _uniquenessScore(logs) * 0.15;
-
-    return score.clamp(0.0, 1.0);
-  }
-
-  /// Returns 0–1. 1 = logs spread across multiple hours, 0 = all same timestamp.
-  double _timeSpreadScore(List<MealLogEntry> logs) {
-    if (logs.length < 2) return 0.5;
-    final hours = logs.map((l) => l.loggedAt.hour).toSet();
-    // Spread across ≥4 distinct hours = perfect
-    return (hours.length / 4.0).clamp(0.0, 1.0);
-  }
 
   /// Returns 0–1. Penalises if >60% of logs are near-identical.
   double _uniquenessScore(List<MealLogEntry> logs) {
@@ -214,18 +174,20 @@ class ConsistencyEngine {
   }) {
     final tierScore = _tierScore(streakDays: streakDays, metrics: metrics);
 
-    final tier = tierScore >= 90
-        ? StreakTier.legendary
-        : tierScore >= 72
-            ? StreakTier.titan
-            : tierScore >= 52
-                ? StreakTier.ironBeast
-                : tierScore >= 30
-                    ? StreakTier.heavyDumbbell
-                    : StreakTier.lightDumbbell;
+    final tier = tierScore >= 92
+        ? StreakTier.fourPlateBarbell
+        : tierScore >= 80
+            ? StreakTier.twoPlateBarbell
+            : tierScore >= 65
+                ? StreakTier.onePlateBarbell
+                : tierScore >= 45
+                    ? StreakTier.barbell
+                    : tierScore >= 25
+                        ? StreakTier.heavyDumbbell
+                        : StreakTier.lightDumbbell;
 
     _log(
-      'Tier score: ${tierScore.toStringAsFixed(1)} → ${tier.displayName} (${tier.multiplier}x)',
+      'Tier score: ${tierScore.toStringAsFixed(1)} → ${tier.efficiencyLabel} (${tier.multiplier}x)',
     );
     return tier;
   }
@@ -235,8 +197,10 @@ class ConsistencyEngine {
     required String userId,
     required bool isGuest,
     required Map<String, List<FoodItem>> historicalLogs,
+    required Map<String, List<dynamic>> historicalWorkouts,
     required Map<String, Map<String, double>> dailyGoals,
     required double currentFitPoints,
+    required double lifetimePoints,
     required double currentMomentum,
   }) async {
     final now = DateTime.now();
@@ -263,8 +227,9 @@ class ConsistencyEngine {
       final date = now.subtract(Duration(days: i));
       final key = _dateKey(date);
       final logs = historicalLogs[key] ?? [];
+      final workouts = historicalWorkouts[key] ?? [];
       
-      final active = ActiveDayEvaluator.isActiveDay(logs.cast<FoodItem>());
+      final active = ActiveDayEvaluator.isActiveDay(logs.cast<FoodItem>(), workouts: workouts);
       
       if (active) {
         hitDays.add(key);
@@ -333,8 +298,9 @@ class ConsistencyEngine {
       longestStreak: longestStreak,
       weeklyActiveDays: weeklyHits,
       monthlyActiveDays: monthlyHits,
-      momentum: currentMomentum,
+      momentum: (metrics.adherenceScore * metrics.activeDayFrequency).clamp(0, 100), // Reflects both quality and frequency
       fitPoints: currentFitPoints,
+      lifetimePoints: lifetimePoints,
       consistencyTier: tier,
       hitDays: hitDays,
       lastCalculated: now,

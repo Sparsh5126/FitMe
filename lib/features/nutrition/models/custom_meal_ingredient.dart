@@ -1,4 +1,4 @@
-import 'food_item.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
 
 /// Represents one ingredient inside a custom meal recipe,
 /// with its user-chosen quantity and scaled macro values.
@@ -76,20 +76,20 @@ class CustomMealIngredient {
   }
 
   Map<String, dynamic> toMap() => {
-        'foodId': foodId,
-        'name': name,
-        'amount': amount,
-        'unit': unit,
-        'calories': calories,
-        'protein': protein,
-        'carbs': carbs,
-        'fats': fats,
-        'baseAmount': baseAmount,
-        'baseCal': baseCal,
-        'basePro': basePro,
-        'baseCarb': baseCarb,
-        'baseFat': baseFat,
-      };
+    'foodId': foodId,
+    'name': name,
+    'amount': amount,
+    'unit': unit,
+    'calories': calories,
+    'protein': protein,
+    'carbs': carbs,
+    'fats': fats,
+    'baseAmount': baseAmount,
+    'baseCal': baseCal,
+    'basePro': basePro,
+    'baseCarb': baseCarb,
+    'baseFat': baseFat,
+  };
 
   factory CustomMealIngredient.fromMap(Map<String, dynamic> m) {
     return CustomMealIngredient(

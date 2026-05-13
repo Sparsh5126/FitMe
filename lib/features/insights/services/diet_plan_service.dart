@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../../../core/models/user_profile.dart';
+import 'package:fitme/core/models/user_profile.dart';
 
 class DietMealPlan {
   final String mealName;
   final String time;
-  final String foodDescription; 
+  final String foodDescription;
   final int calories;
   final int protein;
   final int carbs;
@@ -47,7 +47,8 @@ class DietPlanService {
   }) async {
     if (_apiKey.isEmpty) return null;
 
-    final prompt = '''
+    final prompt =
+        '''
 You are an elite nutritionist and meal planner. Create a highly specific 1-day master diet plan for the user based on the parameters below.
 
 USER PROFILE:
@@ -78,15 +79,30 @@ Foods must be realistic, culturally appropriate (default to Indian/Global mix), 
             'calories': {'type': 'INTEGER'},
             'protein': {'type': 'INTEGER'},
             'carbs': {'type': 'INTEGER'},
-            'fats': {'type': 'INTEGER'}
+            'fats': {'type': 'INTEGER'},
           },
-          'required': ['mealName', 'time', 'foodDescription', 'calories', 'protein', 'carbs', 'fats']
-        }
-      }
+          'required': [
+            'mealName',
+            'time',
+            'foodDescription',
+            'calories',
+            'protein',
+            'carbs',
+            'fats',
+          ],
+        },
+      },
     };
 
     final body = jsonEncode({
-      'contents': [{'role': 'user', 'parts': [{'text': prompt}]}],
+      'contents': [
+        {
+          'role': 'user',
+          'parts': [
+            {'text': prompt},
+          ],
+        },
+      ],
       'generationConfig': config,
     });
 
@@ -102,49 +118,61 @@ Foods must be realistic, culturally appropriate (default to Indian/Global mix), 
     return null;
   }
 
-// ── SMART FALLBACK ROUTING ──────────────────────────────────────────────
+  // ── SMART FALLBACK ROUTING ──────────────────────────────────────────────
   static Future<String> _postWithFallback(String body) async {
-    final List<int> delays = [1, 2]; 
+    final List<int> delays = [1, 2];
     // Changed fallback from 1.5-pro to 1.5-flash to avoid the 404 error
     final models = ['gemini-2.5-flash', 'gemini-1.5-flash'];
 
     for (String model in models) {
-      final url = 'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_apiKey';
+      final url =
+          'https://generativelanguage.googleapis.com/v1beta/models/$model:generateContent?key=$_apiKey';
 
       for (int i = 0; i <= delays.length; i++) {
         try {
           final response = await http
-              .post(Uri.parse(url),
-                  headers: {'Content-Type': 'application/json'}, body: body)
+              .post(
+                Uri.parse(url),
+                headers: {'Content-Type': 'application/json'},
+                body: body,
+              )
               // INCREASED TIMEOUT TO 35 SECONDS FOR COMPLEX JSON GENERATION
-              .timeout(const Duration(seconds: 35)); 
-              
+              .timeout(const Duration(seconds: 35));
+
           if (response.statusCode == 200) {
             return response.body;
           }
 
-          debugPrint('⚠️ [Diet AI] $model Attempt ${i + 1} failed. Status: ${response.statusCode}');
+          debugPrint(
+            '⚠️ [Diet AI] $model Attempt ${i + 1} failed. Status: ${response.statusCode}',
+          );
 
-          if (response.statusCode == 429 && response.body.contains('limit: 0')) {
-              throw Exception('API Quota exhausted. Try a different API key.');
+          if (response.statusCode == 429 &&
+              response.body.contains('limit: 0')) {
+            throw Exception('API Quota exhausted. Try a different API key.');
           }
 
-          if ((response.statusCode == 503 || response.statusCode == 404) && i == delays.length) {
-             debugPrint('🔄 [Diet AI] $model unavailable. Switching to fallback...');
-             break; 
+          if ((response.statusCode == 503 || response.statusCode == 404) &&
+              i == delays.length) {
+            debugPrint(
+              '🔄 [Diet AI] $model unavailable. Switching to fallback...',
+            );
+            break;
           }
 
           if (i == delays.length && model == models.last) {
-             throw Exception('Gemini API error ${response.statusCode}: ${response.body}');
+            throw Exception(
+              'Gemini API error ${response.statusCode}: ${response.body}',
+            );
           }
-          
+
           if (i < delays.length) {
             await Future.delayed(Duration(seconds: delays[i]));
           }
         } catch (e) {
           debugPrint('⚠️ [Diet AI] $model network/timeout error: $e');
           if (i == delays.length && model == models.last) rethrow;
-          
+
           if (i < delays.length) {
             await Future.delayed(Duration(seconds: delays[i]));
           }

@@ -1,8 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../models/recipe_model.dart';
-import '../data/recipes_data.dart';
-import '../../nutrition/providers/nutrition_provider.dart';
+import 'package:fitme/features/recipes/models/recipe_model.dart';
+import 'package:fitme/features/recipes/data/recipes_data.dart';
+import 'package:fitme/features/nutrition/providers/nutrition_provider.dart';
 
 // ── Favorites persistence key ─────────────────────────
 const _kFavoritesKey = 'recipe_favorites';
@@ -67,9 +67,10 @@ class RecipeTagFilterNotifier extends Notifier<String?> {
   void setTag(String? tag) => state = tag;
 }
 
-final recipeTagFilterProvider = NotifierProvider<RecipeTagFilterNotifier, String?>(
-  RecipeTagFilterNotifier.new,
-);
+final recipeTagFilterProvider =
+    NotifierProvider<RecipeTagFilterNotifier, String?>(
+      RecipeTagFilterNotifier.new,
+    );
 
 final filteredRecipesProvider = Provider<List<RecipeModel>>((ref) {
   final recipes = ref.watch(recipesProvider);

@@ -39,7 +39,7 @@ class AuthSessionCleanupService {
         removedCount++;
         continue;
       }
-      
+
       // 4. Recipes/Favourites caches (if any specific ones exist)
       // Currently, recipes seem to be fetched live or using general recents.
     }
@@ -50,6 +50,9 @@ class AuthSessionCleanupService {
     //   await Hive.box('user_insights').clear();
     // }
 
-    dev.log('Session cleanup complete. Removed $removedCount keys.', name: _tag);
+    dev.log(
+      'Session cleanup complete. Removed $removedCount keys.',
+      name: _tag,
+    );
   }
 }
