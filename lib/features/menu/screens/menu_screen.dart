@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/dashboard/providers/user_provider.dart';
 import 'package:fitme/features/integrations/screens/integrations_screen.dart';
@@ -24,9 +25,10 @@ class MenuScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
+    final theme = ThemeManager.instance.activeTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
@@ -34,10 +36,10 @@ class MenuScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
+              Text(
                 'Menu',
                 style: TextStyle(
-                  color: Colors.white,
+                  color: theme.colors.textPrimary,
                   fontWeight: FontWeight.w900,
                   fontSize: 26,
                 ),
@@ -46,7 +48,7 @@ class MenuScreen extends ConsumerWidget {
 
               // ── User greeting ─────────────────────
               profileAsync.when(
-                loading: () => const SizedBox(
+                loading: () => SizedBox(
                   height: 76,
                   child: Center(
                     child: SizedBox(
@@ -54,21 +56,21 @@ class MenuScreen extends ConsumerWidget {
                       height: 20,
                       child: CircularProgressIndicator(
                         strokeWidth: 2,
-                        color: AppTheme.accent,
+                        color: theme.colors.accent,
                       ),
                     ),
                   ),
                 ),
-                error: (_, __) => _buildLoginTile(context),
+                error: (_, __) => _buildLoginTile(context, theme),
                 data: (p) => p != null
-                    ? _buildUserCard(context, ref, p.name)
-                    : _buildLoginTile(context),
+                    ? _buildUserCard(context, ref, p.name, theme)
+                    : _buildLoginTile(context, theme),
               ),
 
               const SizedBox(height: 24),
 
               // ── Settings ──────────────────────────
-              const _GroupLabel('Preferences'),
+              _GroupLabel('Preferences', theme: theme),
               const SizedBox(height: 10),
               _MenuTile(
                 icon: Icons.tune_rounded,
@@ -77,12 +79,13 @@ class MenuScreen extends ConsumerWidget {
                   context,
                   MaterialPageRoute(builder: (_) => const SettingsScreen()),
                 ),
+                theme: theme,
               ),
 
               const SizedBox(height: 20),
 
               // ── Connect health apps ───────────────
-              const _GroupLabel('Connected Apps'),
+              _GroupLabel('Connected Apps', theme: theme),
               const SizedBox(height: 10),
               _MenuTile(
                 icon: Icons.monitor_heart_rounded,
@@ -91,35 +94,39 @@ class MenuScreen extends ConsumerWidget {
                   context,
                   MaterialPageRoute(builder: (_) => const IntegrationsScreen()),
                 ),
+                theme: theme,
               ),
 
               const SizedBox(height: 20),
 
               // ── Features ──────────────────────────
-              const _GroupLabel('Features'),
+              _GroupLabel('Features', theme: theme),
               const SizedBox(height: 10),
               _MenuTile(
                 icon: Icons.storefront_rounded,
                 label: 'Store',
-                trailing: _ComingSoonBadge(),
+                trailing: _ComingSoonBadge(theme: theme),
                 onTap: () {},
+                theme: theme,
               ),
               _MenuTile(
                 icon: Icons.people_rounded,
                 label: 'Challenge a Friend',
-                trailing: _ComingSoonBadge(),
+                trailing: _ComingSoonBadge(theme: theme),
                 onTap: () {},
+                theme: theme,
               ),
 
               const SizedBox(height: 20),
 
               // ── Help & Feedback ───────────────────
-              const _GroupLabel('Help & Feedback'),
+              _GroupLabel('Help & Feedback', theme: theme),
               const SizedBox(height: 10),
               _MenuTile(
                 icon: Icons.code_rounded,
                 label: 'GitHub',
                 onTap: () => _launchUrl('https://github.com/Sparsh5126/FitMe'),
+                theme: theme,
               ),
               _MenuTile(
                 icon: Icons.star_rounded,
@@ -127,6 +134,7 @@ class MenuScreen extends ConsumerWidget {
                 onTap: () => _launchUrl(
                   'https://play.google.com/store/apps/details?id=com.sparsh.fitme',
                 ),
+                theme: theme,
               ),
               _MenuTile(
                 icon: Icons.bug_report_rounded,
@@ -134,22 +142,26 @@ class MenuScreen extends ConsumerWidget {
                 onTap: () => _launchUrl(
                   'https://github.com/Sparsh5126/FitMe/issues/new',
                 ),
+                theme: theme,
               ),
 
               const SizedBox(height: 20),
 
               // ── Subscription ──────────────────────
-              const _GroupLabel('Premium'),
+              _GroupLabel('Premium', theme: theme),
               const SizedBox(height: 10),
-              const _SubscriptionTile(),
+              _SubscriptionTile(theme: theme),
 
               const SizedBox(height: 40),
 
               // ── App version ───────────────────────
-              const Center(
+              Center(
                 child: Text(
                   'FitMe v1.0.0',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  style: TextStyle(
+                    color: theme.colors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
               ),
               const SizedBox(height: 8),
@@ -161,7 +173,12 @@ class MenuScreen extends ConsumerWidget {
   }
 
   // ── User card with sign-out ──────────────────────────
-  Widget _buildUserCard(BuildContext context, WidgetRef ref, String name) {
+  Widget _buildUserCard(
+    BuildContext context,
+    WidgetRef ref,
+    String name,
+    dynamic theme,
+  ) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -180,7 +197,7 @@ class MenuScreen extends ConsumerWidget {
             alignment: Alignment.center,
             child: Text(
               name.isNotEmpty ? name[0].toUpperCase() : 'U',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.accent,
                 fontSize: 20,
                 fontWeight: FontWeight.w900,
@@ -200,7 +217,7 @@ class MenuScreen extends ConsumerWidget {
                     fontSize: 15,
                   ),
                 ),
-                const Text(
+                Text(
                   'Anonymous Account',
                   style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
                 ),
@@ -209,12 +226,12 @@ class MenuScreen extends ConsumerWidget {
           ),
           // ── Sign-out button ──────────────────────
           GestureDetector(
-            onTap: () => _confirmSignOut(context, ref),
-            child: const Padding(
-              padding: EdgeInsets.all(4),
+            onTap: () => _confirmSignOut(context, ref, theme),
+            child: Padding(
+              padding: const EdgeInsets.all(4),
               child: Icon(
                 Icons.logout_rounded,
-                color: AppTheme.textSecondary,
+                color: theme.colors.textSecondary,
                 size: 20,
               ),
             ),
@@ -224,7 +241,7 @@ class MenuScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildLoginTile(BuildContext context) {
+  Widget _buildLoginTile(BuildContext context, dynamic theme) {
     // AuthGate handles routing — tapping this is a manual shortcut only.
     // In practice, if profile is null the user is unauthenticated and
     // AuthGate will have already routed them to LoginScreen.
@@ -238,25 +255,33 @@ class MenuScreen extends ConsumerWidget {
           MaterialPageRoute(builder: (_) => const LoginScreen()),
         );
       },
+      theme: theme,
     );
   }
 
-  Future<void> _confirmSignOut(BuildContext context, WidgetRef ref) async {
+  Future<void> _confirmSignOut(
+    BuildContext context,
+    WidgetRef ref,
+    dynamic theme,
+  ) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        title: const Text('Sign out?', style: TextStyle(color: Colors.white)),
-        content: const Text(
+        backgroundColor: theme.colors.surfacePrimary,
+        title: Text(
+          'Sign out?',
+          style: TextStyle(color: theme.colors.textPrimary),
+        ),
+        content: Text(
           'You will be returned to the login screen.',
-          style: TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: theme.colors.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(
+            child: Text(
               'Cancel',
-              style: TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: theme.colors.textSecondary),
             ),
           ),
           TextButton(
@@ -291,14 +316,16 @@ class MenuScreen extends ConsumerWidget {
 
 class _GroupLabel extends StatelessWidget {
   final String label;
-  const _GroupLabel(this.label);
+  final dynamic theme;
+
+  const _GroupLabel(this.label, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: const TextStyle(
-        color: AppTheme.textSecondary,
+      style: TextStyle(
+        color: theme.colors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.2,
@@ -312,12 +339,14 @@ class _MenuTile extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final Widget? trailing;
+  final dynamic theme;
 
   const _MenuTile({
     required this.icon,
     required this.label,
     required this.onTap,
     this.trailing,
+    required this.theme,
   });
 
   @override
@@ -328,26 +357,26 @@ class _MenuTile extends StatelessWidget {
         margin: const EdgeInsets.only(bottom: 8),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           children: [
-            Icon(icon, color: AppTheme.accent, size: 20),
+            Icon(icon, color: theme.colors.accent, size: 20),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
                 label,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: theme.colors.textPrimary,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
             trailing ??
-                const Icon(
+                Icon(
                   Icons.chevron_right_rounded,
-                  color: AppTheme.textSecondary,
+                  color: theme.colors.textSecondary,
                   size: 20,
                 ),
           ],
@@ -358,18 +387,22 @@ class _MenuTile extends StatelessWidget {
 }
 
 class _ComingSoonBadge extends StatelessWidget {
+  final dynamic theme;
+
+  const _ComingSoonBadge({required this.theme});
+
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: AppTheme.accent.withOpacity(0.15),
+        color: theme.colors.accent.withOpacity(0.15),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Text(
+      child: Text(
         'Soon',
         style: TextStyle(
-          color: AppTheme.accent,
+          color: theme.colors.accent,
           fontSize: 10,
           fontWeight: FontWeight.bold,
         ),
@@ -379,7 +412,9 @@ class _ComingSoonBadge extends StatelessWidget {
 }
 
 class _SubscriptionTile extends StatelessWidget {
-  const _SubscriptionTile();
+  final dynamic theme;
+
+  const _SubscriptionTile({required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -388,8 +423,8 @@ class _SubscriptionTile extends StatelessWidget {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            AppTheme.accent.withOpacity(0.8),
-            AppTheme.accent.withOpacity(0.3),
+            theme.colors.accent.withOpacity(0.8),
+            theme.colors.accent.withOpacity(0.3),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -400,22 +435,25 @@ class _SubscriptionTile extends StatelessWidget {
         children: [
           const Text('⭐', style: TextStyle(fontSize: 28)),
           const SizedBox(width: 12),
-          const Expanded(
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
                   'FitMe Pro',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: theme.colors.textPrimary,
                     fontWeight: FontWeight.w900,
                     fontSize: 16,
                   ),
                 ),
-                SizedBox(height: 2),
+                const SizedBox(height: 2),
                 Text(
                   'Unlimited AI logging + AI Coach',
-                  style: TextStyle(color: Colors.white70, fontSize: 12),
+                  style: TextStyle(
+                    color: theme.colors.textPrimary.withOpacity(0.7),
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -423,13 +461,13 @@ class _SubscriptionTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
             decoration: BoxDecoration(
-              color: AppTheme.background,
+              color: theme.colors.backgroundPrimary,
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
+            child: Text(
               'Upgrade',
               style: TextStyle(
-                color: AppTheme.accent,
+                color: theme.colors.accent,
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
               ),

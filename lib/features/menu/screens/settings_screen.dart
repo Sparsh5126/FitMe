@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/core/models/user_profile.dart';
 import 'package:fitme/features/dashboard/providers/user_provider.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/nutrition/services/local_nutrition_service.dart';
+import 'package:fitme/features/menu/screens/theme_selector_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -14,9 +15,10 @@ class SettingsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profile = ref.watch(userProfileProvider).value;
+    final theme = ThemeManager.instance.activeTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           children: [
@@ -25,16 +27,16 @@ class SettingsScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
+                  Text(
                     'Settings',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -44,8 +46,10 @@ class SettingsScreen extends ConsumerWidget {
             ),
             Expanded(
               child: profile == null
-                  ? const Center(
-                      child: CircularProgressIndicator(color: AppTheme.accent),
+                  ? Center(
+                      child: CircularProgressIndicator(
+                        color: theme.colors.accent,
+                      ),
                     )
                   : SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),
@@ -54,7 +58,7 @@ class SettingsScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           // ── Personality ─────────────────────
-                          const _GroupLabel('Personality & Animations'),
+                          _GroupLabel('Personality & Animations', theme: theme),
                           const SizedBox(height: 10),
                           _ToggleTile(
                             label: 'Hi-Five on Rest',
@@ -63,6 +67,7 @@ class SettingsScreen extends ConsumerWidget {
                             value: profile.hiFiveEnabled,
                             onChanged: (v) =>
                                 _update(ref, profile, hiFiveEnabled: v),
+                            theme: theme,
                           ),
                           _ToggleTile(
                             label: 'Celebration Animations',
@@ -71,6 +76,7 @@ class SettingsScreen extends ConsumerWidget {
                             value: profile.celebrationsEnabled,
                             onChanged: (v) =>
                                 _update(ref, profile, celebrationsEnabled: v),
+                            theme: theme,
                           ),
                           _ToggleTile(
                             label: 'Rest Timer Messages',
@@ -79,12 +85,13 @@ class SettingsScreen extends ConsumerWidget {
                             value: profile.restMessagesEnabled,
                             onChanged: (v) =>
                                 _update(ref, profile, restMessagesEnabled: v),
+                            theme: theme,
                           ),
 
                           const SizedBox(height: 24),
 
                           // ── Notifications ────────────────────
-                          const _GroupLabel('Notifications'),
+                          _GroupLabel('Notifications', theme: theme),
                           const SizedBox(height: 10),
                           _ToggleTile(
                             label: 'Morning Reminder',
@@ -95,6 +102,7 @@ class SettingsScreen extends ConsumerWidget {
                               profile,
                               morningReminderEnabled: v,
                             ),
+                            theme: theme,
                           ),
                           _ToggleTile(
                             label: 'Streak Alerts',
@@ -102,6 +110,7 @@ class SettingsScreen extends ConsumerWidget {
                             value: profile.streakAlertsEnabled,
                             onChanged: (v) =>
                                 _update(ref, profile, streakAlertsEnabled: v),
+                            theme: theme,
                           ),
                           _ToggleTile(
                             label: 'Re-balancer Updates',
@@ -112,19 +121,29 @@ class SettingsScreen extends ConsumerWidget {
                               profile,
                               rebalancerUpdatesEnabled: v,
                             ),
+                            theme: theme,
                           ),
 
                           const SizedBox(height: 24),
 
                           // ── Smart Logger ─────────────────────
-                          const _GroupLabel('Smart Logger'),
+                          _GroupLabel('Smart Logger', theme: theme),
                           const SizedBox(height: 10),
-                          _InfoTile(
-                            label: 'Daily Nutrition AI Assists Used',
-                            value: '${profile.smartLoggerUsedToday} / 10',
-                            color: profile.smartLoggerUsedToday >= 10
-                                ? Colors.redAccent
-                                : AppTheme.accent,
+                          Builder(
+                            builder: (context) {
+                              final today = DateTime.now().toIso8601String().substring(0, 10);
+                              final smartLoggerUsed = profile.smartLoggerLastResetDate == today
+                                  ? profile.smartLoggerUsedToday
+                                  : 0;
+                              return _InfoTile(
+                                label: 'Daily Nutrition AI Assists Used',
+                                value: '$smartLoggerUsed / 10',
+                                color: smartLoggerUsed >= 10
+                                    ? Colors.redAccent
+                                    : theme.colors.accent,
+                                theme: theme,
+                              );
+                            },
                           ),
                           const SizedBox(height: 8),
                           SizedBox(
@@ -132,7 +151,7 @@ class SettingsScreen extends ConsumerWidget {
                             child: OutlinedButton(
                               onPressed: () => _resetSmartLogger(ref, profile),
                               style: OutlinedButton.styleFrom(
-                                foregroundColor: AppTheme.textSecondary,
+                                foregroundColor: theme.colors.textSecondary,
                                 side: BorderSide(
                                   color: Colors.white.withOpacity(0.1),
                                 ),
@@ -150,54 +169,65 @@ class SettingsScreen extends ConsumerWidget {
                           const SizedBox(height: 24),
 
                           // ── Theme ───────────────────────────
-                          const _GroupLabel('Theme'),
+                          _GroupLabel('Theme', theme: theme),
                           const SizedBox(height: 10),
-                          Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppTheme.surface,
-                              borderRadius: BorderRadius.circular(14),
-                            ),
-                            child: const Row(
-                              children: [
-                                Icon(
-                                  Icons.palette_rounded,
-                                  color: AppTheme.textSecondary,
-                                  size: 20,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ThemeSelectorScreen(),
                                 ),
-                                SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'App Theme',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      SizedBox(height: 2),
-                                      Text(
-                                        'More themes coming soon',
-                                        style: TextStyle(
-                                          color: AppTheme.textSecondary,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ],
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                color: theme.colors.surfacePrimary,
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.palette_rounded,
+                                    color: theme.colors.textSecondary,
+                                    size: 20,
                                   ),
-                                ),
-                                Text(
-                                  'Default',
-                                  style: TextStyle(
-                                    color: AppTheme.accent,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.bold,
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'App Theme',
+                                          style: TextStyle(
+                                            color: theme.colors.textPrimary,
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          'Change Theme',
+                                          style: TextStyle(
+                                            color: theme.colors.textSecondary,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    ThemeManager.instance.activeTheme.name,
+                                    style: TextStyle(
+                                      color: theme.colors.accent,
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
 
@@ -245,32 +275,36 @@ class SettingsScreen extends ConsumerWidget {
 
   Future<void> _resetSmartLogger(WidgetRef ref, UserProfile profile) async {
     final isGuest = ref.read(isGuestProvider);
+    final updated = profile.copyWith(
+      smartLoggerUsedToday: 0,
+      smartLoggerLastResetDate: '',
+    );
+
     if (isGuest) {
-      final updated = profile.copyWith(
-        smartLoggerUsedToday: 0,
-        smartLoggerLastResetDate: '',
-      );
       await LocalNutritionService.saveProfile(updated);
     } else {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(profile.uid)
-          .update({'smartLoggerUsedToday': 0, 'smartLoggerLastResetDate': ''});
+          .update(updated.toMap());
     }
+
     ref.invalidate(userProfileProvider);
   }
 }
 
 class _GroupLabel extends StatelessWidget {
   final String label;
-  const _GroupLabel(this.label);
+  final dynamic theme;
+
+  const _GroupLabel(this.label, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: const TextStyle(
-        color: AppTheme.textSecondary,
+      style: TextStyle(
+        color: theme.colors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.2,
@@ -284,12 +318,14 @@ class _ToggleTile extends StatelessWidget {
   final String subtitle;
   final bool value;
   final ValueChanged<bool> onChanged;
+  final dynamic theme;
 
   const _ToggleTile({
     required this.label,
     required this.subtitle,
     required this.value,
     required this.onChanged,
+    required this.theme,
   });
 
   @override
@@ -298,7 +334,7 @@ class _ToggleTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -309,16 +345,16 @@ class _ToggleTile extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.colors.textPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: theme.colors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -328,8 +364,8 @@ class _ToggleTile extends StatelessWidget {
           Switch(
             value: value,
             onChanged: onChanged,
-            activeThumbColor: AppTheme.accent,
-            inactiveTrackColor: AppTheme.background,
+            activeThumbColor: theme.colors.accent,
+            inactiveTrackColor: theme.colors.backgroundPrimary,
           ),
         ],
       ),
@@ -341,11 +377,13 @@ class _InfoTile extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final dynamic theme;
 
   const _InfoTile({
     required this.label,
     required this.value,
     required this.color,
+    required this.theme,
   });
 
   @override
@@ -353,7 +391,7 @@ class _InfoTile extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -361,8 +399,8 @@ class _InfoTile extends StatelessWidget {
         children: [
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: theme.colors.textPrimary,
               fontWeight: FontWeight.w500,
             ),
           ),

@@ -33,93 +33,115 @@ class ChatMessage {
     this.noAiUsed = false,
     this.isCustomMealDraft = false,
     this.draftIngredients,
-  })  : id = id ?? const Uuid().v4(),
-        timestamp = timestamp ?? DateTime.now();
+  }) : id = id ?? const Uuid().v4(),
+       timestamp = timestamp ?? DateTime.now();
 
-  factory ChatMessage.user(String text) => ChatMessage(type: MsgType.user, text: text);
-  factory ChatMessage.error(String text) => ChatMessage(type: MsgType.error, text: text);
-  factory ChatMessage.aiLock({String? hint}) => ChatMessage(type: MsgType.aiLock, text: hint);
-  
-  factory ChatMessage.foodCard(FoodItem food, {bool noAiUsed = false, bool isCustomMealDraft = false, List<CustomMealIngredient>? draftIngredients}) =>
-      ChatMessage(
-        type: MsgType.foodCard, 
-        food: food, 
-        noAiUsed: noAiUsed, 
-        isCustomMealDraft: isCustomMealDraft,
-        draftIngredients: draftIngredients,
-      );
+  factory ChatMessage.user(String text) =>
+      ChatMessage(type: MsgType.user, text: text);
+  factory ChatMessage.error(String text) =>
+      ChatMessage(type: MsgType.error, text: text);
+  factory ChatMessage.aiLock({String? hint}) =>
+      ChatMessage(type: MsgType.aiLock, text: hint);
+
+  factory ChatMessage.foodCard(
+    FoodItem food, {
+    bool noAiUsed = false,
+    bool isCustomMealDraft = false,
+    List<CustomMealIngredient>? draftIngredients,
+  }) => ChatMessage(
+    type: MsgType.foodCard,
+    food: food,
+    noAiUsed: noAiUsed,
+    isCustomMealDraft: isCustomMealDraft,
+    draftIngredients: draftIngredients,
+  );
 
   ChatMessage copyAccepted(bool val, {FoodItem? newFood}) => ChatMessage(
-        id: id,
-        type: type,
-        text: text,
-        food: newFood ?? food,
-        accepted: val,
-        timestamp: timestamp,
-        noAiUsed: noAiUsed,
-        isCustomMealDraft: isCustomMealDraft,
-        draftIngredients: draftIngredients,
-      );
+    id: id,
+    type: type,
+    text: text,
+    food: newFood ?? food,
+    accepted: val,
+    timestamp: timestamp,
+    noAiUsed: noAiUsed,
+    isCustomMealDraft: isCustomMealDraft,
+    draftIngredients: draftIngredients,
+  );
 
   Map<String, dynamic> toMap() => {
-        'id': id,
-        'type': type.index,
-        'text': text,
-        'food': food?.toMap(),
-        'accepted': accepted,
-        'timestamp': timestamp.millisecondsSinceEpoch,
-        'noAiUsed': noAiUsed,
-        'isCustomMealDraft': isCustomMealDraft,
-        'draftIngredients': draftIngredients?.map((x) => {
-          'foodId': x.foodId,
-          'name': x.name,
-          'amount': x.amount,
-          'unit': x.unit,
-          'calories': x.calories,
-          'protein': x.protein,
-          'carbs': x.carbs,
-          'fats': x.fats,
-          'baseAmount': x.baseAmount,
-          'baseCal': x.baseCal,
-          'basePro': x.basePro,
-          'baseCarb': x.baseCarb,
-          'baseFat': x.baseFat,
-        }).toList(),
-      };
+    'id': id,
+    'type': type.index,
+    'text': text,
+    'food': food?.toMap(),
+    'accepted': accepted,
+    'timestamp': timestamp.millisecondsSinceEpoch,
+    'noAiUsed': noAiUsed,
+    'isCustomMealDraft': isCustomMealDraft,
+    'draftIngredients': draftIngredients
+        ?.map(
+          (x) => {
+            'foodId': x.foodId,
+            'name': x.name,
+            'amount': x.amount,
+            'unit': x.unit,
+            'calories': x.calories,
+            'protein': x.protein,
+            'carbs': x.carbs,
+            'fats': x.fats,
+            'baseAmount': x.baseAmount,
+            'baseCal': x.baseCal,
+            'basePro': x.basePro,
+            'baseCarb': x.baseCarb,
+            'baseFat': x.baseFat,
+          },
+        )
+        .toList(),
+  };
 
   factory ChatMessage.fromMap(Map<String, dynamic> map) => ChatMessage(
-        id: map['id'],
-        type: MsgType.values[map['type']],
-        text: map['text'],
-        food: map['food'] != null ? FoodItem.fromMap(Map<String, dynamic>.from(map['food'])) : null,
-        accepted: map['accepted'],
-        timestamp: map['timestamp'] != null ? DateTime.fromMillisecondsSinceEpoch(map['timestamp']) : null,
-        noAiUsed: map['noAiUsed'] ?? false,
-        isCustomMealDraft: map['isCustomMealDraft'] ?? false,
-        draftIngredients: map['draftIngredients'] != null
-            ? (map['draftIngredients'] as List).map((x) => CustomMealIngredient(
-                foodId: x['foodId'],
-                name: x['name'],
-                amount: (x['amount'] as num).toDouble(),
-                unit: x['unit'],
-                calories: (x['calories'] as num).toInt(),
-                protein: (x['protein'] as num).toInt(),
-                carbs: (x['carbs'] as num).toInt(),
-                fats: (x['fats'] as num).toInt(),
-                baseAmount: (x['baseAmount'] as num).toDouble(),
-                baseCal: (x['baseCal'] as num).toInt(),
-                basePro: (x['basePro'] as num).toInt(),
-                baseCarb: (x['baseCarb'] as num).toInt(),
-                baseFat: (x['baseFat'] as num).toInt(),
-              )).toList()
-            : null,
-      );
+    id: map['id'],
+    type: MsgType.values[map['type']],
+    text: map['text'],
+    food: map['food'] != null
+        ? FoodItem.fromMap(Map<String, dynamic>.from(map['food']))
+        : null,
+    accepted: map['accepted'],
+    timestamp: map['timestamp'] != null
+        ? DateTime.fromMillisecondsSinceEpoch(map['timestamp'])
+        : null,
+    noAiUsed: map['noAiUsed'] ?? false,
+    isCustomMealDraft: map['isCustomMealDraft'] ?? false,
+    draftIngredients: map['draftIngredients'] != null
+        ? (map['draftIngredients'] as List)
+              .map(
+                (x) => CustomMealIngredient(
+                  foodId: x['foodId'],
+                  name: x['name'],
+                  amount: (x['amount'] as num).toDouble(),
+                  unit: x['unit'],
+                  calories: (x['calories'] as num).toInt(),
+                  protein: (x['protein'] as num).toInt(),
+                  carbs: (x['carbs'] as num).toInt(),
+                  fats: (x['fats'] as num).toInt(),
+                  baseAmount: (x['baseAmount'] as num).toDouble(),
+                  baseCal: (x['baseCal'] as num).toInt(),
+                  basePro: (x['basePro'] as num).toInt(),
+                  baseCarb: (x['baseCarb'] as num).toInt(),
+                  baseFat: (x['baseFat'] as num).toInt(),
+                ),
+              )
+              .toList()
+        : null,
+  );
 }
 
 class SmartLoggerHistory {
   static const _keyPrefix = 'smart_logger_history_';
 
-  static Future<void> saveMessages(String date, List<ChatMessage> messages) async {
+  static Future<void> saveMessages(
+    String date,
+    List<ChatMessage> messages,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final jsonList = messages.map((m) => jsonEncode(m.toMap())).toList();
     await prefs.setStringList('$_keyPrefix$date', jsonList);
@@ -133,7 +155,10 @@ class SmartLoggerHistory {
   }
 
   static Future<void> _cleanupOldHistory(SharedPreferences prefs) async {
-    final keys = prefs.getKeys().where((k) => k.startsWith(_keyPrefix)).toList();
+    final keys = prefs
+        .getKeys()
+        .where((k) => k.startsWith(_keyPrefix))
+        .toList();
     if (keys.length <= 7) return;
     keys.sort();
     final keysToRemove = keys.sublist(0, keys.length - 7);
@@ -150,74 +175,121 @@ class EmptyChat extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Center(child: Text('🧙', style: TextStyle(fontSize: 44))),
-            const SizedBox(height: 12),
-            const Center(child: Text('Smart Logger',
-                style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18))),
-            const SizedBox(height: 4),
-            const Center(child: Text('Describe meals in plain language — I\'ll find them.',
-                textAlign: TextAlign.center,
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 13))),
-            const SizedBox(height: 20),
-            const HintSection(icon: '🍽️', title: 'Natural language', examples: [
-              '50g oats banana peanut butter',
-              '2 roti sabzi curd',
-              'protein shake with milk and banana',
-              '250ml milk + 1 scoop whey',
-            ]),
-            const SizedBox(height: 12),
-            const HintSection(icon: '⚡', title: '/custommeal — create & save a meal', examples: [
-              '/custommeal "Workout Shake" 250ml milk, 1 scoop whey, 1 banana',
-              '/custommeal "Dal Rice" 1 katori dal, 1 katori rice',
-            ]),
-            const SizedBox(height: 12),
-            const HintSection(icon: '🤖', title: '/aionly — force AI (auth only)', examples: [
-              '/aionly large biryani from Behrouz',
-              '/aionly homemade paneer sandwich',
-            ]),
-            const SizedBox(height: 8),
+    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+    physics: const BouncingScrollPhysics(),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Center(child: Text('🧙', style: TextStyle(fontSize: 44))),
+        const SizedBox(height: 12),
+        const Center(
+          child: Text(
+            'Smart Logger',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Center(
+          child: Text(
+            'Describe meals in plain language — I\'ll find them.',
+            textAlign: TextAlign.center,
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          ),
+        ),
+        const SizedBox(height: 20),
+        const HintSection(
+          icon: '🍽️',
+          title: 'Natural language',
+          examples: [
+            '50g oats banana peanut butter',
+            '2 roti sabzi curd',
+            'protein shake with milk and banana',
+            '250ml milk + 1 scoop whey',
           ],
         ),
-      );
+        const SizedBox(height: 12),
+        const HintSection(
+          icon: '⚡',
+          title: '/custommeal — create & save a meal',
+          examples: [
+            '/custommeal "Workout Shake" 250ml milk, 1 scoop whey, 1 banana',
+            '/custommeal "Dal Rice" 1 katori dal, 1 katori rice',
+          ],
+        ),
+        const SizedBox(height: 12),
+        const HintSection(
+          icon: '🤖',
+          title: '/aionly — force AI (auth only)',
+          examples: [
+            '/aionly large biryani from Behrouz',
+            '/aionly homemade paneer sandwich',
+          ],
+        ),
+        const SizedBox(height: 8),
+      ],
+    ),
+  );
 }
 
 class HintSection extends StatelessWidget {
   final String icon, title;
   final List<String> examples;
-  
-  const HintSection({super.key, required this.icon, required this.title, required this.examples});
+
+  const HintSection({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.examples,
+  });
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start, 
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: AppTheme.surface,
+      borderRadius: BorderRadius.circular(12),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.06)),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
           children: [
-            Row(children: [
-              Text(icon, style: const TextStyle(fontSize: 14)),
-              const SizedBox(width: 8),
-              Expanded(child: Text(title, style: const TextStyle(
-                  color: Colors.white, fontWeight: FontWeight.w600, fontSize: 13))),
-            ]),
-            const SizedBox(height: 8),
-            ...examples.map((e) => Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(e, style: const TextStyle(
-                  color: AppTheme.textSecondary, fontSize: 12, fontFamily: 'monospace')),
-            )),
-          ]
+            Text(icon, style: const TextStyle(fontSize: 14)),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 13,
+                ),
+              ),
+            ),
+          ],
         ),
-      );
+        const SizedBox(height: 8),
+        ...examples.map(
+          (e) => Padding(
+            padding: const EdgeInsets.only(bottom: 4),
+            child: Text(
+              e,
+              style: TextStyle(
+                color: AppTheme.textSecondary,
+                fontSize: 12,
+                fontFamily: 'monospace',
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 // ── BUBBLES AND CARDS ────────────────────────────────────────────────────────
@@ -243,7 +315,10 @@ class UserBubble extends StatelessWidget {
           ),
           border: Border.all(color: AppTheme.accent.withValues(alpha: 0.3)),
         ),
-        child: Text(text, style: const TextStyle(color: Colors.white, fontSize: 14)),
+        child: Text(
+          text,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
       ),
     );
   }
@@ -269,7 +344,10 @@ class ErrorBubble extends StatelessWidget {
             bottomRight: Radius.circular(16),
           ),
         ),
-        child: Text(text, style: const TextStyle(color: Colors.redAccent, fontSize: 13)),
+        child: Text(
+          text,
+          style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+        ),
       ),
     );
   }
@@ -280,7 +358,7 @@ class TypingIndicator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Align(
+    return Align(
       alignment: Alignment.centerLeft,
       child: Padding(
         padding: EdgeInsets.only(bottom: 12),
@@ -291,7 +369,10 @@ class TypingIndicator extends StatelessWidget {
             SizedBox(width: 8),
             SizedBox(
               width: 40,
-              child: LinearProgressIndicator(color: AppTheme.accent, backgroundColor: AppTheme.surface),
+              child: LinearProgressIndicator(
+                color: AppTheme.accent,
+                backgroundColor: AppTheme.surface,
+              ),
             ),
           ],
         ),
@@ -315,29 +396,45 @@ class AiLockCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: Colors.purpleAccent.withValues(alpha: 0.08),
         borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(4), topRight: Radius.circular(16),
-          bottomLeft: Radius.circular(16), bottomRight: Radius.circular(16),
+          topLeft: Radius.circular(4),
+          topRight: Radius.circular(16),
+          bottomLeft: Radius.circular(16),
+          bottomRight: Radius.circular(16),
         ),
         border: Border.all(color: Colors.purpleAccent.withValues(alpha: 0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(children: [
-            const Icon(Icons.lock_outline_rounded, color: Colors.purpleAccent, size: 16),
-            const SizedBox(width: 8),
-            const Expanded(
-              child: Text('AI Search — Sign In Required',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-            ),
-          ]),
+          Row(
+            children: [
+              const Icon(
+                Icons.lock_outline_rounded,
+                color: Colors.purpleAccent,
+                size: 16,
+              ),
+              const SizedBox(width: 8),
+              const Expanded(
+                child: Text(
+                  'AI Search — Sign In Required',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
+              ),
+            ],
+          ),
           if (hint != null) ...[
             const SizedBox(height: 6),
-            Text('Couldn’t find locally: $hint',
-                style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
+            Text(
+              'Couldn’t find locally: $hint',
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+            ),
           ],
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Create a free account to unlock AI-powered food search, photo logging, and more.',
             style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
@@ -345,11 +442,16 @@ class AiLockCard extends StatelessWidget {
           ElevatedButton.icon(
             onPressed: onSignIn,
             icon: const Icon(Icons.person_add_rounded, size: 16),
-            label: const Text('Sign Up Free', style: TextStyle(fontWeight: FontWeight.bold)),
+            label: const Text(
+              'Sign Up Free',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.purpleAccent,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               elevation: 0,
             ),
@@ -441,50 +543,75 @@ class _FoodCardMsgState extends ConsumerState<FoodCardMsg> {
               color: isPending
                   ? Colors.white.withValues(alpha: 0.08)
                   : isAccepted
-                      ? AppTheme.accent.withValues(alpha: 0.5)
-                      : Colors.redAccent.withValues(alpha: 0.5),
+                  ? AppTheme.accent.withValues(alpha: 0.5)
+                  : Colors.redAccent.withValues(alpha: 0.5),
             ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(children: [
-                if (!widget.noAiUsed && !widget.isCustomMealDraft)
-                  const Text('🪄 ', style: TextStyle(fontSize: 13)),
-                Expanded(
-                  child: Text(
-                    _currentFood.name,
-                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  if (!widget.noAiUsed && !widget.isCustomMealDraft)
+                    const Text('🪄 ', style: TextStyle(fontSize: 13)),
+                  Expanded(
+                    child: Text(
+                      _currentFood.name,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
-                ),
-                Text(
-                  '${_currentFood.consumedAmount % 1 == 0 ? _currentFood.consumedAmount.toInt() : _currentFood.consumedAmount} ${_currentFood.consumedUnit}',
-                  style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
-                ),
-              ]),
+                  Text(
+                    '${_currentFood.consumedAmount % 1 == 0 ? _currentFood.consumedAmount.toInt() : _currentFood.consumedAmount} ${_currentFood.consumedUnit}',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 11,
+                    ),
+                  ),
+                ],
+              ),
 
               if (widget.isCustomMealDraft) ...[
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.accent.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text('CUSTOM MEAL PREVIEW',
-                      style: TextStyle(color: AppTheme.accent, fontSize: 9, fontWeight: FontWeight.bold, letterSpacing: 0.8)),
+                  child: Text(
+                    'CUSTOM MEAL PREVIEW',
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 0.8,
+                    ),
+                  ),
                 ),
               ] else if (widget.noAiUsed) ...[
                 const SizedBox(height: 4),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 6,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.accent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     'No AI used ✓',
-                    style: TextStyle(color: AppTheme.accent, fontSize: 9, fontWeight: FontWeight.bold),
+                    style: TextStyle(
+                      color: AppTheme.accent,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ],
@@ -499,61 +626,104 @@ class _FoodCardMsgState extends ConsumerState<FoodCardMsg> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _MacroBadge('${_currentFood.calories}', 'kcal', AppTheme.accent),
-                  _MacroBadge('${_currentFood.protein}g', 'Protein', Colors.blueAccent),
-                  _MacroBadge('${_currentFood.carbs}g', 'Carbs', Colors.orangeAccent),
-                  _MacroBadge('${_currentFood.fats}g', 'Fats', Colors.purpleAccent),
+                  _MacroBadge(
+                    '${_currentFood.calories}',
+                    'kcal',
+                    AppTheme.accent,
+                  ),
+                  _MacroBadge(
+                    '${_currentFood.protein}g',
+                    'Protein',
+                    Colors.blueAccent,
+                  ),
+                  _MacroBadge(
+                    '${_currentFood.carbs}g',
+                    'Carbs',
+                    Colors.orangeAccent,
+                  ),
+                  _MacroBadge(
+                    '${_currentFood.fats}g',
+                    'Fats',
+                    Colors.purpleAccent,
+                  ),
                 ],
               ),
               if (isPending) ...[
                 const SizedBox(height: 12),
-                Row(children: [
-                  _SmallBtn(
-                    icon: Icons.edit_rounded,
-                    label: 'Edit',
-                    color: Colors.white70,
-                    onTap: widget.onEdit,
-                  ),
-                  const SizedBox(width: 6),
-                  _SmallBtn(
-                    icon: widget.isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    label: widget.isFavorite ? 'Saved' : 'Fav',
-                    color: widget.isFavorite ? AppTheme.accent : Colors.amberAccent,
-                    onTap: widget.onFav,
-                  ),
-                  const Spacer(),
-                  _SmallBtn(
-                    icon: Icons.close_rounded,
-                    label: 'Deny',
-                    color: Colors.redAccent,
-                    onTap: widget.onDeny,
-                  ),
-                  const SizedBox(width: 6),
-                  ElevatedButton.icon(
-                    onPressed: () => widget.onAccept(_currentFood),
-                    icon: const Icon(Icons.check_rounded, size: 16),
-                    label: const Text('Log', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.accent,
-                      foregroundColor: AppTheme.background,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-                      elevation: 0,
+                Row(
+                  children: [
+                    _SmallBtn(
+                      icon: Icons.edit_rounded,
+                      label: 'Edit',
+                      color: Colors.white70,
+                      onTap: widget.onEdit,
                     ),
-                  ),
-                ]),
+                    const SizedBox(width: 6),
+                    _SmallBtn(
+                      icon: widget.isFavorite
+                          ? Icons.favorite_rounded
+                          : Icons.favorite_border_rounded,
+                      label: widget.isFavorite ? 'Saved' : 'Fav',
+                      color: widget.isFavorite
+                          ? AppTheme.accent
+                          : Colors.amberAccent,
+                      onTap: widget.onFav,
+                    ),
+                    const Spacer(),
+                    _SmallBtn(
+                      icon: Icons.close_rounded,
+                      label: 'Deny',
+                      color: Colors.redAccent,
+                      onTap: widget.onDeny,
+                    ),
+                    const SizedBox(width: 6),
+                    ElevatedButton.icon(
+                      onPressed: () => widget.onAccept(_currentFood),
+                      icon: const Icon(Icons.check_rounded, size: 16),
+                      label: const Text(
+                        'Log',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 13,
+                        ),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.accent,
+                        foregroundColor: AppTheme.background,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
+                        elevation: 0,
+                      ),
+                    ),
+                  ],
+                ),
               ] else ...[
                 const SizedBox(height: 10),
-                Row(children: [
-                  Icon(isAccepted ? Icons.check_circle_rounded : Icons.cancel_rounded,
+                Row(
+                  children: [
+                    Icon(
+                      isAccepted
+                          ? Icons.check_circle_rounded
+                          : Icons.cancel_rounded,
                       color: isAccepted ? AppTheme.accent : Colors.redAccent,
-                      size: 16),
-                  const SizedBox(width: 6),
-                  Text(isAccepted ? 'Logged / Saved' : 'Dismissed',
+                      size: 16,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      isAccepted ? 'Logged / Saved' : 'Dismissed',
                       style: TextStyle(
-                          color: isAccepted ? AppTheme.accent : Colors.redAccent,
-                          fontSize: 12, fontWeight: FontWeight.bold)),
-                ]),
+                        color: isAccepted ? AppTheme.accent : Colors.redAccent,
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ],
           ),
@@ -568,10 +738,22 @@ class _MacroBadge extends StatelessWidget {
   final Color color;
   const _MacroBadge(this.value, this.label, this.color);
   @override
-  Widget build(BuildContext context) => Column(children: [
-        Text(value, style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 14)),
-        Text(label, style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10)),
-      ]);
+  Widget build(BuildContext context) => Column(
+    children: [
+      Text(
+        value,
+        style: TextStyle(
+          color: color,
+          fontWeight: FontWeight.bold,
+          fontSize: 14,
+        ),
+      ),
+      Text(
+        label,
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+      ),
+    ],
+  );
 }
 
 class _SmallBtn extends StatelessWidget {
@@ -579,24 +761,39 @@ class _SmallBtn extends StatelessWidget {
   final String label;
   final Color color;
   final VoidCallback onTap;
-  const _SmallBtn({required this.icon, required this.label, required this.color, required this.onTap});
+  const _SmallBtn({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
   @override
   Widget build(BuildContext context) => GestureDetector(
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
-          decoration: BoxDecoration(
-            color: color.withValues(alpha: 0.10),
-            borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: color.withValues(alpha: 0.25)),
+    onTap: onTap,
+    child: Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 7),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.10),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: color.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 14, color: color),
+          const SizedBox(width: 4),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontSize: 11,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          child: Row(mainAxisSize: MainAxisSize.min, children: [
-            Icon(icon, size: 14, color: color),
-            const SizedBox(width: 4),
-            Text(label, style: TextStyle(color: color, fontSize: 11, fontWeight: FontWeight.w600)),
-          ]),
-        ),
-      );
+        ],
+      ),
+    ),
+  );
 }
 
 // ── COMMAND ROW & PILLS ──────────────────────────────────────────────────────
@@ -628,7 +825,9 @@ class CommandButtonRow extends StatelessWidget {
         const SizedBox(width: 8),
         CommandPill(
           label: isGuest ? '🔒 /aionly' : '🤖 /aionly',
-          tooltip: isGuest ? 'Sign in to use AI search' : '/aionly food description...',
+          tooltip: isGuest
+              ? 'Sign in to use AI search'
+              : '/aionly food description...',
           color: isGuest ? AppTheme.textSecondary : Colors.purpleAccent,
           onTap: onAiOnly,
         ),
@@ -643,11 +842,11 @@ class CommandPill extends StatelessWidget {
   final VoidCallback onTap;
 
   const CommandPill({
-    super.key, 
-    required this.label, 
-    required this.tooltip, 
-    required this.color, 
-    required this.onTap
+    super.key,
+    required this.label,
+    required this.tooltip,
+    required this.color,
+    required this.onTap,
   });
 
   @override
@@ -663,21 +862,21 @@ class CommandPill extends StatelessWidget {
           borderRadius: BorderRadius.circular(24),
           border: Border.all(color: color.withValues(alpha: 0.5), width: 1.2),
           boxShadow: [
-             BoxShadow(
-               color: color.withValues(alpha: 0.1),
-               blurRadius: 8,
-               offset: const Offset(0, 2),
-             ),
+            BoxShadow(
+              color: color.withValues(alpha: 0.1),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
           ],
         ),
         child: Text(
-          label, 
+          label,
           style: TextStyle(
-            color: color, 
-            fontSize: 13, 
+            color: color,
+            fontSize: 13,
             fontWeight: FontWeight.bold,
             letterSpacing: 0.3,
-          )
+          ),
         ),
       ),
     ),
@@ -703,11 +902,14 @@ class SearchResultsList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(child: CircularProgressIndicator(color: AppTheme.accent));
+      return Center(child: CircularProgressIndicator(color: AppTheme.accent));
     }
     if (hasSearched && results.isEmpty) {
-      return const Center(
-        child: Text('No results found.', style: TextStyle(color: AppTheme.textSecondary)),
+      return Center(
+        child: Text(
+          'No results found.',
+          style: TextStyle(color: AppTheme.textSecondary),
+        ),
       );
     }
     return ListView.builder(
@@ -717,13 +919,28 @@ class SearchResultsList extends StatelessWidget {
       itemBuilder: (_, i) {
         final food = results[i];
         return ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-          title: Text(food.name, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 20,
+            vertical: 6,
+          ),
+          title: Text(
+            food.name,
+            style: const TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           subtitle: Text(
-              '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
-              style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-          trailing: Text('${food.calories} kcal',
-              style: const TextStyle(color: AppTheme.accent, fontWeight: FontWeight.bold)),
+            '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          ),
+          trailing: Text(
+            '${food.calories} kcal',
+            style: TextStyle(
+              color: AppTheme.accent,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
           onTap: () => onTap(food),
         );
       },
@@ -747,15 +964,20 @@ class UsageChip extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: limitReached ? Colors.redAccent.withValues(alpha: 0.15) : AppTheme.surface,
+        color: limitReached
+            ? Colors.redAccent.withValues(alpha: 0.15)
+            : AppTheme.surface,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-            color: limitReached ? Colors.redAccent.withValues(alpha: 0.5) : Colors.transparent),
+          color: limitReached
+              ? Colors.redAccent.withValues(alpha: 0.5)
+              : Colors.transparent,
+        ),
       ),
       child: Text(
         isGuest
-            ? 'Nutrition AI Assists: ${(kGuestMonthlyLimit - used).clamp(0, kGuestMonthlyLimit)} remaining this month'
-            : 'Nutrition AI Assists: ${(kAuthDailyLimit - used).clamp(0, kAuthDailyLimit)} remaining today',
+            ? 'Nutrition AI Assists: ${(kGuestMonthlyLimit - used).clamp(0, kGuestMonthlyLimit)} remaining'
+            : 'Nutrition AI Assists: ${(kAuthDailyLimit - used).clamp(0, kAuthDailyLimit)} remaining',
         style: TextStyle(
           color: limitReached ? Colors.redAccent : AppTheme.textSecondary,
           fontSize: 12,
@@ -769,27 +991,27 @@ class UsageChip extends StatelessWidget {
 class LimitBanner extends StatelessWidget {
   final bool isGuest;
   const LimitBanner({super.key, required this.isGuest});
-  
+
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.redAccent.withValues(alpha: 0.1),
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+    padding: const EdgeInsets.all(14),
+    decoration: BoxDecoration(
+      color: Colors.redAccent.withValues(alpha: 0.1),
+      borderRadius: BorderRadius.circular(14),
+      border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+    ),
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(Icons.lock_outline, color: Colors.redAccent, size: 16),
+        const SizedBox(width: 8),
+        Text(
+          isGuest
+              ? 'Monthly limit reached ($kGuestMonthlyLimit/$kGuestMonthlyLimit). Sign in for more!'
+              : 'Daily limit reached ($kAuthDailyLimit/$kAuthDailyLimit). Resets tomorrow.',
+          style: const TextStyle(color: Colors.redAccent, fontSize: 13),
         ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.lock_outline, color: Colors.redAccent, size: 16),
-            const SizedBox(width: 8),
-            Text(
-              isGuest
-                  ? 'Monthly limit reached ($kGuestMonthlyLimit/$kGuestMonthlyLimit). Sign in for more!'
-                  : 'Daily limit reached ($kAuthDailyLimit/$kAuthDailyLimit). Resets tomorrow.',
-              style: const TextStyle(color: Colors.redAccent, fontSize: 13),
-            ),
-          ],
-        ),
-      );
+      ],
+    ),
+  );
 }

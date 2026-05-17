@@ -87,7 +87,7 @@ class SmartFoodCard extends StatelessWidget {
                         // NEW: Displays the logged quantity
                         Text(
                           '$displayAmount $consumedUnit',
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontSize: 13,
                             color: AppTheme.textSecondary,
                           ),
@@ -97,7 +97,7 @@ class SmartFoodCard extends StatelessWidget {
                   ),
                   Text(
                     '$calories kcal',
-                    style: const TextStyle(
+                    style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
                       color: AppTheme.accent,

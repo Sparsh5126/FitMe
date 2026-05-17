@@ -1,11 +1,10 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:uuid/uuid.dart';
-import '../models/fitpoints_models.dart';
-import 'consistency_engine.dart';
-import '../../nutrition/services/local_nutrition_service.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
+import 'package:fitme/features/fitpoints/services/consistency_engine.dart';
+import 'package:fitme/features/nutrition/services/local_nutrition_service.dart';
 
 /// Central service for all FitPoint calculations.
 /// Handles: base points, multipliers, quality modifier, duplicate detection,
@@ -14,7 +13,7 @@ class FitPointsService {
   final ConsistencyEngine _consistencyEngine;
 
   FitPointsService({ConsistencyEngine? consistencyEngine})
-      : _consistencyEngine = consistencyEngine ?? ConsistencyEngine();
+    : _consistencyEngine = consistencyEngine ?? ConsistencyEngine();
 
   static const _uuid = Uuid();
   static final _db = FirebaseFirestore.instance;
@@ -28,12 +27,18 @@ class FitPointsService {
       return Stream.fromFuture(getRecord(userId, isGuest));
     }
 
-    return _db.collection('users').doc(userId).collection('gamification').doc('fitpoints').snapshots().map((snap) {
-      if (!snap.exists || snap.data() == null) {
-        return FitPointsRecord.newGuest(userId);
-      }
-      return FitPointsRecord.fromJson(snap.data()!);
-    });
+    return _db
+        .collection('users')
+        .doc(userId)
+        .collection('gamification')
+        .doc('fitpoints')
+        .snapshots()
+        .map((snap) {
+          if (!snap.exists || snap.data() == null) {
+            return FitPointsRecord.newGuest(userId);
+          }
+          return FitPointsRecord.fromJson(snap.data()!);
+        });
   }
 
   /// Returns the user's current FitPointsRecord as a Future.
@@ -44,13 +49,22 @@ class FitPointsService {
       return FitPointsRecord.newGuest(userId.isEmpty ? 'guest_user' : userId);
     }
 
-    final doc = await _db.collection('users').doc(userId).collection('gamification').doc('fitpoints').get();
+    final doc = await _db
+        .collection('users')
+        .doc(userId)
+        .collection('gamification')
+        .doc('fitpoints')
+        .get();
     if (!doc.exists || doc.data() == null) {
-      debugPrint('[FitPointsService] No record found for $userId, returning fresh');
+      debugPrint(
+        '[FitPointsService] No record found for $userId, returning fresh',
+      );
       return FitPointsRecord.newGuest(userId).copyWith(isGuest: false);
     }
     final r = FitPointsRecord.fromJson(doc.data()!);
-    debugPrint('[FitPointsService] Fetched record for $userId: balance=${r.currentBalance}, lifetime=${r.lifetimePoints}');
+    debugPrint(
+      '[FitPointsService] Fetched record for $userId: balance=${r.currentBalance}, lifetime=${r.lifetimePoints}',
+    );
     return r;
   }
 
@@ -61,36 +75,52 @@ class FitPointsService {
       return;
     }
 
-    await _db.collection('users').doc(record.userId).collection('gamification').doc('fitpoints').set(record.toJson());
+    await _db
+        .collection('users')
+        .doc(record.userId)
+        .collection('gamification')
+        .doc('fitpoints')
+        .set(record.toJson());
   }
 
   /// Returns all FitPoint transactions for today for a given user.
-  Future<List<FitPointTransaction>> getTodayTransactions(String userId, bool isGuest) async {
+  Future<List<FitPointTransaction>> getTodayTransactions(
+    String userId,
+    bool isGuest,
+  ) async {
     if (isGuest || userId.isEmpty) {
-      // For guests, we could implement local storage for transactions, 
+      // For guests, we could implement local storage for transactions,
       // but for now we return empty to avoid breaking the flow.
       return [];
     }
 
     final now = DateTime.now();
     final startOfDay = DateTime(now.year, now.month, now.day);
-    
+
     final query = await _db
         .collection('users')
         .doc(userId)
         .collection('gamification')
         .doc('fitpoints')
         .collection('transactions')
-        .where('timestamp', isGreaterThanOrEqualTo: startOfDay.toIso8601String())
+        .where(
+          'timestamp',
+          isGreaterThanOrEqualTo: startOfDay.toIso8601String(),
+        )
         .get();
 
-    return query.docs.map((doc) => FitPointTransaction.fromJson(doc.data())).toList();
+    return query.docs
+        .map((doc) => FitPointTransaction.fromJson(doc.data()))
+        .toList();
   }
 
   /// Returns recent FitPoint transactions for a user.
-  Future<List<FitPointTransaction>> getRecentTransactions(String userId, int limit) async {
+  Future<List<FitPointTransaction>> getRecentTransactions(
+    String userId,
+    int limit,
+  ) async {
     if (userId.isEmpty) return [];
-    
+
     final query = await _db
         .collection('users')
         .doc(userId)
@@ -101,7 +131,9 @@ class FitPointsService {
         .limit(limit)
         .get();
 
-    return query.docs.map((doc) => FitPointTransaction.fromJson(doc.data())).toList();
+    return query.docs
+        .map((doc) => FitPointTransaction.fromJson(doc.data()))
+        .toList();
   }
 
   // ─── Daily Caps ───────────────────────────────────────────────────────────
@@ -161,8 +193,9 @@ class FitPointsService {
     // ── Daily action cap check ────────────────────────────────────────────
     final actionCap = action.dailyActionCap;
     if (actionCap != null) {
-      final todayActionCount =
-          todayTransactions.where((t) => t.action == action).length;
+      final todayActionCount = todayTransactions
+          .where((t) => t.action == action)
+          .length;
       if (todayActionCount >= actionCap) {
         _log('Daily action cap reached for ${action.name}');
         return FpAwardResult(
@@ -177,7 +210,8 @@ class FitPointsService {
     // ── Daily total base-points cap ───────────────────────────────────────
     final todayBaseTotal = todayTransactions.fold<double>(
       0,
-      (sum, t) => sum + (t.finalPoints / t.streakMultiplier / t.qualityModifier),
+      (sum, t) =>
+          sum + (t.finalPoints / t.streakMultiplier / t.qualityModifier),
     );
     if (todayBaseTotal >= _dailyBaseCap) {
       _log('Daily base cap reached (${todayBaseTotal.toStringAsFixed(1)} FP)');
@@ -220,8 +254,10 @@ class FitPointsService {
     double finalPoints = basePoints * streakMultiplier * qualityModifier;
 
     // Ensure daily absolute cap not exceeded
-    final todayFinalTotal =
-        todayTransactions.fold<double>(0, (s, t) => s + t.finalPoints);
+    final todayFinalTotal = todayTransactions.fold<double>(
+      0,
+      (s, t) => s + t.finalPoints,
+    );
     final remaining = _dailyAbsoluteCap - todayFinalTotal;
     finalPoints = min(finalPoints, remaining);
 
@@ -264,7 +300,9 @@ class FitPointsService {
   }) {
     assert(result.awarded, 'Do not build transactions for non-awarded results');
 
-    final qualityMod = result.reducedByQuality ? LoggingQuality.poor.modifier : 1.0;
+    final qualityMod = result.reducedByQuality
+        ? LoggingQuality.poor.modifier
+        : 1.0;
 
     return FitPointTransaction(
       id: _uuid.v4(),
@@ -311,15 +349,18 @@ class FitPointsService {
     assert(guestRecord.isGuest, 'Source must be a guest record');
 
     // Merge daily earnings maps
-    final mergedDailyEarnings =
-        Map<String, double>.from(accountRecord.dailyEarnings);
+    final mergedDailyEarnings = Map<String, double>.from(
+      accountRecord.dailyEarnings,
+    );
     for (final entry in guestRecord.dailyEarnings.entries) {
       mergedDailyEarnings[entry.key] =
           (mergedDailyEarnings[entry.key] ?? 0) + entry.value;
     }
 
     // Take best tier and highest streak
-    final bestTier = guestRecord.currentTier.multiplier > accountRecord.currentTier.multiplier
+    final bestTier =
+        guestRecord.currentTier.multiplier >
+            accountRecord.currentTier.multiplier
         ? guestRecord.currentTier
         : accountRecord.currentTier;
 
@@ -334,9 +375,12 @@ class FitPointsService {
       currentBalance: accountRecord.currentBalance + guestRecord.currentBalance,
       currentTier: bestTier,
       streakDays: max(accountRecord.streakDays, guestRecord.streakDays),
-      momentumScore:
-          max(accountRecord.momentumScore, guestRecord.momentumScore),
-      lastActiveDate: accountRecord.lastActiveDate.isAfter(guestRecord.lastActiveDate)
+      momentumScore: max(
+        accountRecord.momentumScore,
+        guestRecord.momentumScore,
+      ),
+      lastActiveDate:
+          accountRecord.lastActiveDate.isAfter(guestRecord.lastActiveDate)
           ? accountRecord.lastActiveDate
           : guestRecord.lastActiveDate,
       dailyEarnings: mergedDailyEarnings,
@@ -356,8 +400,10 @@ class FitPointsService {
 
     _log('Similar existing meal logs today: ${similarMeals.length}');
 
-    if (similarMeals.length >= _reducedFpOccurrences) return _DuplicateLevel.spam;
-    if (similarMeals.length >= _fullFpOccurrences) return _DuplicateLevel.reduced;
+    if (similarMeals.length >= _reducedFpOccurrences)
+      return _DuplicateLevel.spam;
+    if (similarMeals.length >= _fullFpOccurrences)
+      return _DuplicateLevel.reduced;
     return _DuplicateLevel.full;
   }
 
@@ -366,7 +412,13 @@ class FitPointsService {
 
     // Calorie proximity (0.4 weight)
     final calDiff = (a.calories - b.calories).abs();
-    score += (calDiff <= 50 ? 1.0 : calDiff <= 150 ? 0.5 : 0.0) * 0.4;
+    score +=
+        (calDiff <= 50
+            ? 1.0
+            : calDiff <= 150
+            ? 0.5
+            : 0.0) *
+        0.4;
 
     // Ingredient overlap (0.4 weight)
     final aI = a.ingredients.map((s) => s.toLowerCase()).toSet();
@@ -378,7 +430,8 @@ class FitPointsService {
 
     // Name match (0.2 weight)
     score +=
-        (a.mealName.toLowerCase() == b.mealName.toLowerCase() ? 1.0 : 0.0) * 0.2;
+        (a.mealName.toLowerCase() == b.mealName.toLowerCase() ? 1.0 : 0.0) *
+        0.2;
 
     return score;
   }

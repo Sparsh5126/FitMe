@@ -178,37 +178,44 @@ class ThemeColors {
   };
 
   static ThemeColors fromJson(Map<String, dynamic> json) {
-    Color _colorFromJson(dynamic value) {
+    Color colorFromJson(dynamic value) {
       if (value is int) return Color(value);
-      if (value is String) return Color(int.parse(value.replaceFirst('0x', ''), radix: 16));
+      if (value is String)
+        return Color(int.parse(value.replaceFirst('0x', ''), radix: 16));
       return Colors.white; // Fallback
     }
 
     return ThemeColors(
-      backgroundPrimary: _colorFromJson(json['backgroundPrimary'] ?? 0xFF0D0D0D),
-      backgroundSecondary: _colorFromJson(json['backgroundSecondary'] ?? 0xFF1A1A1A),
-      surfacePrimary: _colorFromJson(json['surfacePrimary'] ?? 0xFF1A1A1A),
-      surfaceSecondary: _colorFromJson(json['surfaceSecondary'] ?? 0xFF242424),
-      surfaceElevated: _colorFromJson(json['surfaceElevated'] ?? 0xFF2E2E2E),
-      surfaceBorder: _colorFromJson(json['surfaceBorder'] ?? 0xFFFFFFFF).withOpacity(0.1),
-      textPrimary: _colorFromJson(json['textPrimary'] ?? 0xFFFFFFFF),
-      textSecondary: _colorFromJson(json['textSecondary'] ?? 0xFF888888),
-      textAccent: _colorFromJson(json['textAccent'] ?? 0xFFFF9500),
-      textDisabled: _colorFromJson(json['textDisabled'] ?? 0xFF555555),
-      accent: _colorFromJson(json['accent'] ?? 0xFFFF9500),
-      accentLight: _colorFromJson(json['accentLight'] ?? 0xFFFF9500).withOpacity(0.15),
-      accentDark: _colorFromJson(json['accentDark'] ?? 0xFFD97600),
-      success: _colorFromJson(json['success'] ?? 0xFF00E5A0),
-      warning: _colorFromJson(json['warning'] ?? 0xFFFF9500),
-      error: _colorFromJson(json['error'] ?? 0xFFFF453A),
-      info: _colorFromJson(json['info'] ?? 0xFF00C7FF),
-      proteinColor: _colorFromJson(json['proteinColor'] ?? 0xFF4D9FFF),
-      carbsColor: _colorFromJson(json['carbsColor'] ?? 0xFFFF9500),
-      fatsColor: _colorFromJson(json['fatsColor'] ?? 0xFFAF52DE),
-      waterColor: _colorFromJson(json['waterColor'] ?? 0xFF00C7FF),
-      caloriesColor: _colorFromJson(json['caloriesColor'] ?? 0xFFFF9500),
-      disabled: _colorFromJson(json['disabled'] ?? 0xFF444444),
-      overlay: _colorFromJson(json['overlay'] ?? 0xFF000000).withOpacity(0.5),
+      backgroundPrimary: colorFromJson(json['backgroundPrimary'] ?? 0xFF0D0D0D),
+      backgroundSecondary: colorFromJson(
+        json['backgroundSecondary'] ?? 0xFF1A1A1A,
+      ),
+      surfacePrimary: colorFromJson(json['surfacePrimary'] ?? 0xFF1A1A1A),
+      surfaceSecondary: colorFromJson(json['surfaceSecondary'] ?? 0xFF242424),
+      surfaceElevated: colorFromJson(json['surfaceElevated'] ?? 0xFF2E2E2E),
+      surfaceBorder: colorFromJson(
+        json['surfaceBorder'] ?? 0xFFFFFFFF,
+      ).withOpacity(0.1),
+      textPrimary: colorFromJson(json['textPrimary'] ?? 0xFFFFFFFF),
+      textSecondary: colorFromJson(json['textSecondary'] ?? 0xFF888888),
+      textAccent: colorFromJson(json['textAccent'] ?? 0xFFFF9500),
+      textDisabled: colorFromJson(json['textDisabled'] ?? 0xFF555555),
+      accent: colorFromJson(json['accent'] ?? 0xFFFF9500),
+      accentLight: colorFromJson(
+        json['accentLight'] ?? 0xFFFF9500,
+      ).withOpacity(0.15),
+      accentDark: colorFromJson(json['accentDark'] ?? 0xFFD97600),
+      success: colorFromJson(json['success'] ?? 0xFF00E5A0),
+      warning: colorFromJson(json['warning'] ?? 0xFFFF9500),
+      error: colorFromJson(json['error'] ?? 0xFFFF453A),
+      info: colorFromJson(json['info'] ?? 0xFF00C7FF),
+      proteinColor: colorFromJson(json['proteinColor'] ?? 0xFF4D9FFF),
+      carbsColor: colorFromJson(json['carbsColor'] ?? 0xFFFF9500),
+      fatsColor: colorFromJson(json['fatsColor'] ?? 0xFFAF52DE),
+      waterColor: colorFromJson(json['waterColor'] ?? 0xFF00C7FF),
+      caloriesColor: colorFromJson(json['caloriesColor'] ?? 0xFFFF9500),
+      disabled: colorFromJson(json['disabled'] ?? 0xFF444444),
+      overlay: colorFromJson(json['overlay'] ?? 0xFF000000).withOpacity(0.5),
     );
   }
 }
@@ -267,7 +274,8 @@ class ThemeTypography {
       displayLargeSize: (json['displayLargeSize'] as num?)?.toDouble() ?? 57,
       displayMediumSize: (json['displayMediumSize'] as num?)?.toDouble() ?? 45,
       headlineLargeSize: (json['headlineLargeSize'] as num?)?.toDouble() ?? 32,
-      headlineMediumSize: (json['headlineMediumSize'] as num?)?.toDouble() ?? 28,
+      headlineMediumSize:
+          (json['headlineMediumSize'] as num?)?.toDouble() ?? 28,
       titleLargeSize: (json['titleLargeSize'] as num?)?.toDouble() ?? 22,
       titleMediumSize: (json['titleMediumSize'] as num?)?.toDouble() ?? 16,
       titleSmallSize: (json['titleSmallSize'] as num?)?.toDouble() ?? 14,
@@ -368,34 +376,17 @@ class ThemeElevation {
   const ThemeElevation({
     this.none = const [],
     this.sm = const [
-      BoxShadow(
-        color: Color(0x00000000),
-        blurRadius: 0,
-        spreadRadius: 0,
-      ),
+      BoxShadow(color: Color(0x00000000), blurRadius: 0, spreadRadius: 0),
     ],
     this.md = const [
-      BoxShadow(
-        color: Color(0x1F000000),
-        blurRadius: 4,
-        spreadRadius: 0,
-      ),
+      BoxShadow(color: Color(0x1F000000), blurRadius: 4, spreadRadius: 0),
     ],
     this.lg = const [
-      BoxShadow(
-        color: Color(0x3D000000),
-        blurRadius: 12,
-        spreadRadius: 2,
-      ),
+      BoxShadow(color: Color(0x3D000000), blurRadius: 12, spreadRadius: 2),
     ],
   });
 
-  Map<String, dynamic> toJson() => {
-    'none': [],
-    'sm': [],
-    'md': [],
-    'lg': [],
-  };
+  Map<String, dynamic> toJson() => {'none': [], 'sm': [], 'md': [], 'lg': []};
 
   static ThemeElevation fromJson(Map<String, dynamic> json) {
     return const ThemeElevation();
@@ -409,18 +400,9 @@ class ThemeGradients {
   final List<Color> errorGradient;
 
   const ThemeGradients({
-    this.accentGradient = const [
-      Color(0xFFFF9500),
-      Color(0xFFFF7200),
-    ],
-    this.successGradient = const [
-      Color(0xFF00E5A0),
-      Color(0xFF00B87A),
-    ],
-    this.errorGradient = const [
-      Color(0xFFFF453A),
-      Color(0xFFCC3629),
-    ],
+    this.accentGradient = const [Color(0xFFFF9500), Color(0xFFFF7200)],
+    this.successGradient = const [Color(0xFF00E5A0), Color(0xFF00B87A)],
+    this.errorGradient = const [Color(0xFFFF453A), Color(0xFFCC3629)],
   });
 
   Map<String, dynamic> toJson() => {
@@ -430,27 +412,31 @@ class ThemeGradients {
   };
 
   static ThemeGradients fromJson(Map<String, dynamic> json) {
-    Color _colorFromJson(dynamic value) {
+    Color colorFromJson(dynamic value) {
       if (value is int) return Color(value);
-      if (value is String) return Color(int.parse(value.replaceFirst('0x', ''), radix: 16));
+      if (value is String)
+        return Color(int.parse(value.replaceFirst('0x', ''), radix: 16));
       return Colors.white;
     }
 
     return ThemeGradients(
-      accentGradient: (json['accentGradient'] as List?)
-          ?.cast<dynamic>()
-          .map(_colorFromJson)
-          .toList() ??
+      accentGradient:
+          (json['accentGradient'] as List?)
+              ?.cast<dynamic>()
+              .map(colorFromJson)
+              .toList() ??
           const [Color(0xFFFF9500), Color(0xFFFF7200)],
-      successGradient: (json['successGradient'] as List?)
-          ?.cast<dynamic>()
-          .map(_colorFromJson)
-          .toList() ??
+      successGradient:
+          (json['successGradient'] as List?)
+              ?.cast<dynamic>()
+              .map(colorFromJson)
+              .toList() ??
           const [Color(0xFF00E5A0), Color(0xFF00B87A)],
-      errorGradient: (json['errorGradient'] as List?)
-          ?.cast<dynamic>()
-          .map(_colorFromJson)
-          .toList() ??
+      errorGradient:
+          (json['errorGradient'] as List?)
+              ?.cast<dynamic>()
+              .map(colorFromJson)
+              .toList() ??
           const [Color(0xFFFF453A), Color(0xFFCC3629)],
     );
   }
@@ -478,16 +464,17 @@ class ThemeCharts {
   };
 
   static ThemeCharts fromJson(Map<String, dynamic> json) {
-    Color _colorFromJson(dynamic value) {
+    Color colorFromJson(dynamic value) {
       if (value is int) return Color(value);
-      if (value is String) return Color(int.parse(value.replaceFirst('0x', ''), radix: 16));
+      if (value is String)
+        return Color(int.parse(value.replaceFirst('0x', ''), radix: 16));
       return Colors.white;
     }
 
     return ThemeCharts(
-      gridLineColor: _colorFromJson(json['gridLineColor'] ?? 0xFFFFFFFF),
-      tooltipBackground: _colorFromJson(json['tooltipBackground'] ?? 0xFF242424),
-      tooltipText: _colorFromJson(json['tooltipText'] ?? 0xFFFFFFFF),
+      gridLineColor: colorFromJson(json['gridLineColor'] ?? 0xFFFFFFFF),
+      tooltipBackground: colorFromJson(json['tooltipBackground'] ?? 0xFF242424),
+      tooltipText: colorFromJson(json['tooltipText'] ?? 0xFFFFFFFF),
       gridLineWidth: (json['gridLineWidth'] as num?)?.toDouble() ?? 0.5,
     );
   }

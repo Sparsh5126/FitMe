@@ -1,7 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitme/features/nutrition/models/food_item.dart';
 import 'package:fitme/features/nutrition/repositories/nutrition_repository.dart';
 import 'package:fitme/features/nutrition/services/food_search_service.dart';
@@ -87,7 +86,7 @@ class FoodActions {
     final profile = _ref.read(userProfileProvider).value;
     final userId = profile?.uid ?? '';
     final isGuest = profile == null;
-    
+
     final fpRecord = await service.getRecord(userId, isGuest);
     final todayTxs = await service.getTodayTransactions(userId, isGuest);
 

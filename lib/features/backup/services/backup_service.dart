@@ -47,7 +47,7 @@ class BackupService {
   }
 
   // ── Restore all data ─────────────────────────────────
-  
+
   /// Restore all data components.
   Future<int> restoreAll() async {
     if (!_isLoggedIn) return 0;
@@ -62,13 +62,21 @@ class BackupService {
 
       // Restore logs
       count += await _restoreCollection(uid, 'logs', data['nutrition_logs']);
-      
+
       // Restore favorites
-      count += await _restoreCollection(uid, 'favorites', data['recipe_favorites']);
-      
+      count += await _restoreCollection(
+        uid,
+        'favorites',
+        data['recipe_favorites'],
+      );
+
       // Restore custom meals
-      count += await _restoreCollection(uid, 'custom_meals', data['custom_meals']);
-      
+      count += await _restoreCollection(
+        uid,
+        'custom_meals',
+        data['custom_meals'],
+      );
+
       // Restore streak
       await restoreStreakData();
 
@@ -79,21 +87,27 @@ class BackupService {
     }
   }
 
-  Future<int> _restoreCollection(String uid, String collectionName, dynamic items) async {
+  Future<int> _restoreCollection(
+    String uid,
+    String collectionName,
+    dynamic items,
+  ) async {
     if (items == null || items is! List || items.isEmpty) return 0;
-    
+
     final batch = _db.batch();
     final colRef = _db.collection('users').doc(uid).collection(collectionName);
-    
+
     for (final item in items) {
       if (item is Map<String, dynamic>) {
         // Use ID if available, otherwise let Firestore generate
-        final id = item['id'] ?? item['name']?.toString().toLowerCase().replaceAll(' ', '_');
+        final id =
+            item['id'] ??
+            item['name']?.toString().toLowerCase().replaceAll(' ', '_');
         final ref = id != null ? colRef.doc(id) : colRef.doc();
         batch.set(ref, item);
       }
     }
-    
+
     await batch.commit();
     return items.length;
   }
@@ -141,16 +155,13 @@ class BackupService {
 
       final data = backup.data()!;
       final ts = (data['timestamp'] as Timestamp?);
-      
+
       int totalItems = 0;
       totalItems += (data['nutrition_logs'] as List? ?? []).length;
       totalItems += (data['recipe_favorites'] as List? ?? []).length;
       totalItems += (data['custom_meals'] as List? ?? []).length;
 
-      return BackupStatus(
-        lastBackup: ts?.toDate(),
-        logsCount: totalItems,
-      );
+      return BackupStatus(lastBackup: ts?.toDate(), logsCount: totalItems);
     } catch (_) {
       return null;
     }
@@ -170,7 +181,10 @@ class BackupService {
     return _collectCollection(uid, 'custom_meals');
   }
 
-  Future<List<Map<String, dynamic>>> _collectCollection(String uid, String col) async {
+  Future<List<Map<String, dynamic>>> _collectCollection(
+    String uid,
+    String col,
+  ) async {
     try {
       final snap = await _db.collection('users').doc(uid).collection(col).get();
       return snap.docs.map((d) => d.data()).toList();

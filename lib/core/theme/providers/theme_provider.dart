@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitme/core/theme/models/theme_config.dart';
@@ -36,10 +35,9 @@ class ActiveThemeNotifier extends Notifier<String> {
 }
 
 /// Provider for active theme ID
-final activeThemeIdProvider =
-    NotifierProvider<ActiveThemeNotifier, String>(
-      ActiveThemeNotifier.new,
-    );
+final activeThemeIdProvider = NotifierProvider<ActiveThemeNotifier, String>(
+  ActiveThemeNotifier.new,
+);
 
 /// Provider for the active ThemeConfig
 final activeThemeConfigProvider = Provider<ThemeConfig>((ref) {
@@ -58,8 +56,8 @@ final savedThemeProvider = FutureProvider<String>((ref) async {
   try {
     final prefs = await SharedPreferences.getInstance();
     final savedThemeId = prefs.getString(_themePrefKey);
-    
-    if (savedThemeId != null && 
+
+    if (savedThemeId != null &&
         ThemeManager.instance.getTheme(savedThemeId) != null) {
       return savedThemeId;
     }
@@ -73,6 +71,8 @@ final savedThemeProvider = FutureProvider<String>((ref) async {
 
 /// Notifier for registering new themes from JSON
 class ThemeRegistryNotifier extends Notifier<int> {
+  static const String _customThemesPrefKey = 'custom_registered_themes';
+
   @override
   int build() => 0; // Simple counter to trigger rebuilds
 
@@ -80,7 +80,7 @@ class ThemeRegistryNotifier extends Notifier<int> {
   Future<void> registerThemeFromJson(Map<String, dynamic> json) async {
     try {
       final theme = ThemeConfig.fromJson(json);
-      
+
       // Validate theme
       final error = _validateTheme(theme);
       if (error != null) {
@@ -88,6 +88,7 @@ class ThemeRegistryNotifier extends Notifier<int> {
       }
 
       ThemeManager.instance.registerTheme(theme);
+      await _persistCustomTheme(theme);
       state = state + 1; // Increment counter to trigger rebuild
     } catch (e) {
       throw Exception('Failed to register theme: $e');
@@ -103,16 +104,39 @@ class ThemeRegistryNotifier extends Notifier<int> {
       }
 
       ThemeManager.instance.registerTheme(theme);
+      await _persistCustomTheme(theme);
       state = state + 1;
     } catch (e) {
       throw Exception('Failed to register theme: $e');
     }
   }
 
+  Future<void> _persistCustomTheme(ThemeConfig theme) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final list = prefs.getStringList(_customThemesPrefKey) ?? [];
+      
+      // Prevent duplicates by ID
+      final themeJson = jsonEncode(theme.toJson());
+      final updatedList = list.where((item) {
+        try {
+          final decoded = jsonDecode(item) as Map<String, dynamic>;
+          return decoded['id'] != theme.id;
+        } catch (e) {
+          return false;
+        }
+      }).toList();
+      
+      updatedList.add(themeJson);
+      await prefs.setStringList(_customThemesPrefKey, updatedList);
+    } catch (e) {
+      print('Failed to persist custom theme: $e');
+    }
+  }
+
   String? _validateTheme(ThemeConfig theme) {
     if (theme.id.isEmpty) return 'Theme ID is required';
     if (theme.name.isEmpty) return 'Theme name is required';
-    if (theme.colors == null) return 'Theme colors are required';
     return null;
   }
 }
@@ -154,11 +178,3 @@ class ThemeImportExport {
     }
   }
 }
-
-/// Theme metadata (for theme picker UI)
-typedef ThemeMetadata = ({
-  String id,
-  String name,
-  String description,
-  Color accentColor,
-});

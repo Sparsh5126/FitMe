@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:math';
 import 'package:uuid/uuid.dart';
-import '../models/fitpoints_models.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
 
 /// Manages the full challenge lifecycle: creation, scoring,
 /// stake handling, payout, and anti-abuse enforcement.
@@ -62,9 +62,11 @@ class ChallengeService {
 
     // Active challenge cap
     final userActiveChallenges = existingChallenges
-        .where((c) =>
-            c.status == ChallengeStatus.active &&
-            c.participantIds.contains(initiatorId))
+        .where(
+          (c) =>
+              c.status == ChallengeStatus.active &&
+              c.participantIds.contains(initiatorId),
+        )
         .length;
     if (userActiveChallenges >= _maxActiveChallenges) {
       return ChallengeCreateResult.failed(
@@ -168,7 +170,8 @@ class ChallengeService {
     assert(challenge.status == ChallengeStatus.active);
     _log('Finalising challenge ${challenge.id} (type=${challenge.type.name})');
 
-    final totalPrize = challenge.stakes.values.fold<double>(0, (s, v) => s + v) +
+    final totalPrize =
+        challenge.stakes.values.fold<double>(0, (s, v) => s + v) +
         challenge.bonusPool;
 
     if (challenge.type == ChallengeType.accountability) {
@@ -199,18 +202,12 @@ class ChallengeService {
     Map<String, double> payouts;
     if (isDraw) {
       final half = totalPrize / 2;
-      payouts = {
-        winnerId: half,
-        runnerUpId: half,
-      };
+      payouts = {winnerId: half, runnerUpId: half};
       _log('Draw — splitting $totalPrize evenly');
     } else {
       // Partial refund to loser: they get back 20% of their stake
       final loserRefund = challenge.stakes[runnerUpId]! * 0.2;
-      payouts = {
-        winnerId: totalPrize - loserRefund,
-        runnerUpId: loserRefund,
-      };
+      payouts = {winnerId: totalPrize - loserRefund, runnerUpId: loserRefund};
       _log(
         'Winner: $winnerId (+${(totalPrize - loserRefund).toStringAsFixed(1)} FP), '
         'Runner-up: $runnerUpId (+${loserRefund.toStringAsFixed(1)} FP refund)',
@@ -226,7 +223,10 @@ class ChallengeService {
     );
   }
 
-  ChallengePayout _finaliseAccountability(Challenge challenge, double totalPrize) {
+  ChallengePayout _finaliseAccountability(
+    Challenge challenge,
+    double totalPrize,
+  ) {
     final participants = challenge.participantIds;
     const successThreshold = 70.0; // completion% to be considered "successful"
 
@@ -235,7 +235,9 @@ class ChallengeService {
       return p != null && p.completionPercent >= successThreshold;
     }).toList();
 
-    _log('Accountability success: ${successfulUsers.length}/${participants.length}');
+    _log(
+      'Accountability success: ${successfulUsers.length}/${participants.length}',
+    );
 
     if (successfulUsers.length == participants.length) {
       // Everyone wins — split the pool plus bonus
@@ -252,8 +254,8 @@ class ChallengeService {
     }
 
     // Partial success: successful users get their stake back + share of bonus
-    final bonusPerSuccessful = challenge.bonusPool /
-        max(successfulUsers.length, 1);
+    final bonusPerSuccessful =
+        challenge.bonusPool / max(successfulUsers.length, 1);
     final payouts = <String, double>{};
     for (final uid in participants) {
       if (successfulUsers.contains(uid)) {
@@ -280,17 +282,23 @@ class ChallengeService {
     required String opponentId,
     required List<Challenge> history,
   }) {
-    final pairHistory = history.where((c) =>
-        c.participantIds.contains(initiatorId) &&
-        c.participantIds.contains(opponentId) &&
-        c.status == ChallengeStatus.completed).toList();
+    final pairHistory = history
+        .where(
+          (c) =>
+              c.participantIds.contains(initiatorId) &&
+              c.participantIds.contains(opponentId) &&
+              c.status == ChallengeStatus.completed,
+        )
+        .toList();
 
     if (pairHistory.length >= _maxChallengesPerOpponent) {
       // Check cooldown: last challenge must be >14 days ago
       final lastChallenge = pairHistory.reduce(
         (a, b) => a.endsAt.isAfter(b.endsAt) ? a : b,
       );
-      final daysSinceLast = DateTime.now().difference(lastChallenge.endsAt).inDays;
+      final daysSinceLast = DateTime.now()
+          .difference(lastChallenge.endsAt)
+          .inDays;
       if (daysSinceLast < _opponentCooldownDays) {
         return _AbuseCheckResult(
           allowed: false,
@@ -305,7 +313,9 @@ class ChallengeService {
     if (pairHistory.length >= 2) {
       final alternating = _detectWinTrading(initiatorId, pairHistory);
       if (alternating) {
-        _log('Suspicious win-trading pattern detected between $initiatorId and $opponentId');
+        _log(
+          'Suspicious win-trading pattern detected between $initiatorId and $opponentId',
+        );
         return const _AbuseCheckResult(
           allowed: false,
           reason: 'Suspicious challenge pattern detected. Contact support.',

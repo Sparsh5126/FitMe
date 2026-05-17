@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitme/core/theme/app_theme.dart';
 import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 
@@ -34,7 +33,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = ThemeManager.instance.activeTheme;
-    
+
     return Scaffold(
       backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
@@ -48,7 +47,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
 
               // ── Back ──────────────────────────────────
               IconButton(
-                icon: Icon(Icons.arrow_back_rounded, color: theme.colors.textPrimary),
+                icon: Icon(
+                  Icons.arrow_back_rounded,
+                  color: theme.colors.textPrimary,
+                ),
                 onPressed: () => Navigator.pop(context),
                 padding: EdgeInsets.zero,
               ),
@@ -84,7 +86,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   decoration: BoxDecoration(
                     color: theme.colors.error.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(theme.radius.md),
-                    border: Border.all(color: theme.colors.error.withOpacity(0.3)),
+                    border: Border.all(
+                      color: theme.colors.error.withOpacity(0.3),
+                    ),
                   ),
                   child: Text(
                     _error!,
@@ -169,7 +173,8 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   theme: theme,
                   suffix: _visibilityBtn(
                     obscure: _obscureConfirm,
-                    onTap: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                    onTap: () =>
+                        setState(() => _obscureConfirm = !_obscureConfirm),
                     theme: theme,
                   ),
                 ),
@@ -210,7 +215,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(color: theme.colors.textPrimary.withOpacity(0.1)),
+                    child: Divider(
+                      color: theme.colors.textPrimary.withOpacity(0.1),
+                    ),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: theme.spacing.md),
@@ -223,7 +230,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                     ),
                   ),
                   Expanded(
-                    child: Divider(color: theme.colors.textPrimary.withOpacity(0.1)),
+                    child: Divider(
+                      color: theme.colors.textPrimary.withOpacity(0.1),
+                    ),
                   ),
                 ],
               ),
@@ -249,7 +258,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                   ),
                   style: OutlinedButton.styleFrom(
                     padding: EdgeInsets.symmetric(vertical: theme.spacing.md),
-                    side: BorderSide(color: theme.colors.textPrimary.withOpacity(0.2)),
+                    side: BorderSide(
+                      color: theme.colors.textPrimary.withOpacity(0.2),
+                    ),
                   ),
                 ),
               ),

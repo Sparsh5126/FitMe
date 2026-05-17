@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/nutrition/services/migration_service.dart';
-import 'package:fitme/core/theme/app_theme.dart';
 
 class MigrationDialog extends ConsumerStatefulWidget {
   final Widget child;
@@ -48,6 +48,7 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     final isPending = ref.watch(pendingMigrationProvider);
 
     if (!isPending) return widget.child;
@@ -62,9 +63,9 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
               margin: const EdgeInsets.symmetric(horizontal: 32),
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: AppTheme.surface,
+                color: theme.colors.surfacePrimary,
                 borderRadius: BorderRadius.circular(24),
-                border: Border.all(color: AppTheme.accent.withOpacity(0.2)),
+                border: Border.all(color: theme.colors.accent.withOpacity(0.2)),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.3),
@@ -76,48 +77,51 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Icon(
+                  Icon(
                     Icons.merge_type_rounded,
                     size: 48,
-                    color: AppTheme.accent,
+                    color: theme.colors.accent,
                   ),
                   const SizedBox(height: 16),
-                  const Text(
+                  Text(
                     'Guest Data Found',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                   ),
                   const SizedBox(height: 12),
-                  const Text(
+                  Text(
                     'Do you want to merge your guest meals, recipes, favorites, and FitPoints into this account?',
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      color: AppTheme.textSecondary,
+                      color: theme.colors.textSecondary,
                       fontSize: 14,
                     ),
                   ),
                   const SizedBox(height: 24),
                   if (_isProcessing)
-                    const CircularProgressIndicator()
+                    CircularProgressIndicator(color: theme.colors.accent)
                   else ...[
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _handleMerge,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.accent,
-                          foregroundColor: Colors.black,
+                          backgroundColor: theme.colors.accent,
+                          foregroundColor: theme.colors.backgroundPrimary,
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Merge Guest Data',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: theme.colors.backgroundPrimary,
+                          ),
                         ),
                       ),
                     ),
@@ -128,14 +132,14 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
                         onPressed: _handleKeepAccount,
                         style: OutlinedButton.styleFrom(
                           padding: const EdgeInsets.symmetric(vertical: 14),
-                          side: const BorderSide(color: AppTheme.textSecondary),
+                          side: BorderSide(color: theme.colors.textSecondary),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                           ),
                         ),
-                        child: const Text(
+                        child: Text(
                           'Keep Account Data Only',
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: theme.colors.textSecondary),
                         ),
                       ),
                     ),
@@ -144,9 +148,9 @@ class _MigrationDialogState extends ConsumerState<MigrationDialog> {
                       onPressed: () =>
                           ref.read(pendingMigrationProvider.notifier).state =
                               false,
-                      child: const Text(
+                      child: Text(
                         'Cancel',
-                        style: TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(color: theme.colors.textSecondary),
                       ),
                     ),
                   ],

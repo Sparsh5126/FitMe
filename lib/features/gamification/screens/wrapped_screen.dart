@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -8,7 +7,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/core/models/user_profile.dart';
 import 'package:fitme/features/dashboard/providers/user_provider.dart';
 import 'package:fitme/features/nutrition/models/food_item.dart';
@@ -26,9 +25,10 @@ class WrappedScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final dataAsync = ref.watch(wrappedDataProvider);
+    final theme = ThemeManager.instance.activeTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           children: [
@@ -37,16 +37,16 @@ class WrappedScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
+                  Text(
                     'FitMe Wrapped',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -56,8 +56,8 @@ class WrappedScreen extends ConsumerWidget {
             ),
             Expanded(
               child: dataAsync.when(
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: AppTheme.accent),
+                loading: () => Center(
+                  child: CircularProgressIndicator(color: theme.colors.accent),
                 ),
                 error: (e, _) => Center(
                   child: Text('$e', style: const TextStyle(color: Colors.red)),
@@ -101,10 +101,9 @@ class _WrappedContentState extends State<_WrappedContent> {
       final file = await File('${tempDir.path}/fitme_wrapped.png').create();
       await file.writeAsBytes(bytes);
 
-      await Share.shareXFiles(
-        [XFile(file.path)],
-        text: 'Check out my FitMe Wrapped! 💪🐦‍🔥 #FitMeWrapped',
-      );
+      await Share.shareXFiles([
+        XFile(file.path),
+      ], text: 'Check out my FitMe Wrapped! 💪🐦‍🔥 #FitMeWrapped');
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,6 +120,8 @@ class _WrappedContentState extends State<_WrappedContent> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(20),
@@ -129,7 +130,7 @@ class _WrappedContentState extends State<_WrappedContent> {
           // ── Shareable card ───────────────────
           RepaintBoundary(
             key: _repaintKey,
-            child: _WrappedCard(data: widget.data),
+            child: _WrappedCard(data: widget.data, theme: theme),
           ),
 
           const SizedBox(height: 24),
@@ -146,8 +147,8 @@ class _WrappedContentState extends State<_WrappedContent> {
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accent,
-                foregroundColor: AppTheme.background,
+                backgroundColor: theme.colors.accent,
+                foregroundColor: theme.colors.backgroundPrimary,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(14),
                 ),
@@ -159,7 +160,7 @@ class _WrappedContentState extends State<_WrappedContent> {
           const SizedBox(height: 16),
 
           // ── Detailed stats ───────────────────
-          _DetailedStats(data: widget.data),
+          _DetailedStats(data: widget.data, theme: theme),
 
           const SizedBox(height: 40),
         ],
@@ -173,7 +174,8 @@ class _WrappedContentState extends State<_WrappedContent> {
 // ─────────────────────────────────────────────
 class _WrappedCard extends StatelessWidget {
   final WrappedData data;
-  const _WrappedCard({required this.data});
+  final dynamic theme;
+  const _WrappedCard({required this.data, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +189,10 @@ class _WrappedCard extends StatelessWidget {
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: AppTheme.accent.withOpacity(0.3), width: 1.5),
+        border: Border.all(
+          color: theme.colors.accent.withOpacity(0.3),
+          width: 1.5,
+        ),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,10 +204,10 @@ class _WrappedCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'FitMe',
                     style: TextStyle(
-                      color: AppTheme.accent,
+                      color: theme.colors.accent,
                       fontWeight: FontWeight.w900,
                       fontSize: 22,
                       letterSpacing: 1,
@@ -210,8 +215,8 @@ class _WrappedCard extends StatelessWidget {
                   ),
                   Text(
                     'Wrapped ${data.periodLabel}',
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
+                    style: TextStyle(
+                      color: theme.colors.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -236,7 +241,7 @@ class _WrappedCard extends StatelessWidget {
           Text(
             'Here\'s your journey',
             style: TextStyle(
-              color: AppTheme.accent.withOpacity(0.8),
+              color: theme.colors.accent.withOpacity(0.8),
               fontSize: 13,
             ),
           ),
@@ -250,18 +255,21 @@ class _WrappedCard extends StatelessWidget {
                 value: '${data.totalProtein}g',
                 label: 'Protein\nConsumed',
                 color: Colors.blueAccent,
+                theme: theme,
               ),
               const SizedBox(width: 12),
               _BigStat(
                 value: '${data.daysLogged}',
                 label: 'Days\nLogged',
-                color: AppTheme.accent,
+                color: theme.colors.accent,
+                theme: theme,
               ),
               const SizedBox(width: 12),
               _BigStat(
                 value: '${data.longestStreak}d',
                 label: 'Longest\nStreak',
                 color: Colors.purpleAccent,
+                theme: theme,
               ),
             ],
           ),
@@ -274,13 +282,16 @@ class _WrappedCard extends StatelessWidget {
               children: [
                 CustomPaint(
                   size: const Size(160, 80),
-                  painter: _MiniDumbbellPainter(level: data.dumbbellLevel),
+                  painter: _MiniDumbbellPainter(
+                    level: data.dumbbellLevel,
+                    accentColor: theme.colors.accent,
+                  ),
                 ),
                 const SizedBox(height: 6),
                 Text(
                   data.dumbbellLabel,
-                  style: const TextStyle(
-                    color: AppTheme.accent,
+                  style: TextStyle(
+                    color: theme.colors.accent,
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                     letterSpacing: 1,
@@ -296,21 +307,21 @@ class _WrappedCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _SmallStat('${data.totalCalories}', 'kcal total'),
-              _SmallStat('${data.workoutsCompleted}', 'workouts'),
-              _SmallStat('${data.fitPoints}', 'FitPoints 🐦‍🔥'),
-              _SmallStat('${data.macroGoalHits}', 'macro wins'),
+              _SmallStat('${data.totalCalories}', 'kcal total', theme: theme),
+              _SmallStat('${data.workoutsCompleted}', 'workouts', theme: theme),
+              _SmallStat('${data.fitPoints}', 'FitPoints 🐦‍🔥', theme: theme),
+              _SmallStat('${data.macroGoalHits}', 'macro wins', theme: theme),
             ],
           ),
 
           const SizedBox(height: 20),
 
           // Footer
-          const Center(
+          Center(
             child: Text(
               'fitme.app',
               style: TextStyle(
-                color: AppTheme.textSecondary,
+                color: theme.colors.textSecondary,
                 fontSize: 11,
                 letterSpacing: 1,
               ),
@@ -326,10 +337,12 @@ class _BigStat extends StatelessWidget {
   final String value;
   final String label;
   final Color color;
+  final dynamic theme;
   const _BigStat({
     required this.value,
     required this.label,
     required this.color,
+    required this.theme,
   });
 
   @override
@@ -356,8 +369,8 @@ class _BigStat extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
+              style: TextStyle(
+                color: theme.colors.textSecondary,
                 fontSize: 10,
                 height: 1.3,
               ),
@@ -372,7 +385,8 @@ class _BigStat extends StatelessWidget {
 class _SmallStat extends StatelessWidget {
   final String value;
   final String label;
-  const _SmallStat(this.value, this.label);
+  final dynamic theme;
+  const _SmallStat(this.value, this.label, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -388,7 +402,7 @@ class _SmallStat extends StatelessWidget {
         ),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+          style: TextStyle(color: theme.colors.textSecondary, fontSize: 10),
         ),
       ],
     );
@@ -400,14 +414,15 @@ class _SmallStat extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _DetailedStats extends StatelessWidget {
   final WrappedData data;
-  const _DetailedStats({required this.data});
+  final dynamic theme;
+  const _DetailedStats({required this.data, required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
@@ -422,18 +437,63 @@ class _DetailedStats extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          _Row('Total Protein', '${data.totalProtein}g', Colors.blueAccent),
-          _Row('Total Carbs', '${data.totalCarbs}g', Colors.orangeAccent),
-          _Row('Total Fats', '${data.totalFats}g', Colors.purpleAccent),
-          _Row('Total Calories', '${data.totalCalories} kcal', AppTheme.accent),
-          const Divider(color: AppTheme.background, height: 24),
-          _Row('Days Logged', '${data.daysLogged}', Colors.white),
-          _Row('Macro Goal Days Hit', '${data.macroGoalHits}', AppTheme.accent),
-          _Row('Longest Streak', '${data.longestStreak} days', AppTheme.accent),
-          _Row('Current Streak Level', data.dumbbellLabel, AppTheme.accent),
-          const Divider(color: AppTheme.background, height: 24),
-          _Row('Workouts Completed', '${data.workoutsCompleted}', Colors.white),
-          _Row('FitPoints Earned', '${data.fitPoints} 🐦‍🔥', AppTheme.accent),
+          _Row(
+            'Total Protein',
+            '${data.totalProtein}g',
+            Colors.blueAccent,
+            theme: theme,
+          ),
+          _Row(
+            'Total Carbs',
+            '${data.totalCarbs}g',
+            Colors.orangeAccent,
+            theme: theme,
+          ),
+          _Row(
+            'Total Fats',
+            '${data.totalFats}g',
+            Colors.purpleAccent,
+            theme: theme,
+          ),
+          _Row(
+            'Total Calories',
+            '${data.totalCalories} kcal',
+            theme.colors.accent,
+            theme: theme,
+          ),
+          Divider(color: theme.colors.backgroundPrimary, height: 24),
+          _Row('Days Logged', '${data.daysLogged}', Colors.white, theme: theme),
+          _Row(
+            'Macro Goal Days Hit',
+            '${data.macroGoalHits}',
+            theme.colors.accent,
+            theme: theme,
+          ),
+          _Row(
+            'Longest Streak',
+            '${data.longestStreak} days',
+            theme.colors.accent,
+            theme: theme,
+          ),
+          _Row(
+            'Current Streak Level',
+            data.dumbbellLabel,
+            theme.colors.accent,
+            theme: theme,
+          ),
+          Divider(color: theme.colors.backgroundPrimary, height: 24),
+          _Row(
+            'Workouts Completed',
+            '${data.workoutsCompleted}',
+            Colors.white,
+            theme: theme,
+          ),
+          _Row(
+            'FitPoints Earned',
+            '${data.fitPoints} 🐦‍🔥',
+            theme.colors.accent,
+            theme: theme,
+          ),
         ],
       ),
     );
@@ -444,7 +504,8 @@ class _Row extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
-  const _Row(this.label, this.value, this.color);
+  final dynamic theme;
+  const _Row(this.label, this.value, this.color, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -453,7 +514,7 @@ class _Row extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
+          Text(label, style: TextStyle(color: theme.colors.textSecondary)),
           Text(
             value,
             style: TextStyle(color: color, fontWeight: FontWeight.bold),
@@ -469,11 +530,12 @@ class _Row extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _MiniDumbbellPainter extends CustomPainter {
   final int level;
-  _MiniDumbbellPainter({required this.level});
+  final Color accentColor;
+  _MiniDumbbellPainter({required this.level, required this.accentColor});
 
   @override
   void paint(Canvas canvas, Size size) {
-    final color = AppTheme.accent;
+    final color = accentColor;
     final active = Paint()
       ..color = color
       ..style = PaintingStyle.fill;
@@ -580,7 +642,7 @@ class WrappedData {
         .collection('users')
         .doc(uid)
         .get();
-    
+
     // Correct FitPoints retrieval from subcollection
     final fpDoc = await FirebaseFirestore.instance
         .collection('users')
@@ -588,10 +650,10 @@ class WrappedData {
         .collection('gamification')
         .doc('fitpoints')
         .get();
-    
+
     final data = doc.data() ?? {};
     final fpData = fpDoc.data() ?? {};
-    
+
     final longest = data['longestStreak'] as int? ?? 0;
     final points = (fpData['lifetimePoints'] as num?)?.toInt() ?? 0;
     final workouts = data['workoutsCompleted'] as int? ?? 0;

@@ -127,7 +127,7 @@ class _LogSheetState extends ConsumerState<LogSheet>
 
     return Container(
       height: height,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -154,8 +154,8 @@ class _LogSheetState extends ConsumerState<LogSheet>
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
                 hintText: 'Search food…',
-                hintStyle: const TextStyle(color: AppTheme.textSecondary),
-                prefixIcon: const Icon(
+                hintStyle: TextStyle(color: AppTheme.textSecondary),
+                prefixIcon: Icon(
                   Icons.search_rounded,
                   color: AppTheme.textSecondary,
                 ),
@@ -163,7 +163,7 @@ class _LogSheetState extends ConsumerState<LogSheet>
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (_isSearching)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(12),
                         child: SizedBox(
                           width: 16,
@@ -175,7 +175,7 @@ class _LogSheetState extends ConsumerState<LogSheet>
                         ),
                       ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.qr_code_scanner_rounded,
                         color: AppTheme.textSecondary,
                       ),
@@ -192,10 +192,7 @@ class _LogSheetState extends ConsumerState<LogSheet>
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(
-                    color: AppTheme.accent,
-                    width: 1.5,
-                  ),
+                  borderSide: BorderSide(color: AppTheme.accent, width: 1.5),
                 ),
               ),
             ),
@@ -221,7 +218,7 @@ class _LogSheetState extends ConsumerState<LogSheet>
                   ),
                   child: Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.favorite_rounded,
                         color: AppTheme.accent,
                         size: 16,
@@ -231,14 +228,14 @@ class _LogSheetState extends ConsumerState<LogSheet>
                         favs.isEmpty
                             ? 'No favourites yet — tap ♡ on any food'
                             : '${favs.length} favourite${favs.length == 1 ? '' : 's'} saved',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppTheme.accent,
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
                       const Spacer(),
-                      const Icon(
+                      Icon(
                         Icons.chevron_right_rounded,
                         color: AppTheme.accent,
                         size: 18,
@@ -335,12 +332,10 @@ class _SearchResults extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(color: AppTheme.accent),
-      );
+      return Center(child: CircularProgressIndicator(color: AppTheme.accent));
     }
     if (hasSearched && results.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
@@ -403,7 +398,7 @@ class _RecentsTab extends StatelessWidget {
     return Stack(
       children: [
         foods.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
                   'No recent foods yet.',
                   style: TextStyle(color: AppTheme.textSecondary),
@@ -412,7 +407,12 @@ class _RecentsTab extends StatelessWidget {
             : ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.only(bottom: 80),
-                itemCount: pinned.isEmpty && rest.isEmpty ? 0 : (pinned.length + (pinned.isNotEmpty ? 1 : 0) + rest.length + (pinned.isNotEmpty && rest.isNotEmpty ? 1 : 0)),
+                itemCount: pinned.isEmpty && rest.isEmpty
+                    ? 0
+                    : (pinned.length +
+                          (pinned.isNotEmpty ? 1 : 0) +
+                          rest.length +
+                          (pinned.isNotEmpty && rest.isNotEmpty ? 1 : 0)),
                 itemBuilder: (context, index) {
                   if (pinned.isNotEmpty) {
                     if (index == 0) return const _ListHeader('★  Favourites');
@@ -425,8 +425,10 @@ class _RecentsTab extends StatelessWidget {
                         onFavToggle: () => onFavToggle(f),
                       );
                     }
-                    if (rest.isNotEmpty && index == pinned.length + 1) return const _ListHeader('Recent');
-                    final restIndex = index - pinned.length - (rest.isNotEmpty ? 2 : 1);
+                    if (rest.isNotEmpty && index == pinned.length + 1)
+                      return const _ListHeader('Recent');
+                    final restIndex =
+                        index - pinned.length - (rest.isNotEmpty ? 2 : 1);
                     if (restIndex >= 0 && restIndex < rest.length) {
                       final f = rest[restIndex];
                       return _FoodResultTile(
@@ -499,7 +501,7 @@ class _CustomsTab extends StatelessWidget {
     return Stack(
       children: [
         customFoods.isEmpty
-            ? const Center(
+            ? Center(
                 child: Text(
                   'No custom meals yet.\nTap + to create one.',
                   textAlign: TextAlign.center,
@@ -509,7 +511,12 @@ class _CustomsTab extends StatelessWidget {
             : ListView.builder(
                 physics: const BouncingScrollPhysics(),
                 padding: const EdgeInsets.only(bottom: 80),
-                itemCount: pinned.isEmpty && rest.isEmpty ? 0 : (pinned.length + (pinned.isNotEmpty ? 1 : 0) + rest.length + (pinned.isNotEmpty && rest.isNotEmpty ? 1 : 0)),
+                itemCount: pinned.isEmpty && rest.isEmpty
+                    ? 0
+                    : (pinned.length +
+                          (pinned.isNotEmpty ? 1 : 0) +
+                          rest.length +
+                          (pinned.isNotEmpty && rest.isNotEmpty ? 1 : 0)),
                 itemBuilder: (context, index) {
                   if (pinned.isNotEmpty) {
                     if (index == 0) return const _ListHeader('★  Favourites');
@@ -520,11 +527,14 @@ class _CustomsTab extends StatelessWidget {
                         isFavorite: true,
                         onTap: () => onTap(f),
                         onFavToggle: () => onFavToggle(f),
-                        onEdit: () => CustomMealFormScreen.push(context, existing: f),
+                        onEdit: () =>
+                            CustomMealFormScreen.push(context, existing: f),
                       );
                     }
-                    if (rest.isNotEmpty && index == pinned.length + 1) return const _ListHeader('All Customs');
-                    final restIndex = index - pinned.length - (rest.isNotEmpty ? 2 : 1);
+                    if (rest.isNotEmpty && index == pinned.length + 1)
+                      return const _ListHeader('All Customs');
+                    final restIndex =
+                        index - pinned.length - (rest.isNotEmpty ? 2 : 1);
                     if (restIndex >= 0 && restIndex < rest.length) {
                       final f = rest[restIndex];
                       return _CustomMealTile(
@@ -532,7 +542,8 @@ class _CustomsTab extends StatelessWidget {
                         isFavorite: favNames.contains(f.name.toLowerCase()),
                         onTap: () => onTap(f),
                         onFavToggle: () => onFavToggle(f),
-                        onEdit: () => CustomMealFormScreen.push(context, existing: f),
+                        onEdit: () =>
+                            CustomMealFormScreen.push(context, existing: f),
                       );
                     }
                   } else {
@@ -542,7 +553,8 @@ class _CustomsTab extends StatelessWidget {
                       isFavorite: favNames.contains(f.name.toLowerCase()),
                       onTap: () => onTap(f),
                       onFavToggle: () => onFavToggle(f),
-                      onEdit: () => CustomMealFormScreen.push(context, existing: f),
+                      onEdit: () =>
+                          CustomMealFormScreen.push(context, existing: f),
                     );
                   }
                   return const SizedBox.shrink();
@@ -582,7 +594,7 @@ class _ListHeader extends StatelessWidget {
     padding: const EdgeInsets.fromLTRB(20, 12, 20, 4),
     child: Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         color: AppTheme.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
@@ -616,18 +628,21 @@ class _CustomMealTile extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       title: Text(
         food.name,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       subtitle: Text(
         '${food.protein}g P  ·  ${food.carbs}g C  ·  ${food.fats}g F',
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             '${food.calories} kcal',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.accent,
               fontWeight: FontWeight.bold,
             ),
@@ -643,7 +658,7 @@ class _CustomMealTile extends StatelessWidget {
                 color: AppTheme.surface,
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.edit_rounded,
                 size: 16,
                 color: AppTheme.textSecondary,
@@ -679,18 +694,21 @@ class _FoodResultTile extends StatelessWidget {
       contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
       title: Text(
         food.name,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+        ),
       ),
       subtitle: Text(
         '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
       ),
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             '${food.calories} kcal',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.accent,
               fontWeight: FontWeight.bold,
             ),

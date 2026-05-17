@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fitme/core/models/user_profile.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/core/widgets/goal_pace_slider.dart';
 import 'package:fitme/features/app_shell.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
@@ -71,7 +71,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Color get _bmiColor {
     if (_bmi <= 0) return Colors.transparent;
     if (_bmi < 18.5) return Colors.blueAccent;
-    if (_bmi < 25.0) return AppTheme.accent;
+    if (_bmi < 25.0) return ThemeManager.instance.activeTheme.colors.accent;
     if (_bmi < 30.0) return Colors.orangeAccent;
     return Colors.redAccent;
   }
@@ -179,8 +179,10 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           children: [
@@ -196,8 +198,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       margin: const EdgeInsets.symmetric(horizontal: 3),
                       decoration: BoxDecoration(
                         color: i <= _currentPage
-                            ? AppTheme.accent
-                            : AppTheme.surface,
+                            ? theme.colors.accent
+                            : theme.colors.surfacePrimary,
                         borderRadius: BorderRadius.circular(2),
                       ),
                     ),
@@ -271,16 +273,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 child: ElevatedButton(
                   onPressed: _isSaving ? null : _next,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.accent,
-                    foregroundColor: AppTheme.background,
+                    backgroundColor: theme.colors.accent,
+                    foregroundColor: theme.colors.backgroundPrimary,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(16),
                     ),
                     elevation: 0,
                   ),
                   child: _isSaving
-                      ? const CircularProgressIndicator(
-                          color: AppTheme.background,
+                      ? CircularProgressIndicator(
+                          color: theme.colors.backgroundPrimary,
                           strokeWidth: 2,
                         )
                       : Text(
@@ -330,6 +332,8 @@ class _Step1Basics extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -344,9 +348,9 @@ class _Step1Basics extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             "Let's start with who you are.",
-            style: TextStyle(color: AppTheme.textSecondary),
+            style: TextStyle(color: theme.colors.textSecondary),
           ),
           const SizedBox(height: 32),
 
@@ -365,9 +369,9 @@ class _Step1Basics extends StatelessWidget {
           const SizedBox(height: 16),
 
           // Gender toggle
-          const Text(
+          Text(
             'Gender',
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 8),
           Row(
@@ -502,6 +506,7 @@ class _Step2GoalState extends State<_Step2Goal> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     final showPace = _goalWeight > 0 && widget.currentWeight > 0;
 
     return SingleChildScrollView(
@@ -518,9 +523,9 @@ class _Step2GoalState extends State<_Step2Goal> {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Where do you want to be?',
-            style: TextStyle(color: AppTheme.textSecondary),
+            style: TextStyle(color: theme.colors.textSecondary),
           ),
           const SizedBox(height: 32),
 
@@ -529,9 +534,9 @@ class _Step2GoalState extends State<_Step2Goal> {
               padding: const EdgeInsets.only(bottom: 16),
               child: Row(
                 children: [
-                  const Text(
+                  Text(
                     'Current weight: ',
-                    style: TextStyle(color: AppTheme.textSecondary),
+                    style: TextStyle(color: theme.colors.textSecondary),
                   ),
                   Text(
                     '${widget.currentWeight.toStringAsFixed(1)} kg',
@@ -560,15 +565,15 @@ class _Step2GoalState extends State<_Step2Goal> {
               width: double.infinity,
               padding: const EdgeInsets.all(14),
               decoration: BoxDecoration(
-                color: AppTheme.accent.withOpacity(0.1),
+                color: theme.colors.accent.withOpacity(0.1),
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+                border: Border.all(color: theme.colors.accent.withOpacity(0.3)),
               ),
               child: Text(
                 _goalLabel,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  color: AppTheme.accent,
+                style: TextStyle(
+                  color: theme.colors.accent,
                   fontWeight: FontWeight.bold,
                   fontSize: 16,
                 ),
@@ -587,9 +592,9 @@ class _Step2GoalState extends State<_Step2Goal> {
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
+            Text(
               'How fast do you want to reach your goal?',
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+              style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 16),
             GoalPaceSlider(
@@ -629,6 +634,8 @@ class _Step3Activity extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -643,9 +650,9 @@ class _Step3Activity extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'How active are you on a typical week?',
-            style: TextStyle(color: AppTheme.textSecondary),
+            style: TextStyle(color: theme.colors.textSecondary),
           ),
           const SizedBox(height: 32),
           ..._options.map(
@@ -683,6 +690,8 @@ class _Step4DietUse extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -697,15 +706,15 @@ class _Step4DietUse extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             'Help us tailor your macros.',
-            style: TextStyle(color: AppTheme.textSecondary),
+            style: TextStyle(color: theme.colors.textSecondary),
           ),
           const SizedBox(height: 32),
 
-          const Text(
+          Text(
             'Diet type',
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 10),
           ...([
@@ -725,9 +734,9 @@ class _Step4DietUse extends StatelessWidget {
           ),
 
           const SizedBox(height: 24),
-          const Text(
+          Text(
             "What's the app for?",
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 10),
           ...([
@@ -761,6 +770,8 @@ class _Step5Mantra extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
@@ -775,9 +786,9 @@ class _Step5Mantra extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
+          Text(
             "What do you want to hear when you're struggling?",
-            style: TextStyle(color: AppTheme.textSecondary),
+            style: TextStyle(color: theme.colors.textSecondary),
           ),
           const SizedBox(height: 32),
 
@@ -789,30 +800,27 @@ class _Step5Mantra extends StatelessWidget {
             decoration: InputDecoration(
               hintText:
                   '"Every rep counts." / "You showed up." / "Keep going."',
-              hintStyle: const TextStyle(
-                color: AppTheme.textSecondary,
+              hintStyle: TextStyle(
+                color: theme.colors.textSecondary,
                 fontSize: 14,
               ),
               filled: true,
-              fillColor: AppTheme.surface,
+              fillColor: theme.colors.surfacePrimary,
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
                 borderSide: BorderSide.none,
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(16),
-                borderSide: const BorderSide(
-                  color: AppTheme.accent,
-                  width: 1.5,
-                ),
+                borderSide: BorderSide(color: theme.colors.accent, width: 1.5),
               ),
             ),
           ),
 
           const SizedBox(height: 20),
-          const Text(
+          Text(
             "This will show up as a notification on tough days. You can skip this if you want.",
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
           ),
         ],
       ),
@@ -838,6 +846,8 @@ class _OField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return TextField(
       controller: controller,
       keyboardType: keyboardType,
@@ -848,16 +858,16 @@ class _OField extends StatelessWidget {
           : null,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(color: theme.colors.textSecondary),
         filled: true,
-        fillColor: AppTheme.surface,
+        fillColor: theme.colors.surfacePrimary,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+          borderSide: BorderSide(color: theme.colors.accent, width: 1.5),
         ),
       ),
     );
@@ -879,6 +889,7 @@ class _GenderChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     final isSelected = value == selected;
     return Expanded(
       child: GestureDetector(
@@ -888,11 +899,11 @@ class _GenderChip extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 14),
           decoration: BoxDecoration(
             color: isSelected
-                ? AppTheme.accent.withOpacity(0.15)
-                : AppTheme.surface,
+                ? theme.colors.accent.withOpacity(0.15)
+                : theme.colors.surfacePrimary,
             borderRadius: BorderRadius.circular(12),
             border: Border.all(
-              color: isSelected ? AppTheme.accent : Colors.transparent,
+              color: isSelected ? theme.colors.accent : Colors.transparent,
               width: 1.5,
             ),
           ),
@@ -900,7 +911,9 @@ class _GenderChip extends StatelessWidget {
           child: Text(
             label,
             style: TextStyle(
-              color: isSelected ? AppTheme.accent : AppTheme.textSecondary,
+              color: isSelected
+                  ? theme.colors.accent
+                  : theme.colors.textSecondary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -925,6 +938,8 @@ class _SelectionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -932,11 +947,11 @@ class _SelectionTile extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppTheme.accent.withOpacity(0.1)
-              : AppTheme.surface,
+              ? theme.colors.accent.withOpacity(0.1)
+              : theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(14),
           border: Border.all(
-            color: isSelected ? AppTheme.accent : Colors.transparent,
+            color: isSelected ? theme.colors.accent : Colors.transparent,
             width: 1.5,
           ),
         ),
@@ -949,15 +964,15 @@ class _SelectionTile extends StatelessWidget {
                   Text(
                     title,
                     style: TextStyle(
-                      color: isSelected ? AppTheme.accent : Colors.white,
+                      color: isSelected ? theme.colors.accent : Colors.white,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 2),
                   Text(
                     subtitle,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
+                    style: TextStyle(
+                      color: theme.colors.textSecondary,
                       fontSize: 12,
                     ),
                   ),
@@ -965,7 +980,7 @@ class _SelectionTile extends StatelessWidget {
               ),
             ),
             if (isSelected)
-              const Icon(Icons.check_circle, color: AppTheme.accent, size: 20),
+              Icon(Icons.check_circle, color: theme.colors.accent, size: 20),
           ],
         ),
       ),

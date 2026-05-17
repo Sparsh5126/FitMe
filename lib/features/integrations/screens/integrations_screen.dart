@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/integrations/providers/health_provider.dart';
 // Removed direct import of health_sync_service — screen communicates only
 // through the provider layer (HealthConnectNotifier). Graph confirmed
@@ -34,26 +34,27 @@ class IntegrationsScreen extends ConsumerWidget {
       );
 
       if (isPermanent) {
+        final theme = ThemeManager.instance.activeTheme;
         // Permanent denial — direct user to settings
         await showDialog<void>(
           context: context,
           builder: (_) => AlertDialog(
-            backgroundColor: AppTheme.surface,
-            title: const Text(
+            backgroundColor: theme.colors.surfacePrimary,
+            title: Text(
               'Permission required',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: theme.colors.textPrimary),
             ),
-            content: const Text(
+            content: Text(
               'Health access was permanently denied.\n'
               'Open Settings and enable Activity Recognition to continue.',
-              style: TextStyle(color: AppTheme.textSecondary, height: 1.5),
+              style: TextStyle(color: theme.colors.textSecondary, height: 1.5),
             ),
             actions: [
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: const Text(
+                child: Text(
                   'Cancel',
-                  style: TextStyle(color: AppTheme.textSecondary),
+                  style: TextStyle(color: theme.colors.textSecondary),
                 ),
               ),
               TextButton(
@@ -61,9 +62,9 @@ class IntegrationsScreen extends ConsumerWidget {
                   Navigator.pop(context);
                   await openAppSettings();
                 },
-                child: const Text(
+                child: Text(
                   'Open Settings',
-                  style: TextStyle(color: AppTheme.accent),
+                  style: TextStyle(color: theme.colors.accent),
                 ),
               ),
             ],
@@ -77,11 +78,12 @@ class IntegrationsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ThemeManager.instance.activeTheme;
     final connectState = ref.watch(healthConnectNotifier);
     final isConnected = connectState.value ?? false;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -92,16 +94,16 @@ class IntegrationsScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
+                  Text(
                     'Integrations',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -109,9 +111,9 @@ class IntegrationsScreen extends ConsumerWidget {
                   const Spacer(),
                   if (isConnected)
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.refresh_rounded,
-                        color: AppTheme.accent,
+                        color: theme.colors.accent,
                       ),
                       onPressed: () {
                         HapticFeedback.selectionClick();
@@ -130,11 +132,12 @@ class IntegrationsScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── Health platform card ─────────────
-                    const _GroupLabel('Health Platform'),
+                    _GroupLabel('Health Platform', theme: theme),
                     const SizedBox(height: 10),
                     _HealthConnectCard(
                       isConnected: isConnected,
                       isLoading: connectState.isLoading,
+                      theme: theme,
                       onConnect: () async {
                         HapticFeedback.mediumImpact();
 
@@ -152,15 +155,17 @@ class IntegrationsScreen extends ConsumerWidget {
                           // Check if SDK is unavailable or update required
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              backgroundColor: AppTheme.surface,
+                              backgroundColor: theme.colors.surfacePrimary,
                               behavior: SnackBarBehavior.floating,
-                              content: const Text(
+                              content: Text(
                                 'Health Connect SDK is missing or needs update. Check Play Store.',
-                                style: TextStyle(color: Colors.white),
+                                style: TextStyle(
+                                  color: theme.colors.textPrimary,
+                                ),
                               ),
                               action: SnackBarAction(
                                 label: 'Settings',
-                                textColor: AppTheme.accent,
+                                textColor: theme.colors.accent,
                                 onPressed: openAppSettings,
                               ),
                             ),
@@ -172,27 +177,30 @@ class IntegrationsScreen extends ConsumerWidget {
                     // ── Live summary ─────────────────────
                     if (isConnected) ...[
                       const SizedBox(height: 24),
-                      const _GroupLabel("Today's Activity"),
+                      _GroupLabel("Today's Activity", theme: theme),
                       const SizedBox(height: 10),
-                      const _HealthSummaryCard(),
+                      _HealthSummaryCard(theme: theme),
                     ],
 
                     const SizedBox(height: 24),
 
                     // ── Coming soon ──────────────────────
-                    const _GroupLabel('Coming Soon'),
+                    _GroupLabel('Coming Soon', theme: theme),
                     const SizedBox(height: 10),
-                    const _ComingSoonTile(
+                    _ComingSoonTile(
+                      theme: theme,
                       icon: '⌚',
                       label: 'Fitbit',
                       subtitle: 'Sync workouts and sleep data',
                     ),
-                    const _ComingSoonTile(
+                    _ComingSoonTile(
+                      theme: theme,
                       icon: '🏃',
                       label: 'Garmin Connect',
                       subtitle: 'Import runs, rides, and VO2 max',
                     ),
-                    const _ComingSoonTile(
+                    _ComingSoonTile(
+                      theme: theme,
                       icon: '🔵',
                       label: 'Whoop',
                       subtitle: 'Recovery and strain scores',
@@ -213,11 +221,13 @@ class _HealthConnectCard extends StatelessWidget {
   final bool isConnected;
   final bool isLoading;
   final VoidCallback onConnect;
+  final dynamic theme;
 
   const _HealthConnectCard({
     required this.isConnected,
     required this.isLoading,
     required this.onConnect,
+    required this.theme,
   });
 
   @override
@@ -225,10 +235,13 @@ class _HealthConnectCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(16),
         border: isConnected
-            ? Border.all(color: AppTheme.success.withOpacity(0.4), width: 1.5)
+            ? Border.all(
+                color: theme.colors.success.withOpacity(0.4),
+                width: 1.5,
+              )
             : null,
       ),
       child: Column(
@@ -241,10 +254,10 @@ class _HealthConnectCard extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
+                  Text(
                     'Health Connect',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -254,8 +267,8 @@ class _HealthConnectCard extends StatelessWidget {
                     isConnected ? 'Connected' : 'Not connected',
                     style: TextStyle(
                       color: isConnected
-                          ? AppTheme.success
-                          : AppTheme.textSecondary,
+                          ? theme.colors.success
+                          : theme.colors.textSecondary,
                       fontSize: 12,
                       fontWeight: FontWeight.w500,
                     ),
@@ -264,18 +277,18 @@ class _HealthConnectCard extends StatelessWidget {
               ),
               const Spacer(),
               if (isConnected)
-                const Icon(
+                Icon(
                   Icons.check_circle_rounded,
-                  color: AppTheme.success,
+                  color: theme.colors.success,
                   size: 22,
                 ),
             ],
           ),
           const SizedBox(height: 12),
-          const Text(
+          Text(
             'Syncs steps, calories burned, and weight from your device\'s health platform.',
             style: TextStyle(
-              color: AppTheme.textSecondary,
+              color: theme.colors.textSecondary,
               fontSize: 13,
               height: 1.5,
             ),
@@ -287,12 +300,12 @@ class _HealthConnectCard extends StatelessWidget {
               child: ElevatedButton(
                 onPressed: isLoading ? null : onConnect,
                 child: isLoading
-                    ? const SizedBox(
+                    ? SizedBox(
                         width: 16,
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          color: AppTheme.background,
+                          color: theme.colors.backgroundPrimary,
                         ),
                       )
                     : const Text('Connect'),
@@ -307,36 +320,37 @@ class _HealthConnectCard extends StatelessWidget {
 
 // ── Today summary card ────────────────────────────────
 class _HealthSummaryCard extends ConsumerWidget {
-  const _HealthSummaryCard();
+  final dynamic theme;
+  const _HealthSummaryCard({required this.theme});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summaryAsync = ref.watch(healthSummaryProvider);
 
     return summaryAsync.when(
-      loading: () => const Center(
+      loading: () => Center(
         child: Padding(
-          padding: EdgeInsets.all(20),
-          child: CircularProgressIndicator(color: AppTheme.accent),
+          padding: const EdgeInsets.all(20),
+          child: CircularProgressIndicator(color: theme.colors.accent),
         ),
       ),
       error: (e, _) => Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Row(
           children: [
-            const Icon(
+            Icon(
               Icons.warning_amber_rounded,
-              color: AppTheme.textSecondary,
+              color: theme.colors.textSecondary,
               size: 16,
             ),
             const SizedBox(width: 8),
-            const Text(
+            Text(
               'Failed to load health data',
-              style: TextStyle(color: AppTheme.textSecondary),
+              style: TextStyle(color: theme.colors.textSecondary),
             ),
           ],
         ),
@@ -344,7 +358,7 @@ class _HealthSummaryCard extends ConsumerWidget {
       data: (summary) => Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -354,23 +368,26 @@ class _HealthSummaryCard extends ConsumerWidget {
               icon: Icons.directions_walk_rounded,
               label: 'Steps',
               value: _fmt(summary.steps),
-              color: AppTheme.accent,
+              color: theme.colors.accent,
+              theme: theme,
             ),
-            _divider(),
+            _divider(theme),
             _StatChip(
               icon: Icons.local_fire_department_rounded,
               label: 'Burned',
               value: '${summary.caloriesBurned.toInt()} kcal',
               color: const Color(0xFFFF6B6B),
+              theme: theme,
             ),
-            _divider(),
+            _divider(theme),
             _StatChip(
               icon: Icons.monitor_weight_rounded,
               label: 'Weight',
               value: summary.weightKg != null
                   ? '${summary.weightKg!.toStringAsFixed(1)} kg'
                   : '—',
-              color: AppTheme.proteinColor,
+              color: theme.colors.proteinColor,
+              theme: theme,
             ),
           ],
         ),
@@ -378,8 +395,11 @@ class _HealthSummaryCard extends ConsumerWidget {
     );
   }
 
-  Widget _divider() =>
-      Container(width: 1, height: 40, color: Colors.white.withOpacity(0.06));
+  Widget _divider(dynamic theme) => Container(
+    width: 1,
+    height: 40,
+    color: theme.colors.textSecondary.withOpacity(0.12),
+  );
 
   String _fmt(int n) {
     if (n >= 1000) return '${(n / 1000).toStringAsFixed(1)}k';
@@ -392,12 +412,14 @@ class _StatChip extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final dynamic theme;
 
   const _StatChip({
     required this.icon,
     required this.label,
     required this.value,
     required this.color,
+    required this.theme,
   });
 
   @override
@@ -417,7 +439,7 @@ class _StatChip extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+          style: TextStyle(color: theme.colors.textSecondary, fontSize: 11),
         ),
       ],
     );
@@ -426,11 +448,13 @@ class _StatChip extends StatelessWidget {
 
 // ── Coming soon tile ──────────────────────────────────
 class _ComingSoonTile extends StatelessWidget {
+  final dynamic theme;
   final String icon;
   final String label;
   final String subtitle;
 
   const _ComingSoonTile({
+    required this.theme,
     required this.icon,
     required this.label,
     required this.subtitle,
@@ -442,7 +466,7 @@ class _ComingSoonTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 10),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(14),
       ),
       child: Row(
@@ -455,16 +479,16 @@ class _ComingSoonTile extends StatelessWidget {
               children: [
                 Text(
                   label,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.colors.textPrimary,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   subtitle,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: theme.colors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -474,13 +498,13 @@ class _ComingSoonTile extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
             decoration: BoxDecoration(
-              color: AppTheme.accent.withOpacity(0.15),
+              color: theme.colors.accent.withOpacity(0.15),
               borderRadius: BorderRadius.circular(20),
             ),
-            child: const Text(
+            child: Text(
               'Soon',
               style: TextStyle(
-                color: AppTheme.accent,
+                color: theme.colors.accent,
                 fontSize: 10,
                 fontWeight: FontWeight.bold,
               ),
@@ -495,14 +519,15 @@ class _ComingSoonTile extends StatelessWidget {
 // ── Group label ───────────────────────────────────────
 class _GroupLabel extends StatelessWidget {
   final String label;
-  const _GroupLabel(this.label);
+  final dynamic theme;
+  const _GroupLabel(this.label, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: const TextStyle(
-        color: AppTheme.textSecondary,
+      style: TextStyle(
+        color: theme.colors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.2,

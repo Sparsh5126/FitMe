@@ -231,12 +231,12 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
         ),
         content: Text(
           'Permanently delete "${_nameCtrl.text}"?',
-          style: const TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: AppTheme.textSecondary),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text(
+            child: Text(
               'Cancel',
               style: TextStyle(color: AppTheme.textSecondary),
             ),
@@ -290,7 +290,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
           TextButton(
             onPressed: _saving ? null : _save,
             child: _saving
-                ? const SizedBox(
+                ? SizedBox(
                     width: 20,
                     height: 20,
                     child: CircularProgressIndicator(
@@ -298,7 +298,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                       color: AppTheme.accent,
                     ),
                   )
-                : const Text(
+                : Text(
                     'Save',
                     style: TextStyle(
                       color: AppTheme.accent,
@@ -345,7 +345,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                   ),
                 ),
                 const SizedBox(width: 12),
-                const Text(
+                Text(
                   'serving(s)',
                   style: TextStyle(color: AppTheme.textSecondary),
                 ),
@@ -359,7 +359,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
               onChanged: _onSearchChanged,
               style: const TextStyle(color: Colors.white),
               decoration: _dec('Search to add ingredient…').copyWith(
-                prefixIcon: const Icon(
+                prefixIcon: Icon(
                   Icons.search_rounded,
                   color: AppTheme.textSecondary,
                 ),
@@ -367,7 +367,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (_isSearching)
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(12),
                         child: SizedBox(
                           width: 16,
@@ -379,7 +379,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                         ),
                       ),
                     IconButton(
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.qr_code_scanner_rounded,
                         color: AppTheme.textSecondary,
                       ),
@@ -402,7 +402,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                   color: AppTheme.surface,
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: const Text(
+                child: Text(
                   'No results found',
                   style: TextStyle(color: AppTheme.textSecondary),
                 ),
@@ -418,7 +418,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
                   borderRadius: BorderRadius.circular(14),
                   border: Border.all(color: AppTheme.surface.withOpacity(0.8)),
                 ),
-                child: const Center(
+                child: Center(
                   child: Text(
                     'Search above to add ingredients',
                     style: TextStyle(
@@ -465,7 +465,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
 
   InputDecoration _dec(String hint) => InputDecoration(
     hintText: hint,
-    hintStyle: const TextStyle(color: AppTheme.textSecondary),
+    hintStyle: TextStyle(color: AppTheme.textSecondary),
     filled: true,
     fillColor: AppTheme.surface,
     border: OutlineInputBorder(
@@ -474,7 +474,7 @@ class _CustomMealFormScreenState extends ConsumerState<CustomMealFormScreen> {
     ),
     focusedBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+      borderSide: BorderSide(color: AppTheme.accent, width: 1.5),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
   );
@@ -523,16 +523,13 @@ class _MacroCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
+              Text(
                 'Nutrition per serving',
                 style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
               ),
               Text(
                 'Total: $totalCal kcal',
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 12,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
               ),
             ],
           ),
@@ -570,7 +567,7 @@ class _MacroChip extends StatelessWidget {
       const SizedBox(height: 2),
       Text(
         label,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
       ),
     ],
   );
@@ -599,12 +596,9 @@ class _SearchDropdown extends StatelessWidget {
             subtitle: Text(
               '${food.calories} kcal · '
               '${food.consumedAmount.toStringAsFixed(0)} ${food.consumedUnit}',
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
             ),
-            trailing: const Icon(
+            trailing: Icon(
               Icons.add_circle_outline_rounded,
               color: AppTheme.accent,
               size: 20,
@@ -648,14 +642,14 @@ class _IngredientTile extends StatelessWidget {
         subtitle: Text(
           '${ingredient.amount.toStringAsFixed(ingredient.amount == ingredient.amount.roundToDouble() ? 0 : 1)} '
           '${ingredient.unit}  ·  ${ingredient.calories} kcal',
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             GestureDetector(
               onTap: onEdit,
-              child: const Icon(
+              child: Icon(
                 Icons.edit_rounded,
                 size: 18,
                 color: AppTheme.textSecondary,
@@ -778,7 +772,7 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
     final bottomPad = MediaQuery.of(context).viewInsets.bottom;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + bottomPad),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
@@ -808,7 +802,7 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
           const SizedBox(height: 4),
           Text(
             _getServingInfo(),
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.accent,
               fontSize: 13,
               fontWeight: FontWeight.w500,
@@ -818,7 +812,7 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
           Text(
             'Base: ${_base.toStringAsFixed(0)} $_unit = '
             '${widget.food.calories} kcal',
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 20),
 
@@ -848,13 +842,13 @@ class _QuantityPickerSheetState extends State<_QuantityPickerSheet> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
+                      borderSide: BorderSide(
                         color: AppTheme.accent,
                         width: 1.5,
                       ),
                     ),
                     suffixText: _unit,
-                    suffixStyle: const TextStyle(color: AppTheme.textSecondary),
+                    suffixStyle: TextStyle(color: AppTheme.textSecondary),
                   ),
                 ),
               ),
@@ -947,7 +941,7 @@ class _MiniMacro extends StatelessWidget {
       ),
       Text(
         label,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
       ),
     ],
   );

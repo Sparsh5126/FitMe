@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-import 'package:fitme/core/theme/app_theme.dart';
 import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/core/models/user_profile.dart';
 import 'package:fitme/features/dashboard/providers/user_provider.dart';
@@ -94,7 +93,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     return userAsync.when(
       loading: () => Scaffold(
         backgroundColor: theme.colors.backgroundPrimary,
-        body: Center(child: CircularProgressIndicator(color: theme.colors.accent)),
+        body: Center(
+          child: CircularProgressIndicator(color: theme.colors.accent),
+        ),
       ),
       error: (e, _) => Scaffold(
         backgroundColor: theme.colors.backgroundPrimary,
@@ -163,7 +164,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       child: Text(
                                         '$streakCount',
                                         style: TextStyle(
-                                          color: Colors.white.withOpacity(0.85),
+                                          color: theme.colors.textPrimary
+                                              .withOpacity(0.85),
                                           fontSize: 15,
                                           fontWeight: FontWeight.w700,
                                           letterSpacing: -0.3,
@@ -211,12 +213,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     : CrossAxisAlignment.end,
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'FitMe',
                                     style: TextStyle(
                                       fontSize: 24,
                                       fontWeight: FontWeight.w900,
-                                      color: Colors.white,
+                                      color: theme.colors.textPrimary,
                                       letterSpacing: -0.5,
                                     ),
                                   ),
@@ -428,10 +430,10 @@ class _FoodPage extends ConsumerWidget {
                     children: [
                       Text(
                         '$totalCals',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: theme.colors.textPrimary,
                         ),
                       ),
                       Text(
@@ -453,8 +455,8 @@ class _FoodPage extends ConsumerWidget {
                   ),
                   circularStrokeCap: CircularStrokeCap.round,
                   progressColor: totalCals > profile.dynamicCalories
-                      ? Colors.redAccent
-                      : Colors.white,
+                      ? theme.colors.error
+                      : theme.colors.textPrimary,
                   backgroundColor: theme.colors.surfacePrimary,
                 ),
               ),
@@ -476,7 +478,7 @@ class _FoodPage extends ConsumerWidget {
                       label: 'Protein',
                       current: totalPro,
                       goal: profile.dynamicProtein,
-                      color: Colors.blueAccent,
+                      color: theme.colors.proteinColor,
                     ),
                   ),
                   GestureDetector(
@@ -490,7 +492,7 @@ class _FoodPage extends ConsumerWidget {
                       label: 'Carbs',
                       current: totalCarbs,
                       goal: profile.dynamicCarbs,
-                      color: Colors.orangeAccent,
+                      color: theme.colors.carbsColor,
                     ),
                   ),
                   GestureDetector(
@@ -504,7 +506,7 @@ class _FoodPage extends ConsumerWidget {
                       label: 'Fats',
                       current: totalFats,
                       goal: profile.dynamicFats,
-                      color: Colors.purpleAccent,
+                      color: theme.colors.fatsColor,
                     ),
                   ),
                   GestureDetector(
@@ -530,7 +532,7 @@ class _FoodPage extends ConsumerWidget {
                       label: 'Water',
                       current: totalWater,
                       goal: 2500,
-                      color: Colors.cyanAccent,
+                      color: theme.colors.waterColor,
                       unit: 'ml',
                     ),
                   ),
@@ -570,13 +572,19 @@ class _FoodPage extends ConsumerWidget {
                     },
                     child: Container(
                       height: 56,
-                      margin: EdgeInsets.symmetric(horizontal: theme.spacing.md),
-                      padding: EdgeInsets.symmetric(horizontal: theme.spacing.md),
+                      margin: EdgeInsets.symmetric(
+                        horizontal: theme.spacing.md,
+                      ),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: theme.spacing.md,
+                      ),
                       decoration: BoxDecoration(
                         color: theme.colors.surfacePrimary,
                         borderRadius: BorderRadius.circular(theme.radius.lg),
                         border: Border.all(
-                          color: Colors.white.withValues(alpha: 0.05),
+                          color: theme.colors.textPrimary.withValues(
+                            alpha: 0.05,
+                          ),
                         ),
                       ),
                       child: Row(
@@ -659,7 +667,10 @@ class _FoodPage extends ConsumerWidget {
 
           // ── LOGGED FOOD ─────────────────────────────────────────
           Padding(
-            padding: EdgeInsets.only(left: theme.spacing.lg, bottom: theme.spacing.md),
+            padding: EdgeInsets.only(
+              left: theme.spacing.lg,
+              bottom: theme.spacing.md,
+            ),
             child: Text(
               'Logged Food',
               style: TextStyle(
@@ -718,7 +729,10 @@ class _DateNavBtn extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: theme.spacing.xs, vertical: theme.spacing.sm),
+        padding: EdgeInsets.symmetric(
+          horizontal: theme.spacing.xs,
+          vertical: theme.spacing.sm,
+        ),
         child: Icon(
           icon,
           color: muted
@@ -782,7 +796,7 @@ class _SmallRing extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = ThemeManager.instance.activeTheme;
     final isOver = current > goal;
-    final ringColor = isOver ? Colors.redAccent : color;
+    final ringColor = isOver ? theme.colors.error : color;
 
     return Column(
       children: [
@@ -804,7 +818,9 @@ class _SmallRing extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
-                      color: isOver ? Colors.redAccent : Colors.white,
+                      color: isOver
+                          ? theme.colors.error
+                          : theme.colors.textPrimary,
                     ),
                   ),
                   Text(
@@ -867,7 +883,9 @@ class _ActionIcon extends StatelessWidget {
             decoration: BoxDecoration(
               color: theme.colors.surfacePrimary,
               borderRadius: BorderRadius.circular(theme.radius.md),
-              border: Border.all(color: Colors.white.withOpacity(0.06)),
+              border: Border.all(
+                color: theme.colors.textPrimary.withOpacity(0.06),
+              ),
             ),
             child: Icon(icon, color: theme.colors.accent, size: 22),
           ),
@@ -896,6 +914,7 @@ class _LoggedMealTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final theme = ThemeManager.instance.activeTheme;
     return Dismissible(
       key: Key(meal.id),
       direction: DismissDirection.endToStart,
@@ -906,12 +925,12 @@ class _LoggedMealTile extends ConsumerWidget {
       background: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
         decoration: BoxDecoration(
-          color: Colors.redAccent.withValues(alpha: 0.8),
+          color: theme.colors.error.withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(16),
         ),
         alignment: Alignment.centerRight,
         padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete_outline, color: Colors.white),
+        child: Icon(Icons.delete_outline, color: theme.colors.textPrimary),
       ),
       child: GestureDetector(
         onTap: () => Navigator.push(
@@ -925,9 +944,11 @@ class _LoggedMealTile extends ConsumerWidget {
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: theme.colors.surfacePrimary,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(
+              color: theme.colors.textPrimary.withValues(alpha: 0.05),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -946,8 +967,8 @@ class _LoggedMealTile extends ConsumerWidget {
                         Expanded(
                           child: Text(
                             meal.name,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: theme.colors.textPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                             ),
@@ -960,15 +981,18 @@ class _LoggedMealTile extends ConsumerWidget {
                   ),
                   Text(
                     '${meal.calories} Cal',
-                    style: const TextStyle(color: Colors.white, fontSize: 14),
+                    style: TextStyle(
+                      color: theme.colors.textPrimary,
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
               const SizedBox(height: 6),
               Text(
                 'P:${meal.protein}g C:${meal.carbs}g F:${meal.fats}g',
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                style: TextStyle(
+                  color: theme.colors.textSecondary,
                   fontSize: 12,
                 ),
               ),

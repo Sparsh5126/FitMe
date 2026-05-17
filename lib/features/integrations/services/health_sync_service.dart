@@ -51,7 +51,9 @@ class HealthSyncService {
         return false;
       }
 
-      debugPrint('HealthSyncService: Requesting authorization for types: $_types');
+      debugPrint(
+        'HealthSyncService: Requesting authorization for types: $_types',
+      );
       final granted = await _health.requestAuthorization(
         _types,
         permissions: _permissions,

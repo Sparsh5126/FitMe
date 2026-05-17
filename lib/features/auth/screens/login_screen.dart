@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitme/core/theme/app_theme.dart';
-import 'package:fitme/core/theme/providers/theme_provider.dart';
 import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/auth/screens/signup_screen.dart';
@@ -31,7 +29,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = ThemeManager.instance.activeTheme;
-    
+
     return Scaffold(
       backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
@@ -45,7 +43,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
               // ── Back ──────────────────────────────────
               IconButton(
-                icon: Icon(Icons.arrow_back_rounded, color: theme.colors.textPrimary),
+                icon: Icon(
+                  Icons.arrow_back_rounded,
+                  color: theme.colors.textPrimary,
+                ),
                 onPressed: () => Navigator.pop(context),
                 padding: EdgeInsets.zero,
               ),
@@ -81,7 +82,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   decoration: BoxDecoration(
                     color: theme.colors.error.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(theme.radius.md),
-                    border: Border.all(color: theme.colors.error.withOpacity(0.3)),
+                    border: Border.all(
+                      color: theme.colors.error.withOpacity(0.3),
+                    ),
                   ),
                   child: Text(
                     _error!,
@@ -191,7 +194,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: Divider(color: theme.colors.textSecondary.withOpacity(0.15)),
+                    child: Divider(
+                      color: theme.colors.textSecondary.withOpacity(0.15),
+                    ),
                   ),
                   Padding(
                     padding: EdgeInsets.symmetric(horizontal: theme.spacing.md),
@@ -204,7 +209,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                   ),
                   Expanded(
-                    child: Divider(color: theme.colors.textSecondary.withOpacity(0.15)),
+                    child: Divider(
+                      color: theme.colors.textSecondary.withOpacity(0.15),
+                    ),
                   ),
                 ],
               ),
@@ -263,17 +270,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     MaterialPageRoute(builder: (_) => const SignupScreen()),
                   ),
                   child: RichText(
-                    text: const TextSpan(
+                    text: TextSpan(
                       text: "Don't have an account? ",
                       style: TextStyle(
-                        color: AppTheme.textSecondary,
+                        color: theme.colors.textSecondary,
                         fontSize: 13,
                       ),
                       children: [
                         TextSpan(
                           text: 'Sign Up',
                           style: TextStyle(
-                            color: AppTheme.accent,
+                            color: theme.colors.accent,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
@@ -346,6 +353,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _forgotPassword() async {
+    final theme = ThemeManager.instance.activeTheme;
     final email = _emailCtrl.text.trim();
     if (email.isEmpty) {
       setState(() => _error = 'Enter your email above first.');
@@ -362,7 +370,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               ? 'Reset link sent to $email'
               : result.errorMessage ?? 'Failed to send reset email.',
         ),
-        backgroundColor: result.success ? AppTheme.success : AppTheme.error,
+        backgroundColor: result.success
+            ? theme.colors.success
+            : theme.colors.error,
       ),
     );
   }

@@ -62,7 +62,7 @@ class FavoritesScreen extends ConsumerWidget {
 
             Expanded(
               child: favAsync.when(
-                loading: () => const Center(
+                loading: () => Center(
                   child: CircularProgressIndicator(color: AppTheme.accent),
                 ),
                 error: (e, _) => Center(
@@ -115,11 +115,7 @@ class _FavTile extends ConsumerWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           alignment: Alignment.center,
-          child: const Icon(
-            Icons.favorite_rounded,
-            color: AppTheme.accent,
-            size: 20,
-          ),
+          child: Icon(Icons.favorite_rounded, color: AppTheme.accent, size: 20),
         ),
         title: Text(
           food.name,
@@ -130,14 +126,14 @@ class _FavTile extends ConsumerWidget {
         ),
         subtitle: Text(
           '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
               '${food.calories} kcal',
-              style: const TextStyle(
+              style: TextStyle(
                 color: AppTheme.accent,
                 fontWeight: FontWeight.bold,
               ),
@@ -182,7 +178,7 @@ class _FavTile extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.add_rounded,
                   size: 16,
                   color: AppTheme.accent,
@@ -219,7 +215,7 @@ class _EmptyFavourites extends StatelessWidget {
             shape: BoxShape.circle,
           ),
           alignment: Alignment.center,
-          child: const Icon(
+          child: Icon(
             Icons.favorite_border_rounded,
             color: AppTheme.textSecondary,
             size: 36,
@@ -235,7 +231,7 @@ class _EmptyFavourites extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Tap the ♡ on any food card to save it here.',
           style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
           textAlign: TextAlign.center,

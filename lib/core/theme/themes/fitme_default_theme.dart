@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../models/theme_config.dart';
+import 'package:fitme/core/theme/models/theme_config.dart';
 
 /// FitMe Default Theme - Generated from current app styling
 /// This is the base reference theme that represents the current FitMe look.
@@ -14,7 +14,6 @@ class FitMeDefaultTheme {
       // ── Background Surfaces ──────────────────────────
       backgroundPrimary: const Color(0xFF0D0D0D), // Pure black AMOLED
       backgroundSecondary: const Color(0xFF1A1A1A), // Slightly lighter
-
       // ── Surface Containers ──────────────────────────
       surfacePrimary: const Color(0xFF1A1A1A),
       surfaceSecondary: const Color(0xFF242424),
@@ -37,14 +36,12 @@ class FitMeDefaultTheme {
       warning: const Color(0xFFFF9500), // Orange (same as accent)
       error: const Color(0xFFFF453A), // Red
       info: const Color(0xFF00C7FF), // Cyan
-
       // ── Macro Colors (Nutrition) ─────────────────────
       proteinColor: const Color(0xFF4D9FFF), // Blue
       carbsColor: const Color(0xFFFF9500), // Orange
       fatsColor: const Color(0xFFAF52DE), // Purple
       waterColor: const Color(0xFF00C7FF), // Cyan
       caloriesColor: const Color(0xFFFF9500), // Orange (same as accent)
-
       // ── State Colors ─────────────────────────────────
       disabled: const Color(0xFF444444),
       overlay: Colors.black.withOpacity(0.54),
@@ -64,59 +61,20 @@ class FitMeDefaultTheme {
       labelLargeSize: 14,
       labelMediumSize: 12,
     ),
-    spacing: const ThemeSpacing(
-      xs: 4,
-      sm: 8,
-      md: 16,
-      lg: 24,
-      xl: 32,
-      xxl: 48,
-    ),
-    radius: const ThemeRadius(
-      xs: 4,
-      sm: 8,
-      md: 12,
-      lg: 16,
-      xl: 24,
-      full: 999,
-    ),
+    spacing: const ThemeSpacing(xs: 4, sm: 8, md: 16, lg: 24, xl: 32, xxl: 48),
+    radius: const ThemeRadius(xs: 4, sm: 8, md: 12, lg: 16, xl: 24, full: 999),
     elevation: const ThemeElevation(
       none: [],
-      sm: [
-        BoxShadow(
-          color: Color(0x00000000),
-          blurRadius: 0,
-          spreadRadius: 0,
-        ),
-      ],
-      md: [
-        BoxShadow(
-          color: Color(0x1F000000),
-          blurRadius: 4,
-          spreadRadius: 0,
-        ),
-      ],
+      sm: [BoxShadow(color: Color(0x00000000), blurRadius: 0, spreadRadius: 0)],
+      md: [BoxShadow(color: Color(0x1F000000), blurRadius: 4, spreadRadius: 0)],
       lg: [
-        BoxShadow(
-          color: Color(0x3D000000),
-          blurRadius: 12,
-          spreadRadius: 2,
-        ),
+        BoxShadow(color: Color(0x3D000000), blurRadius: 12, spreadRadius: 2),
       ],
     ),
     gradients: const ThemeGradients(
-      accentGradient: [
-        Color(0xFFFF9500),
-        Color(0xFFFF7200),
-      ],
-      successGradient: [
-        Color(0xFF00E5A0),
-        Color(0xFF00B87A),
-      ],
-      errorGradient: [
-        Color(0xFFFF453A),
-        Color(0xFFCC3629),
-      ],
+      accentGradient: [Color(0xFFFF9500), Color(0xFFFF7200)],
+      successGradient: [Color(0xFF00E5A0), Color(0xFF00B87A)],
+      errorGradient: [Color(0xFFFF453A), Color(0xFFCC3629)],
     ),
     charts: const ThemeCharts(
       gridLineColor: Color(0xFFFFFFFF),
@@ -293,10 +251,7 @@ class FitMeDefaultTheme {
               : colors.surfacePrimary,
         ),
       ),
-      dividerTheme: DividerThemeData(
-        color: colors.surfaceBorder,
-        thickness: 1,
-      ),
+      dividerTheme: DividerThemeData(color: colors.surfaceBorder, thickness: 1),
       snackBarTheme: SnackBarThemeData(
         backgroundColor: colors.surfacePrimary,
         contentTextStyle: TextStyle(

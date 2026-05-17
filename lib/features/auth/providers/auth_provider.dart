@@ -62,11 +62,11 @@ class AuthNotifier extends AsyncNotifier<User?> {
       '[AuthNotifier] build() resolved user: ${user?.uid ?? (guestMode ? 'Guest' : 'null')}',
       name: 'Auth',
     );
-    
+
     if (user != null) {
       await _checkMigration();
     }
-    
+
     return user;
   }
 

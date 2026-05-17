@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/nutrition/screens/home_screen.dart';
 import 'package:fitme/features/profile/screens/profile_screen.dart';
 import 'package:fitme/features/menu/screens/menu_screen.dart';
@@ -29,17 +29,21 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: IndexedStack(index: _selectedIndex, children: _screens),
       bottomNavigationBar: SafeArea(
         child: Container(
           margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: theme.colors.surfacePrimary,
             borderRadius: BorderRadius.circular(32),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(
+              color: theme.colors.textSecondary.withOpacity(0.05),
+            ),
           ),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -51,6 +55,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                   label: 'Menu',
                   isSelected: _selectedIndex == 0,
                   onTap: () => setState(() => _selectedIndex = 0),
+                  theme: theme,
                 ),
               ),
               Expanded(
@@ -59,6 +64,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                   label: 'Insights',
                   isSelected: _selectedIndex == 1,
                   onTap: () => setState(() => _selectedIndex = 1),
+                  theme: theme,
                 ),
               ),
 
@@ -77,22 +83,25 @@ class _AppShellState extends ConsumerState<AppShell> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Container(
-                        width: 48,
-                        height: 48,
+                        width: 56,
+                        height: 56,
                         decoration: BoxDecoration(
-                          color: AppTheme.background,
+                          color: theme.colors.backgroundPrimary,
                           shape: BoxShape.circle,
-                          border: Border.all(color: AppTheme.accent, width: 2),
+                          border: Border.all(
+                            color: theme.colors.accent,
+                            width: 2,
+                          ),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.accent.withValues(alpha: 0.3),
+                              color: theme.colors.accent.withOpacity(0.3),
                               blurRadius: 12,
                             ),
                           ],
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.add_rounded,
-                          color: AppTheme.accent,
+                          color: theme.colors.accent,
                           size: 28,
                         ),
                       ),
@@ -101,8 +110,8 @@ class _AppShellState extends ConsumerState<AppShell> {
                         'Log',
                         style: TextStyle(
                           color: _selectedIndex == 2
-                              ? AppTheme.accent
-                              : AppTheme.textSecondary,
+                              ? theme.colors.accent
+                              : theme.colors.textSecondary,
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                         ),
@@ -121,6 +130,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                     HapticFeedback.lightImpact();
                     SmartLoggerSheet.show(context);
                   },
+                  theme: theme,
                 ),
               ),
               Expanded(
@@ -129,6 +139,7 @@ class _AppShellState extends ConsumerState<AppShell> {
                   label: 'Profile',
                   isSelected: _selectedIndex == 4,
                   onTap: () => setState(() => _selectedIndex = 4),
+                  theme: theme,
                 ),
               ),
             ],
@@ -144,17 +155,19 @@ class _NavItem extends StatelessWidget {
   final String label;
   final bool isSelected;
   final VoidCallback onTap;
+  final dynamic theme;
 
   const _NavItem({
     required this.icon,
     required this.label,
     required this.isSelected,
     required this.onTap,
+    required this.theme,
   });
 
   @override
   Widget build(BuildContext context) {
-    final color = isSelected ? AppTheme.accent : AppTheme.textSecondary;
+    final color = isSelected ? theme.colors.accent : theme.colors.textSecondary;
     return GestureDetector(
       onTap: () {
         HapticFeedback.selectionClick();
@@ -169,7 +182,7 @@ class _NavItem extends StatelessWidget {
             height: 40,
             decoration: BoxDecoration(
               color: isSelected
-                  ? AppTheme.accent.withValues(alpha: 0.15)
+                  ? theme.colors.accent.withOpacity(0.15)
                   : Colors.transparent,
               shape: BoxShape.circle,
             ),

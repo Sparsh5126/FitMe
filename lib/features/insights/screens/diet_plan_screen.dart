@@ -156,7 +156,7 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
           ),
         ),
         const SizedBox(height: 8),
-        const Text(
+        Text(
           'Customize your AI-generated meal plan based on your preferences, schedule, and budget.',
           style: TextStyle(color: AppTheme.textSecondary, fontSize: 14),
         ),
@@ -255,7 +255,7 @@ class _DietPlanScreenState extends ConsumerState<DietPlanScreen> {
           ),
           child: Column(
             children: [
-              const Text(
+              Text(
                 'Target Met!',
                 style: TextStyle(
                   color: AppTheme.accent,
@@ -364,7 +364,7 @@ class _MealPlanCard extends StatelessWidget {
               ),
               Text(
                 meal.time,
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.accent,
                   fontWeight: FontWeight.bold,
                   fontSize: 13,
@@ -375,7 +375,7 @@ class _MealPlanCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             meal.foodDescription,
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.textSecondary,
               fontSize: 14,
               height: 1.4,
@@ -414,7 +414,7 @@ class _MacroBadge extends StatelessWidget {
       ),
       Text(
         label,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
       ),
     ],
   );
@@ -436,7 +436,7 @@ class _MacroStat extends StatelessWidget {
       ),
       Text(
         label,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
       ),
     ],
   );
@@ -445,7 +445,7 @@ class _MacroStat extends StatelessWidget {
 class _LoadingView extends StatelessWidget {
   const _LoadingView();
   @override
-  Widget build(BuildContext context) => const Center(
+  Widget build(BuildContext context) => Center(
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -521,20 +521,13 @@ class _AiUsageChip extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.auto_awesome_rounded,
-              color: AppTheme.accent,
-              size: 14,
-            ),
+            Icon(Icons.auto_awesome_rounded, color: AppTheme.accent, size: 14),
             const SizedBox(width: 6),
             Text(
               isGuest
                   ? '${remaining ~/ 2}/${limit ~/ 2} AI assists remaining this month'
                   : '${remaining ~/ 2}/${limit ~/ 2} AI assists remaining today',
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -570,11 +563,7 @@ class _GuestLockView extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.lock_rounded,
-                    color: AppTheme.accent,
-                    size: 48,
-                  ),
+                  Icon(Icons.lock_rounded, color: AppTheme.accent, size: 48),
                   const SizedBox(height: 16),
                   const Text(
                     'Smart Diet Planner requires an account',
@@ -586,7 +575,7 @@ class _GuestLockView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Sign in or create a free account to unlock AI-powered meal planning.',
                     textAlign: TextAlign.center,
                     style: TextStyle(

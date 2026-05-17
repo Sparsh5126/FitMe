@@ -5,13 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
+import 'package:fitme/core/theme/providers/theme_provider.dart';
 import 'package:fitme/features/app_shell.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/auth/screens/login_screen.dart';
 import 'package:fitme/features/onboarding/onboarding_screen.dart';
 import 'package:fitme/features/dashboard/providers/user_provider.dart';
 import 'package:fitme/features/auth/widgets/migration_dialog.dart';
+import 'dart:convert';
+import 'package:fitme/core/theme/models/theme_config.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fitme/firebase_options.dart';
 import 'package:fitme/features/rebalancer/services/rebalancer_service.dart';
 
@@ -24,18 +28,49 @@ Future<void> main() async {
 
   dev.log('[Main] Firebase initialised', name: 'App');
 
+  // Load custom and saved theme preferences
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    
+    // 1. First, load and register all custom registered themes from disk
+    final customThemeStrings = prefs.getStringList('custom_registered_themes') ?? [];
+    for (final themeStr in customThemeStrings) {
+      try {
+        final json = jsonDecode(themeStr) as Map<String, dynamic>;
+        final theme = ThemeConfig.fromJson(json);
+        ThemeManager.instance.registerTheme(theme);
+        dev.log('[Main] Registered saved custom theme: ${theme.id}', name: 'App');
+      } catch (e) {
+        dev.log('[Main] Failed to parse saved custom theme: $e', name: 'App');
+      }
+    }
+
+    // 2. Then, switch to the selected theme if one was persisted
+    final savedThemeId = prefs.getString('selected_theme_id');
+    if (savedThemeId != null) {
+      ThemeManager.instance.switchTheme(savedThemeId);
+      dev.log('[Main] Loaded active theme: $savedThemeId', name: 'App');
+    }
+  } catch (e) {
+    dev.log('[Main] Failed to load theme settings: $e', name: 'App');
+  }
+
   runApp(const ProviderScope(child: FitMeApp()));
 }
 
-class FitMeApp extends StatelessWidget {
+class FitMeApp extends ConsumerWidget {
   const FitMeApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeId = ref.watch(activeThemeIdProvider);
     return MaterialApp(
+      key: ValueKey(
+        themeId,
+      ), // Forces complete widget tree rebuild on theme change
       title: 'FitMe',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.dark,
+      theme: ThemeManager.instance.themeData,
       // AuthGate is the single entry point — no named routes needed.
       home: const AuthGate(),
     );
@@ -150,9 +185,10 @@ class _SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     return Scaffold(
-      backgroundColor: AppTheme.background,
-      body: const Center(
+      backgroundColor: theme.colors.backgroundPrimary,
+      body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -171,7 +207,7 @@ class _SplashScreen extends StatelessWidget {
               height: 24,
               child: CircularProgressIndicator(
                 strokeWidth: 2,
-                color: AppTheme.accent,
+                color: theme.colors.accent,
               ),
             ),
           ],

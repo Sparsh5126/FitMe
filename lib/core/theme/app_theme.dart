@@ -1,38 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fitme/core/theme/models/theme_config.dart';
 import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/core/theme/themes/fitme_default_theme.dart';
 
 /// Legacy compatibility class - provides static access to current theme colors
-/// 
+///
 /// NEW APPROACH:
 /// For new screens, use ThemeManager or the Riverpod provider directly
 /// For migrating existing screens, gradually replace AppTheme.color with theme tokens
-/// 
+///
 /// Example migration:
 ///   OLD: Colors.white, AppTheme.accent
 ///   NEW: theme.colors.textPrimary, theme.colors.accent
 class AppTheme {
-  // ── Default colors (used as fallback/legacy) ──────────
-  static const Color background = Color(0xFF0D0D0D);
-  static const Color surface = Color(0xFF1A1A1A);
-  static const Color surfaceElevated = Color(0xFF242424);
-  static const Color accent = Color(0xFFFF9500); // Orange
-  static const Color textPrimary = Colors.white;
-  static const Color textSecondary = Color(0xFF888888);
+  // ── Dynamic Theme Colors ──────────
+  static Color get background =>
+      ThemeManager.instance.activeTheme.colors.backgroundPrimary;
+  static Color get surface =>
+      ThemeManager.instance.activeTheme.colors.surfacePrimary;
+  static Color get surfaceElevated =>
+      ThemeManager.instance.activeTheme.colors.surfaceElevated;
+  static Color get accent => ThemeManager.instance.activeTheme.colors.accent;
+  static Color get textPrimary =>
+      ThemeManager.instance.activeTheme.colors.textPrimary;
+  static Color get textSecondary =>
+      ThemeManager.instance.activeTheme.colors.textSecondary;
 
   // ── Macro colors ─────────────────────────
-  static const Color proteinColor = Color(0xFF4D9FFF); // Blue
-  static const Color carbsColor = Color(0xFFFF9500); // Orange
-  static const Color fatsColor = Color(0xFFAF52DE); // Purple
-  static const Color waterColor = Color(0xFF00C7FF); // Cyan
-  static const Color caloriesColor = accent;
+  static Color get proteinColor =>
+      ThemeManager.instance.activeTheme.colors.proteinColor;
+  static Color get carbsColor =>
+      ThemeManager.instance.activeTheme.colors.carbsColor;
+  static Color get fatsColor =>
+      ThemeManager.instance.activeTheme.colors.fatsColor;
+  static Color get waterColor =>
+      ThemeManager.instance.activeTheme.colors.waterColor;
+  static Color get caloriesColor =>
+      ThemeManager.instance.activeTheme.colors.caloriesColor;
 
   // ── Semantic colors ──────────────────────
-  static const Color success = Color(0xFF00E5A0);
-  static const Color warning = Color(0xFFFF9500);
-  static const Color error = Color(0xFFFF453A);
+  static Color get success => ThemeManager.instance.activeTheme.colors.success;
+  static Color get warning => ThemeManager.instance.activeTheme.colors.warning;
+  static Color get error => ThemeManager.instance.activeTheme.colors.error;
 
   // ── Theme data ───────────────────────────
   /// Get dark theme data (now uses ThemeConfig)

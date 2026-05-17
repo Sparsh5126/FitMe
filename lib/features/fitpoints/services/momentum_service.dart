@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'dart:math';
-import '../models/fitpoints_models.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
 
 /// Manages momentum score (0–100): gradual rise on active days,
 /// graceful decay on missed days. Protects users from full collapse
@@ -41,10 +41,7 @@ class MomentumService {
         adherenceScore: adherenceScore,
       );
     } else {
-      updated = _applyDecay(
-        current: currentMomentum,
-        tier: currentTier,
-      );
+      updated = _applyDecay(current: currentMomentum, tier: currentTier);
     }
 
     updated = updated.clamp(_minMomentum, _maxMomentum);
@@ -69,8 +66,8 @@ class MomentumService {
     final qualityMod = loggingQuality == LoggingQuality.high
         ? 1.4
         : loggingQuality == LoggingQuality.normal
-            ? 1.0
-            : 0.5;
+        ? 1.0
+        : 0.5;
 
     // Adherence boost: linear scale 0–1.2x over 0–100 adherence
     final adherenceMod = (adherenceScore / 100) * 1.2;
@@ -84,10 +81,7 @@ class MomentumService {
 
   // ─── Decay ────────────────────────────────────────────────────────────────
 
-  double _applyDecay({
-    required double current,
-    required StreakTier tier,
-  }) {
+  double _applyDecay({required double current, required StreakTier tier}) {
     // Higher tiers decay more slowly (they've earned protection)
     final tierProtectionFactor = switch (tier) {
       StreakTier.fourPlateBarbell => 0.4,
@@ -175,7 +169,9 @@ class MomentumService {
   }) {
     // No demotion unless sustained low momentum
     if (consecutiveLowMomentumDays < 3) {
-      _log('Tier protected — only $consecutiveLowMomentumDays low-momentum days');
+      _log(
+        'Tier protected — only $consecutiveLowMomentumDays low-momentum days',
+      );
       return currentTier;
     }
 

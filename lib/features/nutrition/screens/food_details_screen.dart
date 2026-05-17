@@ -137,7 +137,7 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                           ),
                           child: Text(
                             '${food.consumedAmount % 1 == 0 ? food.consumedAmount.toInt() : food.consumedAmount} ${food.consumedUnit}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppTheme.textSecondary,
                               fontSize: 13,
                             ),
@@ -200,7 +200,7 @@ class _FoodDetailsScreenState extends ConsumerState<FoodDetailsScreen> {
                               height: 1,
                             ),
                           ),
-                          const Text(
+                          Text(
                             'kcal',
                             style: TextStyle(
                               color: AppTheme.textSecondary,
@@ -405,10 +405,7 @@ class _DetailRing extends StatelessWidget {
               ),
               Text(
                 '${(pct * 100).round()}%',
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 10,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
               ),
             ],
           ),
@@ -419,7 +416,7 @@ class _DetailRing extends StatelessWidget {
         const SizedBox(height: 8),
         Text(
           label,
-          style: const TextStyle(
+          style: TextStyle(
             color: AppTheme.textSecondary,
             fontSize: 12,
             fontWeight: FontWeight.bold,

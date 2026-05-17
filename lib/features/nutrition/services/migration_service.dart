@@ -59,33 +59,33 @@ class MigrationService {
               SetOptions(merge: true),
             );
       }
-      
+
       // 4. Migrate FitPoints
       final guestFPData = await LocalNutritionService.getFitPointsRecord();
       if (guestFPData != null) {
         final guestFP = FitPointsRecord.fromJson(guestFPData);
         final fpService = FitPointsService();
-        
+
         // Fetch current account record
         final accountFP = await fpService.getRecord(uid, false);
-        
+
         dev.log(
           '[MigrationService] Merging FP: guest_lifetime=${guestFP.lifetimePoints}, '
           'account_lifetime=${accountFP.lifetimePoints}',
           name: 'Migration',
         );
-        
+
         // Perform merge
         final mergedFP = fpService.migrateGuestToAccount(
           guestRecord: guestFP,
           accountRecord: accountFP,
         );
-        
+
         dev.log(
           '[MigrationService] Merged FP total: ${mergedFP.lifetimePoints}',
           name: 'Migration',
         );
-        
+
         // Save to Firestore
         await fpService.saveRecord(mergedFP);
       }

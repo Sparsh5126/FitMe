@@ -63,7 +63,10 @@ class WorkoutRepository {
         .toList();
   }
 
-  Future<List<Workout>> getWorkoutsForRange(DateTime start, DateTime end) async {
+  Future<List<Workout>> getWorkoutsForRange(
+    DateTime start,
+    DateTime end,
+  ) async {
     final startStr = _dateFor(start);
     final endStr = _dateFor(end);
     final snap = await _workouts

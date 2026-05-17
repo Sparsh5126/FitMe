@@ -53,13 +53,13 @@ class AiUsageService {
   static Future<int> _getGuestRemaining() async {
     final prefs = await SharedPreferences.getInstance();
     final currentMonth = _monthStr();
-    
+
     if ((prefs.getString(kGuestAiUsageMonthKey) ?? '') != currentMonth) {
       await prefs.setInt(kGuestAiUsageKey, 0);
       await prefs.setString(kGuestAiUsageMonthKey, currentMonth);
       return kGuestMonthlyLimit;
     }
-    
+
     final used = prefs.getInt(kGuestAiUsageKey) ?? 0;
     return (kGuestMonthlyLimit - used).clamp(0, kGuestMonthlyLimit).toInt();
   }
@@ -67,16 +67,16 @@ class AiUsageService {
   static Future<bool> _consumeGuest(int count) async {
     final prefs = await SharedPreferences.getInstance();
     final currentMonth = _monthStr();
-    
+
     if ((prefs.getString(kGuestAiUsageMonthKey) ?? '') != currentMonth) {
       await prefs.setInt(kGuestAiUsageKey, count);
       await prefs.setString(kGuestAiUsageMonthKey, currentMonth);
       return true;
     }
-    
+
     final used = prefs.getInt(kGuestAiUsageKey) ?? 0;
     if (used + count > kGuestMonthlyLimit) return false;
-    
+
     await prefs.setInt(kGuestAiUsageKey, used + count);
     return true;
   }
@@ -84,13 +84,16 @@ class AiUsageService {
   // ── INTERNAL AUTH LOGIC (Daily) ──────────────────────────────────────────
 
   static Future<int> _getAuthRemaining(String uid) async {
-    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .get();
     final data = doc.data() ?? {};
     final today = _todayStr();
-    
+
     final lastReset = data['smartLoggerLastResetDate'] ?? '';
     final used = lastReset == today ? (data['smartLoggerUsedToday'] ?? 0) : 0;
-    
+
     return (kAuthDailyLimit - used).clamp(0, kAuthDailyLimit).toInt();
   }
 
@@ -99,12 +102,12 @@ class AiUsageService {
     final doc = await ref.get();
     final data = doc.data() ?? {};
     final today = _todayStr();
-    
+
     final lastReset = data['smartLoggerLastResetDate'] ?? '';
     final used = lastReset == today ? (data['smartLoggerUsedToday'] ?? 0) : 0;
-    
+
     if (used + count > kAuthDailyLimit) return false;
-    
+
     await ref.update({
       'smartLoggerUsedToday': used + count,
       'smartLoggerLastResetDate': today,
@@ -114,6 +117,7 @@ class AiUsageService {
 
   // ── HELPERS ──────────────────────────────────────────────────────────────
 
-  static String _todayStr() => DateTime.now().toIso8601String().substring(0, 10);
+  static String _todayStr() =>
+      DateTime.now().toIso8601String().substring(0, 10);
   static String _monthStr() => DateTime.now().toIso8601String().substring(0, 7);
 }

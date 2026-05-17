@@ -70,27 +70,29 @@ final insightsDataProvider = FutureProvider<List<DayMacros>>((ref) async {
   return result;
 });
 
-final workoutInsightsProvider = FutureProvider<Map<String, dynamic>>((ref) async {
+final workoutInsightsProvider = FutureProvider<Map<String, dynamic>>((
+  ref,
+) async {
   final period = ref.watch(insightsPeriodProvider);
-  final days = period == InsightsPeriod.week ? 7 : period == InsightsPeriod.twoWeeks ? 14 : 30;
+  final days = period == InsightsPeriod.week
+      ? 7
+      : period == InsightsPeriod.twoWeeks
+      ? 14
+      : 30;
   final workoutRepo = WorkoutRepository();
   final now = DateTime.now();
   final startDate = now.subtract(Duration(days: days - 1));
-  
+
   final workouts = await workoutRepo.getWorkoutsForRange(startDate, now);
-  
+
   int totalVolume = 0;
   int totalSets = 0;
   for (final w in workouts) {
     totalVolume += w.totalVolume;
     totalSets += w.totalSets;
   }
-  
-  return {
-    'count': workouts.length,
-    'volume': totalVolume,
-    'sets': totalSets,
-  };
+
+  return {'count': workouts.length, 'volume': totalVolume, 'sets': totalSets};
 });
 
 class InsightsScreen extends ConsumerWidget {
@@ -146,7 +148,7 @@ class InsightsScreen extends ConsumerWidget {
 
                 // ── Charts ──────────────────────────────
                 dataAsync.when(
-                  loading: () => const Center(
+                  loading: () => Center(
                     child: Padding(
                       padding: EdgeInsets.all(40),
                       child: CircularProgressIndicator(color: AppTheme.accent),
@@ -232,79 +234,79 @@ class _FitPointsCard extends ConsumerWidget {
     final snapshotAsync = ref.watch(consistencySnapshotProvider);
 
     return Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              AppTheme.accent.withOpacity(0.8),
-              AppTheme.accent.withOpacity(0.3),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          borderRadius: BorderRadius.circular(18),
+      width: double.infinity,
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [
+            AppTheme.accent.withOpacity(0.8),
+            AppTheme.accent.withOpacity(0.3),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
         ),
-        child: snapshotAsync.when(
-          data: (snap) => Row(
-            children: [
-              Text(
-                _getTierEmoji(snap.consistencyTier),
-                style: const TextStyle(fontSize: 36),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      'FitPoints • ${snap.consistencyTier.efficiencyLabel}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: snapshotAsync.when(
+        data: (snap) => Row(
+          children: [
+            Text(
+              _getTierEmoji(snap.consistencyTier),
+              style: const TextStyle(fontSize: 36),
+            ),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'FitPoints • ${snap.consistencyTier.efficiencyLabel}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(
-                      '${snap.lifetimePoints.toInt()}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 40,
-                        fontWeight: FontWeight.w900,
-                        height: 1.1,
-                      ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  Text(
+                    '${snap.lifetimePoints.toInt()}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.w900,
+                      height: 1.1,
                     ),
-                    Text(
-                      'Streak: ${snap.currentStreak} days • Momentum: ${snap.momentum.toInt()}%',
-                      style: const TextStyle(color: Colors.white70, fontSize: 11),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
+                  ),
+                  Text(
+                    'Streak: ${snap.currentStreak} days • Momentum: ${snap.momentum.toInt()}%',
+                    style: const TextStyle(color: Colors.white70, fontSize: 11),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
               ),
-            ],
-          ),
-          loading: () =>
-              const Center(child: CircularProgressIndicator(color: Colors.white)),
-          error: (e, _) => const Row(
-            children: [
-              Text('🐦‍🔥', style: TextStyle(fontSize: 36)),
-              SizedBox(width: 16),
-              Text(
-                'FitPoints Unavailable',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
-      );
+        loading: () =>
+            const Center(child: CircularProgressIndicator(color: Colors.white)),
+        error: (e, _) => const Row(
+          children: [
+            Text('🐦‍🔥', style: TextStyle(fontSize: 36)),
+            SizedBox(width: 16),
+            Text(
+              'FitPoints Unavailable',
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   String _getTierEmoji(ConsistencyTier tier) {
@@ -325,8 +327,12 @@ class _RebalancerCard extends StatelessWidget {
     final proteinDiff = profile.dynamicProtein - profile.dailyProtein;
     final carbsDiff = profile.dynamicCarbs - profile.dailyCarbs;
     final fatsDiff = profile.dynamicFats - profile.dailyFats;
-    
-    final isAdjusted = caloriesDiff != 0 || proteinDiff != 0 || carbsDiff != 0 || fatsDiff != 0;
+
+    final isAdjusted =
+        caloriesDiff != 0 ||
+        proteinDiff != 0 ||
+        carbsDiff != 0 ||
+        fatsDiff != 0;
 
     if (!isAdjusted) return const SizedBox();
 
@@ -342,10 +348,7 @@ class _RebalancerCard extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [
-            AppTheme.surface,
-            AppTheme.surface.withOpacity(0.8),
-          ],
+          colors: [AppTheme.surface, AppTheme.surface.withOpacity(0.8)],
         ),
       ),
       child: Column(
@@ -359,10 +362,14 @@ class _RebalancerCard extends StatelessWidget {
                   color: AppTheme.accent.withOpacity(0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.balance_rounded, color: AppTheme.accent, size: 18),
+                child: Icon(
+                  Icons.balance_rounded,
+                  color: AppTheme.accent,
+                  size: 18,
+                ),
               ),
               const SizedBox(width: 12),
-              const Expanded(
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -392,32 +399,17 @@ class _RebalancerCard extends StatelessWidget {
             children: [
               _AdjustStat(
                 'Calories',
-                '${fmt(caloriesDiff)}',
+                fmt(caloriesDiff),
                 AppTheme.accent,
                 'kcal',
               ),
-              _AdjustStat(
-                'Protein',
-                '${fmt(proteinDiff)}',
-                Colors.blueAccent,
-                'g',
-              ),
-              _AdjustStat(
-                'Carbs',
-                '${fmt(carbsDiff)}',
-                Colors.orangeAccent,
-                'g',
-              ),
-              _AdjustStat(
-                'Fats',
-                '${fmt(fatsDiff)}',
-                Colors.purpleAccent,
-                'g',
-              ),
+              _AdjustStat('Protein', fmt(proteinDiff), Colors.blueAccent, 'g'),
+              _AdjustStat('Carbs', fmt(carbsDiff), Colors.orangeAccent, 'g'),
+              _AdjustStat('Fats', fmt(fatsDiff), Colors.purpleAccent, 'g'),
             ],
           ),
           const SizedBox(height: 16),
-          const Text(
+          Text(
             'The rebalancer spreads your calorie debt/credit across remaining days to help you hit your weekly average goal safely.',
             style: TextStyle(
               color: AppTheme.textSecondary,
@@ -445,7 +437,7 @@ class _AdjustStat extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
         ),
         const SizedBox(height: 4),
         Row(
@@ -628,10 +620,7 @@ class _MacroChart extends StatelessWidget {
             children: [
               Text(
                 _shortDate(data.first.date),
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 10,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
               ),
               Text(
                 'Goal: $goal',
@@ -639,10 +628,7 @@ class _MacroChart extends StatelessWidget {
               ),
               Text(
                 _shortDate(data.last.date),
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 10,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
               ),
             ],
           ),
@@ -809,7 +795,10 @@ class _SummaryStats extends StatelessWidget {
           _SummaryRow('Protein goal hit', '$goalHits / ${data.length} days'),
           const Divider(color: Colors.white10, height: 24),
           _SummaryRow('Total Workouts', '$totalWorkouts'),
-          _SummaryRow('Total Volume', '${(totalVolume / 1000).toStringAsFixed(1)}k kg'),
+          _SummaryRow(
+            'Total Volume',
+            '${(totalVolume / 1000).toStringAsFixed(1)}k kg',
+          ),
         ],
       ),
     );
@@ -828,7 +817,7 @@ class _SummaryRow extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
+          Text(label, style: TextStyle(color: AppTheme.textSecondary)),
           Text(
             value,
             style: const TextStyle(
@@ -847,7 +836,13 @@ class _SummaryRow extends StatelessWidget {
 // ─────────────────────────────────────────────
 class DayMacros {
   final DateTime date;
-  final int calories, protein, carbs, fats, workoutVolume, workoutSets, workoutCount;
+  final int calories,
+      protein,
+      carbs,
+      fats,
+      workoutVolume,
+      workoutSets,
+      workoutCount;
   const DayMacros({
     required this.date,
     required this.calories,
@@ -893,10 +888,7 @@ class _StatCard extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
             ),
           ],
         ),

@@ -313,7 +313,7 @@ class _QuantitySelectionScreenState
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // ── Quantity input ───────────────────────────────
-                    const Text(
+                    Text(
                       'Quantity',
                       style: TextStyle(
                         color: AppTheme.textSecondary,
@@ -355,7 +355,7 @@ class _QuantitySelectionScreenState
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(14),
-                                borderSide: const BorderSide(
+                                borderSide: BorderSide(
                                   color: AppTheme.accent,
                                   width: 1.5,
                                 ),
@@ -389,7 +389,7 @@ class _QuantitySelectionScreenState
                         ),
                         child: Text(
                           hint,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppTheme.textSecondary,
                             fontSize: 12,
                             height: 1.5,
@@ -401,7 +401,7 @@ class _QuantitySelectionScreenState
                     const SizedBox(height: 16),
 
                     // ── Unit selector ────────────────────────────────
-                    const Text(
+                    Text(
                       'Unit',
                       style: TextStyle(
                         color: AppTheme.textSecondary,
@@ -472,7 +472,7 @@ class _QuantitySelectionScreenState
                     const SizedBox(height: 28),
 
                     // ── Live macro preview ───────────────────────────
-                    const Text(
+                    Text(
                       'Nutritional Values',
                       style: TextStyle(
                         color: AppTheme.textSecondary,
@@ -498,7 +498,7 @@ class _QuantitySelectionScreenState
                               fontWeight: FontWeight.w900,
                             ),
                           ),
-                          const Text(
+                          Text(
                             'kcal',
                             style: TextStyle(
                               color: AppTheme.textSecondary,
@@ -582,7 +582,7 @@ class _QuantitySelectionScreenState
                     elevation: 0,
                   ),
                   child: _logging
-                      ? const CircularProgressIndicator(
+                      ? CircularProgressIndicator(
                           color: AppTheme.background,
                           strokeWidth: 2,
                         )
@@ -653,7 +653,7 @@ class _MacroCell extends StatelessWidget {
         const SizedBox(height: 2),
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
         ),
       ],
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'dart:math';
-import '../models/fitpoints_models.dart';
-import '../../nutrition/models/food_item.dart';
+import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
 
 /// Calculates adherence scoring, logging quality, consistency metrics,
 /// and multiplier tier eligibility. Central source of truth for "how well
@@ -26,8 +26,6 @@ class ConsistencyEngine {
     if (adherence == AdherenceLevel.good) return LoggingQuality.normal;
     return LoggingQuality.poor;
   }
-
-
 
   /// Returns 0–1. Penalises if >60% of logs are near-identical.
   double _uniquenessScore(List<MealLogEntry> logs) {
@@ -69,7 +67,9 @@ class ConsistencyEngine {
       return true;
     }
 
-    _log('Daily logging: incomplete (cals=$totalCals, meaningful=${meaningfulLogs.length})');
+    _log(
+      'Daily logging: incomplete (cals=$totalCals, meaningful=${meaningfulLogs.length})',
+    );
     return false;
   }
 
@@ -120,8 +120,11 @@ class ConsistencyEngine {
         totalAdherence += (calAdherence + proteinAdherence) / 2;
 
         // Goal completion: 1.0 if both goals within 10%
-        if (calAdherence >= 0.9 && proteinAdherence >= 0.9) totalGoalCompletion += 1.0;
-        else totalGoalCompletion += (calAdherence + proteinAdherence) / 2;
+        if (calAdherence >= 0.9 && proteinAdherence >= 0.9) {
+          totalGoalCompletion += 1.0;
+        } else {
+          totalGoalCompletion += (calAdherence + proteinAdherence) / 2;
+        }
 
         // Logging quality
         final quality = evaluateLoggingQuality(
@@ -132,8 +135,8 @@ class ConsistencyEngine {
         totalLoggingQuality += quality == LoggingQuality.high
             ? 1.0
             : quality == LoggingQuality.normal
-                ? 0.6
-                : 0.2;
+            ? 0.6
+            : 0.2;
 
         if (!qualityStreakBroken && quality != LoggingQuality.poor) {
           consecutiveQuality++;
@@ -147,7 +150,10 @@ class ConsistencyEngine {
     final metrics = ConsistencyMetrics(
       userId: userId,
       adherenceScore: (totalAdherence / daysWithData * 100).clamp(0, 100),
-      loggingQualityScore: (totalLoggingQuality / daysWithData * 100).clamp(0, 100),
+      loggingQualityScore: (totalLoggingQuality / daysWithData * 100).clamp(
+        0,
+        100,
+      ),
       goalCompletionRate: (totalGoalCompletion / daysWithData).clamp(0, 1),
       activeDayFrequency: activeDays / windowDays,
       consecutiveQualityDays: consecutiveQuality,
@@ -177,14 +183,14 @@ class ConsistencyEngine {
     final tier = tierScore >= 92
         ? StreakTier.fourPlateBarbell
         : tierScore >= 80
-            ? StreakTier.twoPlateBarbell
-            : tierScore >= 65
-                ? StreakTier.onePlateBarbell
-                : tierScore >= 45
-                    ? StreakTier.barbell
-                    : tierScore >= 25
-                        ? StreakTier.heavyDumbbell
-                        : StreakTier.lightDumbbell;
+        ? StreakTier.twoPlateBarbell
+        : tierScore >= 65
+        ? StreakTier.onePlateBarbell
+        : tierScore >= 45
+        ? StreakTier.barbell
+        : tierScore >= 25
+        ? StreakTier.heavyDumbbell
+        : StreakTier.lightDumbbell;
 
     _log(
       'Tier score: ${tierScore.toStringAsFixed(1)} → ${tier.efficiencyLabel} (${tier.multiplier}x)',
@@ -205,7 +211,7 @@ class ConsistencyEngine {
   }) async {
     final now = DateTime.now();
     final hitDays = <String>{};
-    
+
     // Window: 90 days for grid, 30 days for metrics
     const gridWindow = 90;
     const metricsWindow = 30;
@@ -220,7 +226,9 @@ class ConsistencyEngine {
     final monday = now.subtract(Duration(days: now.weekday - 1));
     final firstOfMonth = DateTime(now.year, now.month, 1);
 
-    debugPrint('[Consistency] Starting streak calculation for user=$userId, isGuest=$isGuest');
+    debugPrint(
+      '[Consistency] Starting streak calculation for user=$userId, isGuest=$isGuest',
+    );
 
     bool streakBroken = false;
     for (int i = 0; i < 200; i++) {
@@ -228,37 +236,46 @@ class ConsistencyEngine {
       final key = _dateKey(date);
       final logs = historicalLogs[key] ?? [];
       final workouts = historicalWorkouts[key] ?? [];
-      
-      final active = ActiveDayEvaluator.isActiveDay(logs.cast<FoodItem>(), workouts: workouts);
-      
+
+      final active = ActiveDayEvaluator.isActiveDay(
+        logs.cast<FoodItem>(),
+        workouts: workouts,
+      );
+
       if (active) {
         hitDays.add(key);
         tempStreak++;
-        
+
         // Update stats
         if (!date.isBefore(monday)) {
           weeklyHits++;
-          debugPrint('[Consistency] Weekly hit: day=$key, weeklyTotal=$weeklyHits');
+          debugPrint(
+            '[Consistency] Weekly hit: day=$key, weeklyTotal=$weeklyHits',
+          );
         }
         if (!date.isBefore(firstOfMonth)) {
           monthlyHits++;
         }
-        
+
         if (tempStreak > longestStreak) {
           longestStreak = tempStreak;
         }
       } else {
         // If we hit a gap...
         if (i == 0) {
-          // Today is not active yet. We don't break the streak run, 
+          // Today is not active yet. We don't break the streak run,
           // but we also haven't incremented tempStreak.
-          debugPrint('[Consistency] Today (i=0) is not active yet. Run continues from yesterday.');
+          debugPrint(
+            '[Consistency] Today (i=0) is not active yet. Run continues from yesterday.',
+          );
         } else {
           // A gap occurred on a day that IS NOT today. The current run ends.
           if (!streakBroken) {
             currentStreak = tempStreak;
             streakBroken = true;
-            debugPrint('[Consistency] Gap found at i=$i ($key). Streak run ends at $currentStreak');
+            debugPrint(
+              '[Consistency] Gap found at i=$i ($key). Streak run ends at $currentStreak',
+            );
           }
           tempStreak = 0;
         }
@@ -267,25 +284,32 @@ class ConsistencyEngine {
     // If we never hit a gap in 200 days (unlikely but possible)
     if (!streakBroken) currentStreak = tempStreak;
 
-    debugPrint('[Consistency] Final streak stats: current=$currentStreak, longest=$longestStreak, weeklyHits=$weeklyHits, monthlyHits=$monthlyHits');
+    debugPrint(
+      '[Consistency] Final streak stats: current=$currentStreak, longest=$longestStreak, weeklyHits=$weeklyHits, monthlyHits=$monthlyHits',
+    );
 
     // 2. Compute Metrics (30d window)
     final metrics = computeMetrics(
       userId: userId,
-      dailyLogs: historicalLogs.map((k, v) => MapEntry(k, v.map((f) {
-        final item = f as FoodItem;
-        return MealLogEntry(
-          id: item.id,
-          userId: userId,
-          mealName: item.name,
-          ingredients: item.ingredients ?? [item.name],
-          calories: item.calories.toDouble(),
-          proteinGrams: item.protein.toDouble(),
-          carbGrams: item.carbs.toDouble(),
-          fatGrams: item.fats.toDouble(),
-          loggedAt: DateTime.fromMillisecondsSinceEpoch(item.timestamp),
-        );
-      }).toList())),
+      dailyLogs: historicalLogs.map(
+        (k, v) => MapEntry(
+          k,
+          v.map((f) {
+            final item = f;
+            return MealLogEntry(
+              id: item.id,
+              userId: userId,
+              mealName: item.name,
+              ingredients: item.ingredients ?? [item.name],
+              calories: item.calories.toDouble(),
+              proteinGrams: item.protein.toDouble(),
+              carbGrams: item.carbs.toDouble(),
+              fatGrams: item.fats.toDouble(),
+              loggedAt: DateTime.fromMillisecondsSinceEpoch(item.timestamp),
+            );
+          }).toList(),
+        ),
+      ),
       dailyGoals: dailyGoals,
       windowDays: metricsWindow,
     );
@@ -298,7 +322,10 @@ class ConsistencyEngine {
       longestStreak: longestStreak,
       weeklyActiveDays: weeklyHits,
       monthlyActiveDays: monthlyHits,
-      momentum: (metrics.adherenceScore * metrics.activeDayFrequency).clamp(0, 100), // Reflects both quality and frequency
+      momentum: (metrics.adherenceScore * metrics.activeDayFrequency).clamp(
+        0,
+        100,
+      ), // Reflects both quality and frequency
       fitPoints: currentFitPoints,
       lifetimePoints: lifetimePoints,
       consistencyTier: tier,
@@ -306,7 +333,9 @@ class ConsistencyEngine {
       lastCalculated: now,
     );
 
-    debugPrint('[Consistency] ✓ Snapshot complete: streak=${snapshot.currentStreak}, tier=${snapshot.consistencyTier.displayName}, fp=${snapshot.fitPoints}');
+    debugPrint(
+      '[Consistency] ✓ Snapshot complete: streak=${snapshot.currentStreak}, tier=${snapshot.consistencyTier.displayName}, fp=${snapshot.fitPoints}',
+    );
 
     return snapshot;
   }
@@ -326,7 +355,11 @@ class ConsistencyEngine {
     // Active day frequency contributes up to 10 points
     final activityScore = metrics.activeDayFrequency * 10;
 
-    return streakScore + adherenceScore + qualityScore + goalScore + activityScore;
+    return streakScore +
+        adherenceScore +
+        qualityScore +
+        goalScore +
+        activityScore;
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
@@ -337,7 +370,11 @@ class ConsistencyEngine {
 
     // Calorie proximity
     final calDiff = (a.calories - b.calories).abs();
-    final calSim = calDiff <= 50 ? 1.0 : calDiff <= 150 ? 0.5 : 0.0;
+    final calSim = calDiff <= 50
+        ? 1.0
+        : calDiff <= 150
+        ? 0.5
+        : 0.0;
     score += calSim * 0.4;
 
     // Ingredient overlap
@@ -350,7 +387,9 @@ class ConsistencyEngine {
     }
 
     // Name similarity (simple)
-    final nameSim = a.mealName.toLowerCase() == b.mealName.toLowerCase() ? 1.0 : 0.0;
+    final nameSim = a.mealName.toLowerCase() == b.mealName.toLowerCase()
+        ? 1.0
+        : 0.0;
     score += nameSim * 0.2;
 
     return score;
@@ -365,7 +404,8 @@ class ConsistencyEngine {
     return max(0, 1 - (ratio - 1.1) / 0.4);
   }
 
-  String _dateKey(DateTime d) => '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+  String _dateKey(DateTime d) =>
+      '${d.year}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   void _log(String message) {
     // ignore: avoid_print

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fitme/core/theme/models/theme_config.dart';
 import 'package:fitme/core/theme/themes/fitme_default_theme.dart';
+import 'package:fitme/core/theme/themes/fitme_ocean_theme.dart';
 
 /// Manages theme state, switching, and persistence
 class ThemeManager {
@@ -10,11 +11,12 @@ class ThemeManager {
   // Map of available themes
   final Map<String, ThemeConfig> _themes = {
     'fitme-default-amoled': FitMeDefaultTheme.config,
+    'fitme-ocean': FitMeOceanTheme.config,
   };
 
   // Current active theme
   late ThemeConfig _activeTheme;
-  
+
   // Listeners for theme changes
   final List<VoidCallback> _listeners = [];
 
@@ -24,7 +26,7 @@ class ThemeManager {
 
   /// Get current active theme
   ThemeConfig get activeTheme => _activeTheme;
-  
+
   /// Get current theme as Flutter ThemeData
   ThemeData get themeData => FitMeDefaultTheme.toThemeData(_activeTheme);
 
@@ -87,8 +89,7 @@ class ThemeManager {
       // Check required fields
       if (theme.id.isEmpty) return 'Theme ID cannot be empty';
       if (theme.name.isEmpty) return 'Theme name cannot be empty';
-      if (theme.colors == null) return 'Theme must have colors defined';
-      
+
       // Add more validations as needed
       return null; // Valid
     } catch (e) {
@@ -119,12 +120,14 @@ class ThemeManager {
   /// Get all themes with metadata (for theme picker UI)
   List<ThemeMetadata> getAllThemeMetadata() {
     return _themes.values
-        .map((theme) => ThemeMetadata(
-          id: theme.id,
-          name: theme.name,
-          description: theme.description,
-          accentColor: theme.colors.accent,
-        ))
+        .map(
+          (theme) => ThemeMetadata(
+            id: theme.id,
+            name: theme.name,
+            description: theme.description,
+            accentColor: theme.colors.accent,
+          ),
+        )
         .toList();
   }
 }

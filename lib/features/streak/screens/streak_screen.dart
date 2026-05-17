@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/nutrition/models/food_item.dart';
 import 'package:fitme/features/fitpoints/providers/fitpoints_provider.dart';
 import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
@@ -34,9 +34,10 @@ class StreakScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final snapshotAsync = ref.watch(consistencySnapshotProvider);
     final debugLevel = ref.watch(debugStreakLevelProvider);
+    final theme = ThemeManager.instance.activeTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           children: [
@@ -45,16 +46,16 @@ class StreakScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
+                  Text(
                     'Consistency Streak',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -69,8 +70,8 @@ class StreakScreen extends ConsumerWidget {
                             ? Icons.bug_report_outlined
                             : Icons.bug_report,
                         color: debugLevel == null
-                            ? AppTheme.textSecondary
-                            : AppTheme.accent,
+                            ? theme.colors.textSecondary
+                            : theme.colors.accent,
                       ),
                       onPressed: () =>
                           ref.read(debugStreakLevelProvider.notifier).cycle(),
@@ -83,12 +84,12 @@ class StreakScreen extends ConsumerWidget {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.symmetric(vertical: 4),
-                color: AppTheme.accent.withOpacity(0.2),
+                color: theme.colors.accent.withOpacity(0.2),
                 child: Text(
                   'DEBUG MODE: Forcing Level $debugLevel',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    color: AppTheme.accent,
+                  style: TextStyle(
+                    color: theme.colors.accent,
                     fontSize: 12,
                     fontWeight: FontWeight.bold,
                   ),
@@ -96,8 +97,8 @@ class StreakScreen extends ConsumerWidget {
               ),
             Expanded(
               child: snapshotAsync.when(
-                loading: () => const Center(
-                  child: CircularProgressIndicator(color: AppTheme.accent),
+                loading: () => Center(
+                  child: CircularProgressIndicator(color: theme.colors.accent),
                 ),
                 error: (e, _) => Center(
                   child: Text('$e', style: const TextStyle(color: Colors.red)),
@@ -119,10 +120,10 @@ class StreakScreen extends ConsumerWidget {
                           child: FitMe3DModel(level: displayLevel),
                         ),
                         const SizedBox(height: 6),
-                        const Text(
+                        Text(
                           'drag to view from any angle',
                           style: TextStyle(
-                            color: AppTheme.textSecondary,
+                            color: theme.colors.textSecondary,
                             fontSize: 11,
                             letterSpacing: 0.5,
                           ),
@@ -130,10 +131,11 @@ class StreakScreen extends ConsumerWidget {
                         const SizedBox(height: 14),
                         Text(
                           debugLevel != null
-                              ? StreakLevel.values[debugLevel].streakLabel.toUpperCase()
+                              ? StreakLevel.values[debugLevel].streakLabel
+                                    .toUpperCase()
                               : snap.streakLevel.streakLabel.toUpperCase(),
-                          style: const TextStyle(
-                            color: AppTheme.accent,
+                          style: TextStyle(
+                            color: theme.colors.accent,
                             fontSize: 14,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 1.5,
@@ -149,17 +151,17 @@ class StreakScreen extends ConsumerWidget {
                             height: 1,
                           ),
                         ),
-                        const Text(
+                        Text(
                           'day streak',
                           style: TextStyle(
-                            color: AppTheme.textSecondary,
+                            color: theme.colors.textSecondary,
                             fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 8),
 
                         // Days to next level
-                        _buildNextLevelInfo(snap),
+                        _buildNextLevelInfo(snap, theme),
 
                         const SizedBox(height: 36),
                         Row(
@@ -167,19 +169,22 @@ class StreakScreen extends ConsumerWidget {
                             _StatCard(
                               label: 'Longest',
                               value: '${snap.longestStreak}d',
-                              color: AppTheme.accent,
+                              color: theme.colors.accent,
+                              theme: theme,
                             ),
                             const SizedBox(width: 12),
                             _StatCard(
                               label: 'This Week',
                               value: '${snap.weeklyActiveDays}/7',
                               color: Colors.blueAccent,
+                              theme: theme,
                             ),
                             const SizedBox(width: 12),
                             _StatCard(
                               label: 'This Month',
                               value: '${snap.monthlyActiveDays}d',
                               color: Colors.purpleAccent,
+                              theme: theme,
                             ),
                           ],
                         ),
@@ -196,7 +201,7 @@ class StreakScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _LevelProgressBar(snap: snap),
+                        _LevelProgressBar(snap: snap, theme: theme),
                         const SizedBox(height: 28),
                         const Align(
                           alignment: Alignment.centerLeft,
@@ -210,7 +215,7 @@ class StreakScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _WeeklyGrid(hitDays: snap.hitDays),
+                        _WeeklyGrid(hitDays: snap.hitDays, theme: theme),
                         const SizedBox(height: 28),
                         const Align(
                           alignment: Alignment.centerLeft,
@@ -224,7 +229,10 @@ class StreakScreen extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 12),
-                        _ProgressionLevels(currentLevel: displayLevel),
+                        _ProgressionLevels(
+                          currentLevel: displayLevel,
+                          theme: theme,
+                        ),
                         const SizedBox(height: 40),
                       ],
                     ),
@@ -247,14 +255,14 @@ class StreakScreen extends ConsumerWidget {
     return 0;
   }
 
-  Widget _buildNextLevelInfo(ConsistencySnapshot snap) {
+  Widget _buildNextLevelInfo(ConsistencySnapshot snap, dynamic theme) {
     if (snap.streakLevel == StreakLevel.maxLevel) {
       return const SizedBox();
     }
 
     return Text(
       '${snap.daysToNextLevel} more days to ${snap.nextLevelLabel}',
-      style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+      style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
     );
   }
 }
@@ -360,8 +368,8 @@ class True3DGeometry {
       final plateColor = level >= 5
           ? plateGold
           : level == 4
-              ? plateSilver
-              : plateBronze;
+          ? plateSilver
+          : plateBronze;
 
       if (level >= 3) {
         _addCylinder(
@@ -754,7 +762,8 @@ class True3DPainter extends CustomPainter {
 
 class _LevelProgressBar extends StatelessWidget {
   final ConsistencySnapshot snap;
-  const _LevelProgressBar({required this.snap});
+  final dynamic theme;
+  const _LevelProgressBar({required this.snap, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -768,8 +777,8 @@ class _LevelProgressBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: LinearProgressIndicator(
             value: progress,
-            backgroundColor: AppTheme.surface,
-            color: AppTheme.accent,
+            backgroundColor: theme.colors.surfacePrimary,
+            color: theme.colors.accent,
             minHeight: 10,
           ),
         ),
@@ -779,25 +788,19 @@ class _LevelProgressBar extends StatelessWidget {
           children: [
             Text(
               level.streakLabel,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: theme.colors.textSecondary, fontSize: 12),
             ),
             Text(
               '${(progress * 100).round()}%',
-              style: const TextStyle(
-                color: AppTheme.accent,
+              style: TextStyle(
+                color: theme.colors.accent,
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
               ),
             ),
             Text(
               snap.nextLevelLabel,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: theme.colors.textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -808,7 +811,8 @@ class _LevelProgressBar extends StatelessWidget {
 
 class _WeeklyGrid extends StatelessWidget {
   final Set<String> hitDays;
-  const _WeeklyGrid({required this.hitDays});
+  final dynamic theme;
+  const _WeeklyGrid({required this.hitDays, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -839,8 +843,8 @@ class _WeeklyGrid extends StatelessWidget {
                   child: Text(
                     d,
                     textAlign: TextAlign.center,
-                    style: const TextStyle(
-                      color: AppTheme.textSecondary,
+                    style: TextStyle(
+                      color: theme.colors.textSecondary,
                       fontSize: 11,
                     ),
                   ),
@@ -863,17 +867,17 @@ class _WeeklyGrid extends StatelessWidget {
                   height: 36,
                   decoration: BoxDecoration(
                     color: cell.hit
-                        ? AppTheme.accent.withOpacity(0.85)
-                        : AppTheme.surface,
+                        ? theme.colors.accent.withOpacity(0.85)
+                        : theme.colors.surfacePrimary,
                     borderRadius: BorderRadius.circular(8),
                     border: cell.isToday
-                        ? Border.all(color: AppTheme.accent, width: 2)
+                        ? Border.all(color: theme.colors.accent, width: 2)
                         : null,
                   ),
                   child: cell.hit
-                      ? const Icon(
+                      ? Icon(
                           Icons.check_rounded,
-                          color: AppTheme.background,
+                          color: theme.colors.backgroundPrimary,
                           size: 16,
                         )
                       : null,
@@ -889,7 +893,8 @@ class _WeeklyGrid extends StatelessWidget {
 
 class _ProgressionLevels extends StatelessWidget {
   final int currentLevel;
-  const _ProgressionLevels({required this.currentLevel});
+  final dynamic theme;
+  const _ProgressionLevels({required this.currentLevel, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -920,11 +925,11 @@ class _ProgressionLevels extends StatelessWidget {
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
             color: isCurrent
-                ? AppTheme.accent.withOpacity(0.1)
-                : AppTheme.surface,
+                ? theme.colors.accent.withOpacity(0.1)
+                : theme.colors.surfacePrimary,
             borderRadius: BorderRadius.circular(14),
             border: Border.all(
-              color: isCurrent ? AppTheme.accent : Colors.transparent,
+              color: isCurrent ? theme.colors.accent : Colors.transparent,
               width: 1.5,
             ),
           ),
@@ -959,15 +964,15 @@ class _ProgressionLevels extends StatelessWidget {
                       label,
                       style: TextStyle(
                         color: isUnlocked
-                            ? Colors.white
-                            : AppTheme.textSecondary,
+                            ? theme.colors.textPrimary
+                            : theme.colors.textSecondary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     Text(
                       durationText,
-                      style: const TextStyle(
-                        color: AppTheme.textSecondary,
+                      style: TextStyle(
+                        color: theme.colors.textSecondary,
                         fontSize: 12,
                       ),
                     ),
@@ -981,28 +986,28 @@ class _ProgressionLevels extends StatelessWidget {
                     vertical: 4,
                   ),
                   decoration: BoxDecoration(
-                    color: AppTheme.accent,
+                    color: theme.colors.accent,
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: const Text(
+                  child: Text(
                     'Current',
                     style: TextStyle(
-                      color: AppTheme.background,
+                      color: theme.colors.backgroundPrimary,
                       fontSize: 11,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 )
               else if (isUnlocked)
-                const Icon(
+                Icon(
                   Icons.check_circle_rounded,
-                  color: AppTheme.accent,
+                  color: theme.colors.accent,
                   size: 20,
                 )
               else
-                const Icon(
+                Icon(
                   Icons.lock_outline_rounded,
-                  color: AppTheme.textSecondary,
+                  color: theme.colors.textSecondary,
                   size: 20,
                 ),
             ],
@@ -1016,10 +1021,12 @@ class _ProgressionLevels extends StatelessWidget {
 class _StatCard extends StatelessWidget {
   final String label, value;
   final Color color;
+  final dynamic theme;
   const _StatCard({
     required this.label,
     required this.value,
     required this.color,
+    required this.theme,
   });
 
   @override
@@ -1028,7 +1035,7 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
@@ -1045,10 +1052,7 @@ class _StatCard extends StatelessWidget {
             Text(
               label,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: theme.colors.textSecondary, fontSize: 11),
             ),
           ],
         ),
@@ -1056,4 +1060,3 @@ class _StatCard extends StatelessWidget {
     );
   }
 }
-

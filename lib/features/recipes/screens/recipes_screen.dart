@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/recipes/providers/recipes_provider.dart';
 import 'package:fitme/features/recipes/models/recipe_model.dart';
 import 'package:fitme/features/recipes/screens/recipe_detail_screen.dart';
@@ -25,8 +25,10 @@ class RecipesScreen extends ConsumerWidget {
     final recipes = ref.watch(filteredRecipesProvider);
     final selectedTag = ref.watch(recipeTagFilterProvider);
 
+    final theme = ThemeManager.instance.activeTheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -37,16 +39,16 @@ class RecipesScreen extends ConsumerWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
+                  Text(
                     'Recipes',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -88,10 +90,10 @@ class RecipesScreen extends ConsumerWidget {
             // ── Recipe list ──────────────────────────────
             Expanded(
               child: recipes.isEmpty
-                  ? const Center(
+                  ? Center(
                       child: Text(
                         'No recipes found',
-                        style: TextStyle(color: AppTheme.textSecondary),
+                        style: TextStyle(color: theme.colors.textSecondary),
                       ),
                     )
                   : ListView.separated(
@@ -142,6 +144,7 @@ class _TagChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     return GestureDetector(
       onTap: onTap,
       child: AnimatedContainer(
@@ -149,13 +152,15 @@ class _TagChip extends StatelessWidget {
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.accent : AppTheme.surface,
+          color: selected ? theme.colors.accent : theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Text(
           label,
           style: TextStyle(
-            color: selected ? AppTheme.background : AppTheme.textSecondary,
+            color: selected
+                ? theme.colors.backgroundPrimary
+                : theme.colors.textSecondary,
             fontSize: 12,
             fontWeight: FontWeight.w600,
           ),
@@ -179,12 +184,13 @@ class _RecipeCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = ThemeManager.instance.activeTheme;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(
@@ -194,7 +200,7 @@ class _RecipeCard extends StatelessWidget {
               width: 52,
               height: 52,
               decoration: BoxDecoration(
-                color: AppTheme.background,
+                color: theme.colors.backgroundPrimary,
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(
@@ -210,8 +216,8 @@ class _RecipeCard extends StatelessWidget {
                 children: [
                   Text(
                     recipe.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 15,
                     ),
@@ -219,44 +225,44 @@ class _RecipeCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(
+                      Icon(
                         Icons.local_fire_department_rounded,
-                        color: AppTheme.accent,
+                        color: theme.colors.accent,
                         size: 13,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         '${recipe.calories.toInt()} kcal',
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                        style: TextStyle(
+                          color: theme.colors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Icon(
+                      Icon(
                         Icons.fitness_center_rounded,
-                        color: AppTheme.proteinColor,
+                        color: theme.colors.proteinColor,
                         size: 13,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         '${recipe.protein.toInt()}g protein',
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                        style: TextStyle(
+                          color: theme.colors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
                       const SizedBox(width: 10),
-                      const Icon(
+                      Icon(
                         Icons.timer_rounded,
-                        color: AppTheme.textSecondary,
+                        color: theme.colors.textSecondary,
                         size: 13,
                       ),
                       const SizedBox(width: 3),
                       Text(
                         '${recipe.prepMinutes}m',
-                        style: const TextStyle(
-                          color: AppTheme.textSecondary,
+                        style: TextStyle(
+                          color: theme.colors.textSecondary,
                           fontSize: 12,
                         ),
                       ),
@@ -274,13 +280,13 @@ class _RecipeCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppTheme.background,
+                              color: theme.colors.backgroundPrimary,
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               t,
-                              style: const TextStyle(
-                                color: AppTheme.textSecondary,
+                              style: TextStyle(
+                                color: theme.colors.textSecondary,
                                 fontSize: 10,
                               ),
                             ),
@@ -303,8 +309,8 @@ class _RecipeCard extends StatelessWidget {
                       : Icons.favorite_border_rounded,
                   key: ValueKey(recipe.isFavorite),
                   color: recipe.isFavorite
-                      ? Colors.redAccent
-                      : AppTheme.textSecondary,
+                      ? theme.colors.error
+                      : theme.colors.textSecondary,
                   size: 22,
                 ),
               ),

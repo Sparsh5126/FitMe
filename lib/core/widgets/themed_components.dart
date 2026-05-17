@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:fitme/core/theme/models/theme_config.dart';
 import 'package:fitme/core/theme/managers/theme_manager.dart';
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -17,7 +16,7 @@ class AppCard extends StatelessWidget {
   final bool outlined;
 
   const AppCard({
-    Key? key,
+    super.key,
     required this.child,
     this.padding,
     this.backgroundColor,
@@ -27,15 +26,17 @@ class AppCard extends StatelessWidget {
     this.elevation,
     this.onTap,
     this.outlined = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeManager.instance.activeTheme;
     final padding = this.padding ?? EdgeInsets.all(theme.spacing.md);
     final bgColor =
-        backgroundColor ?? (outlined ? Colors.transparent : theme.colors.surfacePrimary);
-    final borderColor = this.borderColor ??
+        backgroundColor ??
+        (outlined ? Colors.transparent : theme.colors.surfacePrimary);
+    final borderColor =
+        this.borderColor ??
         (outlined ? theme.colors.surfaceBorder : Colors.transparent);
     final borderRadius =
         this.borderRadius ?? BorderRadius.circular(theme.radius.lg);
@@ -43,8 +44,7 @@ class AppCard extends StatelessWidget {
     final decoration = BoxDecoration(
       color: bgColor,
       borderRadius: borderRadius,
-      border:
-          Border.all(color: borderColor, width: outlined ? 1 : 0),
+      border: Border.all(color: borderColor, width: outlined ? 1 : 0),
       boxShadow: shadows,
     );
 
@@ -77,7 +77,7 @@ class AppButton extends StatelessWidget {
   final double? height;
 
   const AppButton({
-    Key? key,
+    super.key,
     required this.label,
     this.onPressed,
     this.isLoading = false,
@@ -87,7 +87,7 @@ class AppButton extends StatelessWidget {
     this.icon,
     this.width,
     this.height,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -102,14 +102,16 @@ class AppButton extends StatelessWidget {
         onPressed: (isLoading || isDisabled) ? null : onPressed,
         icon: isLoading
             ? SizedBox(
-          width: 18,
-          height: 18,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            valueColor: AlwaysStoppedAnimation(fgColor),
-          ),
-        )
-            : icon != null ? Icon(icon) : const SizedBox.shrink(),
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  valueColor: AlwaysStoppedAnimation(fgColor),
+                ),
+              )
+            : icon != null
+            ? Icon(icon)
+            : const SizedBox.shrink(),
         style: ElevatedButton.styleFrom(
           backgroundColor: bgColor,
           foregroundColor: fgColor,
@@ -136,7 +138,7 @@ class AppOutlinedButton extends StatelessWidget {
   final double? height;
 
   const AppOutlinedButton({
-    Key? key,
+    super.key,
     required this.label,
     this.onPressed,
     this.borderColor,
@@ -144,7 +146,7 @@ class AppOutlinedButton extends StatelessWidget {
     this.icon,
     this.width,
     this.height,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -187,7 +189,7 @@ class AppTextField extends StatelessWidget {
   final String? Function(String?)? validator;
 
   const AppTextField({
-    Key? key,
+    super.key,
     required this.label,
     this.hint,
     this.controller,
@@ -198,7 +200,7 @@ class AppTextField extends StatelessWidget {
     this.prefixIcon,
     this.onChanged,
     this.validator,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -222,9 +224,7 @@ class AppTextField extends StatelessWidget {
           color: theme.colors.textSecondary,
           fontSize: theme.typography.bodyMediumSize,
         ),
-        hintStyle: TextStyle(
-          color: theme.colors.textSecondary,
-        ),
+        hintStyle: TextStyle(color: theme.colors.textSecondary),
         filled: true,
         fillColor: theme.colors.surfacePrimary,
         prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
@@ -263,7 +263,7 @@ class AppDialog extends StatelessWidget {
   final VoidCallback? onDismiss;
 
   const AppDialog({
-    Key? key,
+    super.key,
     required this.title,
     required this.message,
     this.primaryActionLabel,
@@ -271,7 +271,7 @@ class AppDialog extends StatelessWidget {
     this.onPrimaryAction,
     this.onSecondaryAction,
     this.onDismiss,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -281,10 +281,7 @@ class AppDialog extends StatelessWidget {
       backgroundColor: theme.colors.surfaceElevated,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(theme.radius.lg),
-        side: BorderSide(
-          color: theme.colors.surfaceBorder,
-          width: 1,
-        ),
+        side: BorderSide(color: theme.colors.surfaceBorder, width: 1),
       ),
       title: Text(
         title,
@@ -334,11 +331,11 @@ class AppBottomSheet extends StatelessWidget {
   final bool showHandle;
 
   const AppBottomSheet({
-    Key? key,
+    super.key,
     required this.title,
     required this.child,
     this.showHandle = true,
-  }) : super(key: key);
+  });
 
   static Future<T?> show<T>(
     BuildContext context, {
@@ -350,11 +347,8 @@ class AppBottomSheet extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (context) => AppBottomSheet(
-        title: title,
-        child: child,
-        showHandle: showHandle,
-      ),
+      builder: (context) =>
+          AppBottomSheet(title: title, showHandle: showHandle, child: child),
     );
   }
 
@@ -369,10 +363,7 @@ class AppBottomSheet extends StatelessWidget {
           top: Radius.circular(theme.radius.xl),
         ),
         border: Border(
-          top: BorderSide(
-            color: theme.colors.surfaceBorder,
-            width: 1,
-          ),
+          top: BorderSide(color: theme.colors.surfaceBorder, width: 1),
         ),
       ),
       child: Column(
@@ -426,12 +417,12 @@ class AppBadge extends StatelessWidget {
   final VoidCallback? onTap;
 
   const AppBadge({
-    Key? key,
+    super.key,
     required this.label,
     this.backgroundColor,
     this.textColor,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -471,28 +462,19 @@ class AppDivider extends StatelessWidget {
   final double? thickness;
   final EdgeInsets? padding;
 
-  const AppDivider({
-    Key? key,
-    this.color,
-    this.thickness,
-    this.padding,
-  }) : super(key: key);
+  const AppDivider({super.key, this.color, this.thickness, this.padding});
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeManager.instance.activeTheme;
     final color = this.color ?? theme.colors.surfaceBorder;
     final thickness = this.thickness ?? 1.0;
-    final padding = this.padding ?? EdgeInsets.symmetric(
-      vertical: theme.spacing.md,
-    );
+    final padding =
+        this.padding ?? EdgeInsets.symmetric(vertical: theme.spacing.md);
 
     return Padding(
       padding: padding,
-      child: Divider(
-        color: color,
-        thickness: thickness,
-      ),
+      child: Divider(color: color, thickness: thickness),
     );
   }
 }
@@ -512,7 +494,7 @@ class AppScaffold extends StatelessWidget {
   final EdgeInsets? padding;
 
   const AppScaffold({
-    Key? key,
+    super.key,
     required this.body,
     this.appBarTitle,
     this.appBarLeading,
@@ -522,7 +504,7 @@ class AppScaffold extends StatelessWidget {
     this.bottomNavigationBar,
     this.extendBodyBehindAppBar = false,
     this.padding,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -530,22 +512,18 @@ class AppScaffold extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: theme.colors.backgroundPrimary,
-      appBar: appBar ??
+      appBar:
+          appBar ??
           (appBarTitle != null
               ? AppBar(
-            backgroundColor: theme.colors.backgroundPrimary,
-            elevation: 0,
-            title: Text(appBarTitle!),
-            leading: appBarLeading,
-            actions: appBarActions,
-          )
+                  backgroundColor: theme.colors.backgroundPrimary,
+                  elevation: 0,
+                  title: Text(appBarTitle!),
+                  leading: appBarLeading,
+                  actions: appBarActions,
+                )
               : null),
-      body: padding != null
-          ? Padding(
-            padding: padding!,
-            child: body,
-          )
-          : body,
+      body: padding != null ? Padding(padding: padding!, child: body) : body,
       floatingActionButton: floatingActionButton,
       bottomNavigationBar: bottomNavigationBar,
       extendBodyBehindAppBar: extendBodyBehindAppBar,

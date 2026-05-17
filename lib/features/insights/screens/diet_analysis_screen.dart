@@ -118,157 +118,151 @@ class DietAnalysisScreen extends ConsumerWidget {
         ),
       ),
       body: ListView(
-          padding: const EdgeInsets.all(20),
-          physics: const BouncingScrollPhysics(),
-          children: [
-                const Row(
-                  children: [
-                    Icon(
-                      Icons.auto_awesome_rounded,
-                      color: AppTheme.accent,
-                      size: 24,
-                    ),
-                    SizedBox(width: 10),
-                    Text(
-                      '7-Day AI Review',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ],
+        padding: const EdgeInsets.all(20),
+        physics: const BouncingScrollPhysics(),
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.auto_awesome_rounded,
+                color: AppTheme.accent,
+                size: 24,
+              ),
+              SizedBox(width: 10),
+              Text(
+                '7-Day AI Review',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
                 ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Gemini will analyze your exact logs over the last 7 days against your personal diet goals to find patterns, missing nutrients, and performance gaps.',
-                  style: TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 14,
-                    height: 1.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                // AI usage counter
-                _AiUsageChip(),
-                const SizedBox(height: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Gemini will analyze your exact logs over the last 7 days against your personal diet goals to find patterns, missing nutrients, and performance gaps.',
+            style: TextStyle(
+              color: AppTheme.textSecondary,
+              fontSize: 14,
+              height: 1.5,
+            ),
+          ),
+          const SizedBox(height: 8),
+          // AI usage counter
+          _AiUsageChip(),
+          const SizedBox(height: 16),
 
-                if (analysisState is AsyncLoading)
-                  Container(
-                    padding: const EdgeInsets.all(32),
-                    decoration: BoxDecoration(
-                      color: AppTheme.surface,
-                      borderRadius: BorderRadius.circular(20),
+          if (analysisState is AsyncLoading)
+            Container(
+              padding: const EdgeInsets.all(32),
+              decoration: BoxDecoration(
+                color: AppTheme.surface,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Column(
+                children: [
+                  CircularProgressIndicator(color: AppTheme.accent),
+                  SizedBox(height: 20),
+                  Text(
+                    'Analyzing 7-day logs...',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
                     ),
-                    child: const Column(
-                      children: [
-                        CircularProgressIndicator(color: AppTheme.accent),
-                        SizedBox(height: 20),
-                        Text(
-                          'Analyzing 7-day logs...',
-                          style: TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                else if (analysisState is AsyncError)
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.redAccent.withValues(alpha: 0.1),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Text(
-                      '${analysisState.error}',
-                      style: const TextStyle(
-                        color: Colors.redAccent,
-                        fontSize: 13,
-                      ),
-                    ),
-                  )
-                else if (analysisState.value == null)
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: () =>
-                          ref.read(aiAnalysisProvider.notifier).generate(),
-                      icon: const Icon(Icons.analytics_rounded, size: 20),
-                      label: const Text(
-                        'Generate 7-Day Analysis',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15,
-                        ),
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.accent,
-                        foregroundColor: AppTheme.background,
-                        padding: const EdgeInsets.symmetric(vertical: 18),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 4,
-                      ),
-                    ),
-                  )
-                else
-                  Column(
-                    children: [
-                      _InsightCard(
-                        icon: Icons.fitness_center_rounded,
-                        title: 'Protein Gaps',
-                        text: analysisState.value!.proteinGaps,
-                        color: Colors.blueAccent,
-                      ),
-                      _InsightCard(
-                        icon: Icons.local_fire_department_rounded,
-                        title: 'Calorie Trends',
-                        text: analysisState.value!.calorieTrends,
-                        color: Colors.orangeAccent,
-                      ),
-                      _InsightCard(
-                        icon: Icons.schedule_rounded,
-                        title: 'Meal Timing',
-                        text: analysisState.value!.mealTiming,
-                        color: Colors.tealAccent,
-                      ),
-                      _InsightCard(
-                        icon: Icons.fastfood_rounded,
-                        title: 'Junk Frequency',
-                        text: analysisState.value!.junkFrequency,
-                        color: Colors.redAccent,
-                      ),
-                      _InsightCard(
-                        icon: Icons.health_and_safety_rounded,
-                        title: 'Micronutrient Warnings',
-                        text: analysisState.value!.micronutrientWarnings,
-                        color: Colors.greenAccent,
-                      ),
-                      const SizedBox(height: 12),
-                      TextButton.icon(
-                        onPressed: () =>
-                            ref.read(aiAnalysisProvider.notifier).generate(),
-                        icon: const Icon(
-                          Icons.refresh_rounded,
-                          size: 18,
-                          color: AppTheme.textSecondary,
-                        ),
-                        label: const Text(
-                          'Recalculate Analysis',
-                          style: TextStyle(
-                            color: AppTheme.textSecondary,
-                            fontSize: 14,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
+                ],
+              ),
+            )
+          else if (analysisState is AsyncError)
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: BoxDecoration(
+                color: Colors.redAccent.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: Text(
+                '${analysisState.error}',
+                style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+              ),
+            )
+          else if (analysisState.value == null)
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton.icon(
+                onPressed: () =>
+                    ref.read(aiAnalysisProvider.notifier).generate(),
+                icon: const Icon(Icons.analytics_rounded, size: 20),
+                label: const Text(
+                  'Generate 7-Day Analysis',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppTheme.accent,
+                  foregroundColor: AppTheme.background,
+                  padding: const EdgeInsets.symmetric(vertical: 18),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  elevation: 4,
+                ),
+              ),
+            )
+          else
+            Column(
+              children: [
+                _InsightCard(
+                  icon: Icons.fitness_center_rounded,
+                  title: 'Protein Gaps',
+                  text: analysisState.value!.proteinGaps,
+                  color: Colors.blueAccent,
+                ),
+                _InsightCard(
+                  icon: Icons.local_fire_department_rounded,
+                  title: 'Calorie Trends',
+                  text: analysisState.value!.calorieTrends,
+                  color: Colors.orangeAccent,
+                ),
+                _InsightCard(
+                  icon: Icons.schedule_rounded,
+                  title: 'Meal Timing',
+                  text: analysisState.value!.mealTiming,
+                  color: Colors.tealAccent,
+                ),
+                _InsightCard(
+                  icon: Icons.fastfood_rounded,
+                  title: 'Junk Frequency',
+                  text: analysisState.value!.junkFrequency,
+                  color: Colors.redAccent,
+                ),
+                _InsightCard(
+                  icon: Icons.health_and_safety_rounded,
+                  title: 'Micronutrient Warnings',
+                  text: analysisState.value!.micronutrientWarnings,
+                  color: Colors.greenAccent,
+                ),
+                const SizedBox(height: 12),
+                TextButton.icon(
+                  onPressed: () =>
+                      ref.read(aiAnalysisProvider.notifier).generate(),
+                  icon: Icon(
+                    Icons.refresh_rounded,
+                    size: 18,
+                    color: AppTheme.textSecondary,
+                  ),
+                  label: Text(
+                    'Recalculate Analysis',
+                    style: TextStyle(
+                      color: AppTheme.textSecondary,
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
               ],
             ),
+        ],
+      ),
     );
   }
 }
@@ -293,20 +287,13 @@ class _AiUsageChip extends ConsumerWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(
-              Icons.auto_awesome_rounded,
-              color: AppTheme.accent,
-              size: 14,
-            ),
+            Icon(Icons.auto_awesome_rounded, color: AppTheme.accent, size: 14),
             const SizedBox(width: 6),
             Text(
               isGuest
                   ? '${remaining ~/ 2}/${limit ~/ 2} AI assists remaining this month'
                   : '${remaining ~/ 2}/${limit ~/ 2} AI assists remaining today',
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
             ),
           ],
         ),
@@ -343,11 +330,7 @@ class _GuestLockView extends StatelessWidget {
               ),
               child: Column(
                 children: [
-                  const Icon(
-                    Icons.lock_rounded,
-                    color: AppTheme.accent,
-                    size: 48,
-                  ),
+                  Icon(Icons.lock_rounded, color: AppTheme.accent, size: 48),
                   const SizedBox(height: 16),
                   Text(
                     '$feature requires an account',
@@ -359,7 +342,7 @@ class _GuestLockView extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 10),
-                  const Text(
+                  Text(
                     'Sign in or create a free account to unlock AI-powered diet analysis.',
                     textAlign: TextAlign.center,
                     style: TextStyle(

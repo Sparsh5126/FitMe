@@ -5,15 +5,16 @@
 ///
 /// COMPLETED MIGRATIONS:
 /// ✅ lib/features/auth/screens/login_screen.dart
+/// ✅ lib/features/auth/screens/signup_screen.dart
+/// ✅ lib/features/nutrition/screens/home_screen.dart
+/// ✅ lib/features/recipes/screens/recipes_screen.dart
+/// ✅ lib/features/menu/screens/settings_screen.dart (Theme Selector UI)
+/// ✅ lib/features/menu/screens/theme_selector_screen.dart
 /// ✅ lib/core/theme/app_theme.dart (backwards compatible)
 ///
 /// PRIORITY MIGRATIONS (Do these next):
-/// 1. Signup Screen (70% complete - needs build method)
-/// 2. Settings Screen (themes selector UI)
-/// 3. Home Screen (most visible)
-/// 4. App Shell (bottom navigation)
-/// 5. Auth Migration Dialog
-/// 6. Backup Settings
+/// 1. App Shell (bottom navigation)
+/// 2. Auth Migration Dialog
 ///
 /// PATTERN FOR MIGRATION:
 ///
@@ -28,7 +29,7 @@
 /// @override
 /// Widget build(BuildContext context) {
 ///   final theme = ThemeManager.instance.activeTheme;
-///   
+///
 ///   // Now use theme throughout this method
 /// }
 /// ```
@@ -62,7 +63,7 @@
 ///   fontSize: theme.typography.titleLargeSize, fontWeight: FontWeight.bold
 ///
 /// QUICK REFERENCE:
-/// 
+///
 /// Colors:
 ///   backgroundPrimary (dark background)
 ///   surfacePrimary (card/container)

@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:fitme/features/nutrition/models/food_item.dart';
 import 'package:fitme/features/nutrition/models/custom_meal_ingredient.dart';
-import 'package:fitme/features/nutrition/services/food_search_service.dart' show FoodSource;
+import 'package:fitme/features/nutrition/services/food_search_service.dart'
+    show FoodSource;
 
 // ── Source of a resolved food item ─────────────────────────────────────────
 // Re-exported from FoodSource for convenience.

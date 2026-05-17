@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/core/models/user_profile.dart';
 import 'package:fitme/core/widgets/goal_pace_slider.dart';
 import 'package:fitme/features/dashboard/providers/user_provider.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/nutrition/services/local_nutrition_service.dart';
 import 'package:fitme/features/gamification/screens/wrapped_screen.dart';
-import 'package:fitme/features/nutrition/services/migration_service.dart';
 import 'package:fitme/features/fitpoints/services/fitpoints_service.dart';
 import 'package:fitme/features/fitpoints/models/fitpoints_models.dart';
 
@@ -19,13 +18,14 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(userProfileProvider);
+    final theme = ThemeManager.instance.activeTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: profileAsync.when(
-          loading: () => const Center(
-            child: CircularProgressIndicator(color: AppTheme.accent),
+          loading: () => Center(
+            child: CircularProgressIndicator(color: theme.colors.accent),
           ),
           error: (e, _) => Center(
             child: Text('$e', style: const TextStyle(color: Colors.red)),
@@ -39,73 +39,80 @@ class ProfileScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
+                    Text(
                       'Profile',
                       style: TextStyle(
-                        color: Colors.white,
+                        color: theme.colors.textPrimary,
                         fontWeight: FontWeight.w900,
                         fontSize: 26,
                       ),
                     ),
                     const SizedBox(height: 20),
-                    _AccountCard(profile: profile),
+                    _AccountCard(profile: profile, theme: theme),
                     const SizedBox(height: 20),
-                    _StatsRow(profile: profile),
+                    _StatsRow(profile: profile, theme: theme),
                     const SizedBox(height: 24),
-                    const _SectionHeader('Personal Details'),
+                    _SectionHeader('Personal Details', theme: theme),
                     const SizedBox(height: 12),
                     _DetailTile(
                       icon: Icons.cake_rounded,
                       label: 'Age',
                       value: '${profile.age} years',
+                      theme: theme,
                     ),
                     _DetailTile(
                       icon: Icons.height_rounded,
                       label: 'Height',
                       value: '${profile.height.toStringAsFixed(0)} cm',
+                      theme: theme,
                     ),
                     _DetailTile(
                       icon: Icons.monitor_weight_rounded,
                       label: 'Current Weight',
                       value: '${profile.weight} kg',
+                      theme: theme,
                     ),
                     _DetailTile(
                       icon: Icons.flag_rounded,
                       label: 'Goal Weight',
                       value: '${profile.goalWeight} kg',
+                      theme: theme,
                     ),
                     _DetailTile(
                       icon: Icons.directions_run_rounded,
                       label: 'Activity Level',
                       value: _activityLabel(profile.activityLevel),
+                      theme: theme,
                     ),
                     _DetailTile(
                       icon: Icons.restaurant_rounded,
                       label: 'Diet Type',
                       value: _capitalize(profile.dietType),
+                      theme: theme,
                     ),
                     _DetailTile(
                       icon: Icons.fitness_center_rounded,
                       label: 'App Use',
                       value: _appUseLabel(profile.appUse),
+                      theme: theme,
                     ),
                     const SizedBox(height: 24),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const _SectionHeader('Daily Macro Goals'),
+                        _SectionHeader('Daily Macro Goals', theme: theme),
                         TextButton.icon(
                           onPressed: () =>
                               _showEditGoals(context, profile, ref),
-                          icon: const Icon(
+                          icon: Icon(
                             Icons.tune_rounded,
                             size: 15,
-                            color: AppTheme.accent,
+                            color: theme.colors.accent,
                           ),
-                          label: const Text(
+                          label: Text(
                             'Edit Goals',
                             style: TextStyle(
-                              color: AppTheme.accent,
+                              color: theme.colors.accent,
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),
@@ -115,25 +122,25 @@ class ProfileScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 12),
-                    _MacroGoalRow(profile: profile),
+                    _MacroGoalRow(profile: profile, theme: theme),
                     const SizedBox(height: 24),
                     if (profile.mantra.isNotEmpty) ...[
-                      const _SectionHeader('Your Mantra'),
+                      _SectionHeader('Your Mantra', theme: theme),
                       const SizedBox(height: 12),
                       Container(
                         width: double.infinity,
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent.withOpacity(0.08),
+                          color: theme.colors.accent.withOpacity(0.08),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: AppTheme.accent.withOpacity(0.3),
+                            color: theme.colors.accent.withOpacity(0.3),
                           ),
                         ),
                         child: Text(
                           '"${profile.mantra}"',
-                          style: const TextStyle(
-                            color: Colors.white,
+                          style: TextStyle(
+                            color: theme.colors.textPrimary,
                             fontSize: 15,
                             fontStyle: FontStyle.italic,
                           ),
@@ -152,8 +159,8 @@ class ProfileScreen extends ConsumerWidget {
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.surface,
-                          foregroundColor: Colors.white,
+                          backgroundColor: theme.colors.surfacePrimary,
+                          foregroundColor: theme.colors.textPrimary,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -173,15 +180,17 @@ class ProfileScreen extends ConsumerWidget {
                                 const Scaffold(body: WrappedScreen()),
                           ),
                         ),
-                        icon: const Icon(Icons.auto_awesome_mosaic_rounded,
-                            size: 18),
+                        icon: const Icon(
+                          Icons.auto_awesome_mosaic_rounded,
+                          size: 18,
+                        ),
                         label: const Text(
                           'Debug: Show My Wrapped',
                           style: TextStyle(fontWeight: FontWeight.bold),
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.accent,
-                          side: const BorderSide(color: AppTheme.accent),
+                          foregroundColor: theme.colors.accent,
+                          side: BorderSide(color: theme.colors.accent),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(14),
                           ),
@@ -189,7 +198,7 @@ class ProfileScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    const _MigrateFitPointsTile(),
+                    _MigrateFitPointsTile(theme: theme),
                     const SizedBox(height: 40),
                   ],
                 ),
@@ -206,11 +215,12 @@ class ProfileScreen extends ConsumerWidget {
     UserProfile profile,
     WidgetRef ref,
   ) {
+    final theme = ThemeManager.instance.activeTheme;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _EditGoalsSheet(profile: profile, ref: ref),
+      builder: (_) => _EditGoalsSheet(profile: profile, ref: ref, theme: theme),
     );
   }
 
@@ -219,11 +229,13 @@ class ProfileScreen extends ConsumerWidget {
     UserProfile profile,
     WidgetRef ref,
   ) {
+    final theme = ThemeManager.instance.activeTheme;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => _EditProfileSheet(profile: profile, ref: ref),
+      builder: (_) =>
+          _EditProfileSheet(profile: profile, ref: ref, theme: theme),
     );
   }
 
@@ -255,10 +267,12 @@ class ProfileScreen extends ConsumerWidget {
 // MANUAL MIGRATION TILE
 // ─────────────────────────────────────────────
 class _MigrateFitPointsTile extends ConsumerStatefulWidget {
-  const _MigrateFitPointsTile();
+  final dynamic theme;
+  const _MigrateFitPointsTile({required this.theme});
 
   @override
-  ConsumerState<_MigrateFitPointsTile> createState() => _MigrateFitPointsTileState();
+  ConsumerState<_MigrateFitPointsTile> createState() =>
+      _MigrateFitPointsTileState();
 }
 
 class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
@@ -275,7 +289,9 @@ class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
     final data = await LocalNutritionService.getFitPointsRecord();
     if (mounted) {
       setState(() {
-        _detectedGuestRecord = data != null ? FitPointsRecord.fromJson(data) : null;
+        _detectedGuestRecord = data != null
+            ? FitPointsRecord.fromJson(data)
+            : null;
       });
     }
   }
@@ -288,26 +304,30 @@ class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
     try {
       final fpService = FitPointsService();
       final accountFP = await fpService.getRecord(user.uid, false);
-      
+
       final merged = fpService.migrateGuestToAccount(
         guestRecord: _detectedGuestRecord!,
         accountRecord: accountFP,
       );
-      
+
       await fpService.saveRecord(merged);
       await LocalNutritionService.clearAll();
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Merged ${_detectedGuestRecord!.lifetimePoints.toInt()} FP into your account!')),
+          SnackBar(
+            content: Text(
+              'Merged ${_detectedGuestRecord!.lifetimePoints.toInt()} FP into your account!',
+            ),
+          ),
         );
       }
       await _check();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Recovery failed: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Recovery failed: $e')));
       }
     } finally {
       if (mounted) setState(() => _migrating = false);
@@ -316,25 +336,29 @@ class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
 
   @override
   Widget build(BuildContext context) {
-    if (_detectedGuestRecord == null || ref.watch(isGuestProvider)) return const SizedBox();
+    if (_detectedGuestRecord == null || ref.watch(isGuestProvider))
+      return const SizedBox();
 
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppTheme.accent.withOpacity(0.1),
+        color: widget.theme.colors.accent.withOpacity(0.1),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppTheme.accent.withOpacity(0.3)),
+        border: Border.all(color: widget.theme.colors.accent.withOpacity(0.3)),
       ),
       child: Column(
         children: [
           Row(
             children: [
-              const Icon(Icons.stars_rounded, color: AppTheme.accent),
+              Icon(Icons.stars_rounded, color: widget.theme.colors.accent),
               const SizedBox(width: 12),
               Expanded(
                 child: Text(
                   'Found ${_detectedGuestRecord!.lifetimePoints.toInt()} un-synced FitPoints from your guest session.',
-                  style: const TextStyle(color: Colors.white, fontSize: 13),
+                  style: TextStyle(
+                    color: widget.theme.colors.textPrimary,
+                    fontSize: 13,
+                  ),
                 ),
               ),
             ],
@@ -345,7 +369,7 @@ class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
             child: ElevatedButton(
               onPressed: _migrating ? null : _doMigrate,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.accent,
+                backgroundColor: widget.theme.colors.accent,
                 foregroundColor: Colors.black,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -355,7 +379,10 @@ class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2, color: Colors.black),
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: Colors.black,
+                      ),
                     )
                   : const Text('Sync FitPoints Now'),
             ),
@@ -371,14 +398,15 @@ class _MigrateFitPointsTileState extends ConsumerState<_MigrateFitPointsTile> {
 // ─────────────────────────────────────────────
 class _AccountCard extends StatelessWidget {
   final UserProfile profile;
-  const _AccountCard({required this.profile});
+  final dynamic theme;
+  const _AccountCard({required this.profile, required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(18),
       ),
       child: Row(
@@ -387,14 +415,14 @@ class _AccountCard extends StatelessWidget {
             width: 60,
             height: 60,
             decoration: BoxDecoration(
-              color: AppTheme.accent.withOpacity(0.2),
+              color: theme.colors.accent.withOpacity(0.2),
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: Text(
               profile.name.isNotEmpty ? profile.name[0].toUpperCase() : '?',
-              style: const TextStyle(
-                color: AppTheme.accent,
+              style: TextStyle(
+                color: theme.colors.accent,
                 fontSize: 26,
                 fontWeight: FontWeight.w900,
               ),
@@ -407,8 +435,8 @@ class _AccountCard extends StatelessWidget {
               children: [
                 Text(
                   profile.name,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.colors.textPrimary,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -416,15 +444,18 @@ class _AccountCard extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   'BMI: ${profile.bmi.toStringAsFixed(1)} • ${profile.bmiCategory}',
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: theme.colors.textSecondary,
                     fontSize: 13,
                   ),
                 ),
                 const SizedBox(height: 4),
-                const Text(
+                Text(
                   'Anonymous Account',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+                  style: TextStyle(
+                    color: theme.colors.textSecondary,
+                    fontSize: 12,
+                  ),
                 ),
               ],
             ),
@@ -440,7 +471,8 @@ class _AccountCard extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _StatsRow extends StatelessWidget {
   final UserProfile profile;
-  const _StatsRow({required this.profile});
+  final dynamic theme;
+  const _StatsRow({required this.profile, required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -452,19 +484,22 @@ class _StatsRow extends StatelessWidget {
         _StatTile(
           label: isLosing ? 'To Lose' : 'To Gain',
           value: '${toGo.toStringAsFixed(1)} kg',
-          color: AppTheme.accent,
+          color: theme.colors.accent,
+          theme: theme,
         ),
         const SizedBox(width: 12),
         _StatTile(
           label: 'Daily Calories',
           value: '${profile.dynamicCalories}',
           color: Colors.orangeAccent,
+          theme: theme,
         ),
         const SizedBox(width: 12),
         _StatTile(
           label: 'Protein Goal',
           value: '${profile.dynamicProtein}g',
           color: Colors.blueAccent,
+          theme: theme,
         ),
       ],
     );
@@ -475,10 +510,12 @@ class _StatTile extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final dynamic theme;
   const _StatTile({
     required this.label,
     required this.value,
     required this.color,
+    required this.theme,
   });
 
   @override
@@ -487,7 +524,7 @@ class _StatTile extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: AppTheme.surface,
+          color: theme.colors.surfacePrimary,
           borderRadius: BorderRadius.circular(14),
         ),
         child: Column(
@@ -504,10 +541,7 @@ class _StatTile extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: theme.colors.textSecondary, fontSize: 11),
             ),
           ],
         ),
@@ -521,19 +555,40 @@ class _StatTile extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _MacroGoalRow extends StatelessWidget {
   final UserProfile profile;
-  const _MacroGoalRow({required this.profile});
+  final dynamic theme;
+  const _MacroGoalRow({required this.profile, required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        _MacroTile('Protein', '${profile.dynamicProtein}g', Colors.blueAccent),
+        _MacroTile(
+          'Protein',
+          '${profile.dynamicProtein}g',
+          Colors.blueAccent,
+          theme,
+        ),
         const SizedBox(width: 10),
-        _MacroTile('Carbs', '${profile.dynamicCarbs}g', Colors.orangeAccent),
+        _MacroTile(
+          'Carbs',
+          '${profile.dynamicCarbs}g',
+          Colors.orangeAccent,
+          theme,
+        ),
         const SizedBox(width: 10),
-        _MacroTile('Fats', '${profile.dynamicFats}g', Colors.purpleAccent),
+        _MacroTile(
+          'Fats',
+          '${profile.dynamicFats}g',
+          Colors.purpleAccent,
+          theme,
+        ),
         const SizedBox(width: 10),
-        _MacroTile('Calories', '${profile.dynamicCalories}', AppTheme.accent),
+        _MacroTile(
+          'Calories',
+          '${profile.dynamicCalories}',
+          theme.colors.accent,
+          theme,
+        ),
       ],
     );
   }
@@ -543,8 +598,9 @@ class _MacroTile extends StatelessWidget {
   final String label;
   final String value;
   final Color color;
+  final dynamic theme;
   final VoidCallback? onTap;
-  const _MacroTile(this.label, this.value, this.color, {this.onTap});
+  const _MacroTile(this.label, this.value, this.color, this.theme, {this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -570,8 +626,8 @@ class _MacroTile extends StatelessWidget {
               ),
               Text(
                 label,
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
+                style: TextStyle(
+                  color: theme.colors.textSecondary,
                   fontSize: 10,
                 ),
               ),
@@ -590,10 +646,12 @@ class _DetailTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final String value;
+  final dynamic theme;
   const _DetailTile({
     required this.icon,
     required this.label,
     required this.value,
+    required this.theme,
   });
 
   @override
@@ -602,19 +660,19 @@ class _DetailTile extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Row(
         children: [
-          Icon(icon, color: AppTheme.textSecondary, size: 18),
+          Icon(icon, color: theme.colors.textSecondary, size: 18),
           const SizedBox(width: 12),
-          Text(label, style: const TextStyle(color: AppTheme.textSecondary)),
+          Text(label, style: TextStyle(color: theme.colors.textSecondary)),
           const Spacer(),
           Text(
             value,
-            style: const TextStyle(
-              color: Colors.white,
+            style: TextStyle(
+              color: theme.colors.textPrimary,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -630,7 +688,12 @@ class _DetailTile extends StatelessWidget {
 class _EditProfileSheet extends StatefulWidget {
   final UserProfile profile;
   final WidgetRef ref;
-  const _EditProfileSheet({required this.profile, required this.ref});
+  final dynamic theme;
+  const _EditProfileSheet({
+    required this.profile,
+    required this.ref,
+    required this.theme,
+  });
 
   @override
   State<_EditProfileSheet> createState() => _EditProfileSheetState();
@@ -712,8 +775,8 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
     return Container(
       padding: EdgeInsets.fromLTRB(20, 20, 20, bottomInset + 24),
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
+      decoration: BoxDecoration(
+        color: widget.theme.colors.backgroundPrimary,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
@@ -725,33 +788,43 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppTheme.surface,
+                  color: widget.theme.colors.surfacePrimary,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Edit Profile',
               style: TextStyle(
-                color: Colors.white,
+                color: widget.theme.colors.textPrimary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
             ),
             const SizedBox(height: 20),
-            _EditField(label: 'Name', controller: _nameCtrl, numeric: false),
+            _EditField(
+              label: 'Name',
+              controller: _nameCtrl,
+              numeric: false,
+              theme: widget.theme,
+            ),
             const SizedBox(height: 14),
             Row(
               children: [
                 Expanded(
-                  child: _EditField(label: 'Age', controller: _ageCtrl),
+                  child: _EditField(
+                    label: 'Age',
+                    controller: _ageCtrl,
+                    theme: widget.theme,
+                  ),
                 ),
                 const SizedBox(width: 14),
                 Expanded(
                   child: _EditField(
                     label: 'Height (cm)',
                     controller: _heightCtrl,
+                    theme: widget.theme,
                   ),
                 ),
               ],
@@ -763,6 +836,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                   child: _EditField(
                     label: 'Current Weight (kg)',
                     controller: _weightCtrl,
+                    theme: widget.theme,
                   ),
                 ),
                 const SizedBox(width: 14),
@@ -770,6 +844,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                   child: _EditField(
                     label: 'Goal Weight (kg)',
                     controller: _goalWeightCtrl,
+                    theme: widget.theme,
                   ),
                 ),
               ],
@@ -779,6 +854,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
               label: 'Your Mantra',
               controller: _mantraCtrl,
               numeric: false,
+              theme: widget.theme,
             ),
             const SizedBox(height: 14),
             _DropdownField(
@@ -789,6 +865,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 DropdownMenuItem(value: 'female', child: Text('Female')),
               ],
               onChanged: (v) => setState(() => _gender = v!),
+              theme: widget.theme,
             ),
             const SizedBox(height: 14),
             _DropdownField(
@@ -802,6 +879,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 DropdownMenuItem(value: 'athlete', child: Text('Athlete')),
               ],
               onChanged: (v) => setState(() => _activityLevel = v!),
+              theme: widget.theme,
             ),
             const SizedBox(height: 14),
             _DropdownField(
@@ -813,6 +891,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 DropdownMenuItem(value: 'vegan', child: Text('Vegan')),
               ],
               onChanged: (v) => setState(() => _dietType = v!),
+              theme: widget.theme,
             ),
             const SizedBox(height: 14),
             _DropdownField(
@@ -824,6 +903,7 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
                 DropdownMenuItem(value: 'gym', child: Text('Gym Only')),
               ],
               onChanged: (v) => setState(() => _appUse = v!),
+              theme: widget.theme,
             ),
             const SizedBox(height: 24),
             SizedBox(
@@ -832,16 +912,16 @@ class _EditProfileSheetState extends State<_EditProfileSheet> {
               child: ElevatedButton(
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.accent,
-                  foregroundColor: AppTheme.background,
+                  backgroundColor: widget.theme.colors.accent,
+                  foregroundColor: widget.theme.colors.backgroundPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                   elevation: 0,
                 ),
                 child: _saving
-                    ? const CircularProgressIndicator(
-                        color: AppTheme.background,
+                    ? CircularProgressIndicator(
+                        color: widget.theme.colors.backgroundPrimary,
                         strokeWidth: 2,
                       )
                     : const Text(
@@ -864,17 +944,19 @@ class _EditField extends StatelessWidget {
   final String label;
   final TextEditingController controller;
   final bool numeric;
+  final dynamic theme;
   const _EditField({
     required this.label,
     required this.controller,
     this.numeric = true,
+    required this.theme,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      style: const TextStyle(color: Colors.white),
+      style: TextStyle(color: theme.colors.textPrimary),
       keyboardType: numeric
           ? const TextInputType.numberWithOptions(decimal: true)
           : TextInputType.text,
@@ -883,9 +965,9 @@ class _EditField extends StatelessWidget {
           : null,
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: const TextStyle(color: AppTheme.textSecondary),
+        labelStyle: TextStyle(color: theme.colors.textSecondary),
         filled: true,
-        fillColor: AppTheme.surface,
+        fillColor: theme.colors.surfacePrimary,
         // Issue 2: proper contentPadding so label + value don't overlap/clip
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 16,
@@ -897,7 +979,7 @@ class _EditField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+          borderSide: BorderSide(color: theme.colors.accent, width: 1.5),
         ),
       ),
     );
@@ -909,14 +991,15 @@ class _EditField extends StatelessWidget {
 // ─────────────────────────────────────────────
 class _SectionHeader extends StatelessWidget {
   final String title;
-  const _SectionHeader(this.title);
+  final dynamic theme;
+  const _SectionHeader(this.title, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       title,
-      style: const TextStyle(
-        color: Colors.white,
+      style: TextStyle(
+        color: theme.colors.textPrimary,
         fontWeight: FontWeight.w900,
         fontSize: 16,
       ),
@@ -929,12 +1012,14 @@ class _DropdownField extends StatelessWidget {
   final String value;
   final List<DropdownMenuItem<String>> items;
   final ValueChanged<String?> onChanged;
+  final dynamic theme;
 
   const _DropdownField({
     required this.label,
     required this.value,
     required this.items,
     required this.onChanged,
+    required this.theme,
   });
 
   @override
@@ -944,16 +1029,16 @@ class _DropdownField extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          style: TextStyle(color: theme.colors.textSecondary, fontSize: 13),
         ),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
           initialValue: value,
-          dropdownColor: AppTheme.surface,
-          style: const TextStyle(color: Colors.white),
+          dropdownColor: theme.colors.surfacePrimary,
+          style: TextStyle(color: theme.colors.textPrimary),
           decoration: InputDecoration(
             filled: true,
-            fillColor: AppTheme.surface,
+            fillColor: theme.colors.surfacePrimary,
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 18,
@@ -977,7 +1062,12 @@ class _DropdownField extends StatelessWidget {
 class _EditGoalsSheet extends StatefulWidget {
   final UserProfile profile;
   final WidgetRef ref;
-  const _EditGoalsSheet({required this.profile, required this.ref});
+  final dynamic theme;
+  const _EditGoalsSheet({
+    required this.profile,
+    required this.ref,
+    required this.theme,
+  });
 
   @override
   State<_EditGoalsSheet> createState() => _EditGoalsSheetState();
@@ -1067,8 +1157,8 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
 
     return Container(
       padding: EdgeInsets.fromLTRB(20, 20, 20, bottomInset + 24),
-      decoration: const BoxDecoration(
-        color: AppTheme.background,
+      decoration: BoxDecoration(
+        color: widget.theme.colors.backgroundPrimary,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SingleChildScrollView(
@@ -1080,16 +1170,16 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: AppTheme.surface,
+                  color: widget.theme.colors.surfacePrimary,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
             ),
             const SizedBox(height: 16),
-            const Text(
+            Text(
               'Edit Goals',
               style: TextStyle(
-                color: Colors.white,
+                color: widget.theme.colors.textPrimary,
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
@@ -1097,19 +1187,19 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
             const SizedBox(height: 4),
             Text(
               '${UserProfile.paceLabel(p.goalPace)} pace  •  ${p.dynamicCalories} kcal/day',
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
+              style: TextStyle(
+                color: widget.theme.colors.textSecondary,
                 fontSize: 13,
               ),
             ),
             const SizedBox(height: 16),
             TabBar(
               controller: _tabCtrl,
-              indicatorColor: AppTheme.accent,
+              indicatorColor: widget.theme.colors.accent,
               indicatorWeight: 2,
               dividerColor: Colors.transparent,
-              labelColor: AppTheme.accent,
-              unselectedLabelColor: AppTheme.textSecondary,
+              labelColor: widget.theme.colors.accent,
+              unselectedLabelColor: widget.theme.colors.textSecondary,
               labelStyle: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 13,
@@ -1137,21 +1227,21 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
                         inputFormatters: [
                           FilteringTextInputFormatter.digitsOnly,
                         ],
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: widget.theme.colors.textPrimary,
                           fontSize: 16,
                         ),
                         decoration: InputDecoration(
                           labelText: 'Target Calories',
                           suffixText: 'kcal/day',
-                          suffixStyle: const TextStyle(
-                            color: AppTheme.textSecondary,
+                          suffixStyle: TextStyle(
+                            color: widget.theme.colors.textSecondary,
                           ),
-                          labelStyle: const TextStyle(
-                            color: AppTheme.textSecondary,
+                          labelStyle: TextStyle(
+                            color: widget.theme.colors.textSecondary,
                           ),
                           filled: true,
-                          fillColor: AppTheme.surface,
+                          fillColor: widget.theme.colors.surfacePrimary,
                           // Key fix: explicit contentPadding keeps text vertically
                           // centered and prevents the label from being clipped
                           contentPadding: const EdgeInsets.symmetric(
@@ -1164,8 +1254,8 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: const BorderSide(
-                              color: AppTheme.accent,
+                            borderSide: BorderSide(
+                              color: widget.theme.colors.accent,
                               width: 1.5,
                             ),
                           ),
@@ -1176,10 +1266,10 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
                       ),
                       const SizedBox(height: 16),
                       if (_manualCals > 0) ...[
-                        const Text(
+                        Text(
                           'Auto macro split:',
                           style: TextStyle(
-                            color: AppTheme.textSecondary,
+                            color: widget.theme.colors.textSecondary,
                             fontSize: 12,
                           ),
                         ),
@@ -1193,18 +1283,21 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
                                   'Protein',
                                   '${m['protein']}g',
                                   Colors.blueAccent,
+                                  widget.theme,
                                 ),
                                 const SizedBox(width: 8),
                                 _GoalChip(
                                   'Carbs',
                                   '${m['carbs']}g',
                                   Colors.orangeAccent,
+                                  widget.theme,
                                 ),
                                 const SizedBox(width: 8),
                                 _GoalChip(
                                   'Fats',
                                   '${m['fats']}g',
                                   Colors.purpleAccent,
+                                  widget.theme,
                                 ),
                               ],
                             );
@@ -1234,16 +1327,16 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
               child: ElevatedButton(
                 onPressed: _saving ? null : _save,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.accent,
-                  foregroundColor: AppTheme.background,
+                  backgroundColor: widget.theme.colors.accent,
+                  foregroundColor: widget.theme.colors.backgroundPrimary,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(14),
                   ),
                   elevation: 0,
                 ),
                 child: _saving
-                    ? const CircularProgressIndicator(
-                        color: AppTheme.background,
+                    ? CircularProgressIndicator(
+                        color: widget.theme.colors.backgroundPrimary,
                         strokeWidth: 2,
                       )
                     : const Text(
@@ -1265,7 +1358,8 @@ class _EditGoalsSheetState extends State<_EditGoalsSheet>
 class _GoalChip extends StatelessWidget {
   final String label, value;
   final Color color;
-  const _GoalChip(this.label, this.value, this.color);
+  final dynamic theme;
+  const _GoalChip(this.label, this.value, this.color, this.theme);
 
   @override
   Widget build(BuildContext context) => Expanded(
@@ -1288,7 +1382,7 @@ class _GoalChip extends StatelessWidget {
           ),
           Text(
             label,
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+            style: TextStyle(color: theme.colors.textSecondary, fontSize: 10),
           ),
         ],
       ),

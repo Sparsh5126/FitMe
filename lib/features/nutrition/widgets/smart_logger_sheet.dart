@@ -103,7 +103,10 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     _saveDebounce = Timer(const Duration(milliseconds: 300), _saveHistory);
   }
 
-  Future<void> _appendMessagesStaggered(List<ChatMessage> items, String streamId) async {
+  Future<void> _appendMessagesStaggered(
+    List<ChatMessage> items,
+    String streamId,
+  ) async {
     if (items.isEmpty) return;
     final interval = (400 ~/ items.length).clamp(80, 150);
     for (final item in items) {
@@ -152,7 +155,11 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         await _handleCustomMealCommand(text, streamId);
       } else if (lowerText.startsWith('/aionly')) {
         if (_isGuest) {
-          _showAiLockCard(hint: text.replaceFirst(RegExp(r'/aionly\s*', caseSensitive: false), '').trim());
+          _showAiLockCard(
+            hint: text
+                .replaceFirst(RegExp(r'/aionly\s*', caseSensitive: false), '')
+                .trim(),
+          );
         } else {
           await _handleAiOnlyCommand(text, streamId);
         }
@@ -178,13 +185,18 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   }
 
   Future<void> _handleCustomMealCommand(String text, String streamId) async {
-    final regex = RegExp(r'/custommeal\s+"([^"]+)"\s*(.*)', caseSensitive: false);
+    final regex = RegExp(
+      r'/custommeal\s+"([^"]+)"\s*(.*)',
+      caseSensitive: false,
+    );
     final match = regex.firstMatch(text);
 
     if (match == null) {
       if (mounted && _activeStreamId == streamId) {
         setState(() {
-          _messages.add(ChatMessage.error('Format: /custommeal "Name" ingredients...'));
+          _messages.add(
+            ChatMessage.error('Format: /custommeal "Name" ingredients...'),
+          );
         });
       }
       return;
@@ -196,13 +208,17 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     if (ingredientsText.isEmpty) {
       if (mounted && _activeStreamId == streamId) {
         setState(() {
-          _messages.add(ChatMessage.error('Please provide ingredients for "$name".'));
+          _messages.add(
+            ChatMessage.error('Please provide ingredients for "$name".'),
+          );
         });
       }
       return;
     }
 
-    final foods = await GeminiService.parseFood('Ingredients for "$name": $ingredientsText');
+    final foods = await GeminiService.parseFood(
+      'Ingredients for "$name": $ingredientsText',
+    );
     if (!mounted || _activeStreamId != streamId) return;
 
     if (foods.isNotEmpty) {
@@ -216,25 +232,35 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         consumedAmount: 1,
         consumedUnit: 'serving',
       );
-      
-      final draftIngs = foods.map((m) => CustomMealIngredient(
-          foodId: m.id,
-          name: m.name,
-          amount: m.consumedAmount,
-          unit: m.consumedUnit,
-          calories: m.calories,
-          protein: m.protein,
-          carbs: m.carbs,
-          fats: m.fats,
-          baseAmount: m.consumedAmount,
-          baseCal: m.calories,
-          basePro: m.protein,
-          baseCarb: m.carbs,
-          baseFat: m.fats,
-        )).toList();
+
+      final draftIngs = foods
+          .map(
+            (m) => CustomMealIngredient(
+              foodId: m.id,
+              name: m.name,
+              amount: m.consumedAmount,
+              unit: m.consumedUnit,
+              calories: m.calories,
+              protein: m.protein,
+              carbs: m.carbs,
+              fats: m.fats,
+              baseAmount: m.consumedAmount,
+              baseCal: m.calories,
+              basePro: m.protein,
+              baseCarb: m.carbs,
+              baseFat: m.fats,
+            ),
+          )
+          .toList();
 
       setState(() {
-        _messages.add(ChatMessage.foodCard(summary, isCustomMealDraft: true, draftIngredients: draftIngs));
+        _messages.add(
+          ChatMessage.foodCard(
+            summary,
+            isCustomMealDraft: true,
+            draftIngredients: draftIngs,
+          ),
+        );
       });
     } else {
       setState(() {
@@ -244,10 +270,16 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   }
 
   Future<void> _handleAiOnlyCommand(String text, String streamId) async {
-    final query = text.replaceFirst(RegExp(r'/aionly\s*', caseSensitive: false), '').trim();
+    final query = text
+        .replaceFirst(RegExp(r'/aionly\s*', caseSensitive: false), '')
+        .trim();
     if (query.isEmpty) {
       if (mounted && _activeStreamId == streamId) {
-        setState(() => _messages.add(ChatMessage.error('Format: /aionly food description...')));
+        setState(
+          () => _messages.add(
+            ChatMessage.error('Format: /aionly food description...'),
+          ),
+        );
       }
       return;
     }
@@ -260,7 +292,11 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       final msgs = foods.map((f) => ChatMessage.foodCard(f)).toList();
       await _appendMessagesStaggered(msgs, streamId);
     } else {
-      setState(() => _messages.add(ChatMessage.error('Could not identify that even with AI.')));
+      setState(
+        () => _messages.add(
+          ChatMessage.error('Could not identify that even with AI.'),
+        ),
+      );
     }
   }
 
@@ -276,7 +312,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       recents: recents,
       allowAi: !_isGuest,
     );
-    
+
     if (!mounted || _activeStreamId != streamId) return;
 
     List<ChatMessage> localMsgs = [];
@@ -296,24 +332,37 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     if (anyAiNeeded) {
       if (_isGuest) {
         _showAiLockCard(
-          hint: parsed.segments.where((s) => !s.isResolved).map((s) => s.rawInput).join(', '),
+          hint: parsed.segments
+              .where((s) => !s.isResolved)
+              .map((s) => s.rawInput)
+              .join(', '),
         );
       } else {
         if (!mounted || _activeStreamId != streamId) return;
         setState(() => _isResolving = true);
-        
+
         final aiFoods = await GeminiService.parseFoodSafe(text);
         if (!mounted || _activeStreamId != streamId) return;
-        
+
         if (aiFoods.isNotEmpty) {
           await ref.read(foodActionsProvider).incrementSmartLoggerCount();
           final aiMsgs = aiFoods
-              .where((f) => !_messages.any((m) => m.food?.name.toLowerCase() == f.name.toLowerCase()))
+              .where(
+                (f) => !_messages.any(
+                  (m) => m.food?.name.toLowerCase() == f.name.toLowerCase(),
+                ),
+              )
               .map((f) => ChatMessage.foodCard(f))
               .toList();
           await _appendMessagesStaggered(aiMsgs, streamId);
         } else if (_messages.isEmpty || _messages.last.type == MsgType.user) {
-          setState(() => _messages.add(ChatMessage.error('Could not identify some items. Try searching manually.')));
+          setState(
+            () => _messages.add(
+              ChatMessage.error(
+                'Could not identify some items. Try searching manually.',
+              ),
+            ),
+          );
         }
       }
     }
@@ -364,7 +413,12 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
       _hasSearched = false;
       _isSearching = false;
     });
-    Navigator.push(context, MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => QuantitySelectionScreen(baseFood: food),
+      ),
+    );
   }
 
   Future<void> _openBarcodeScanner() async {
@@ -372,35 +426,52 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     final food = await BarcodeScannerScreen.scan(context);
     if (!mounted) return;
     if (food != null) {
-      Navigator.push(context,
-          MaterialPageRoute(builder: (_) => QuantitySelectionScreen(baseFood: food)));
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => QuantitySelectionScreen(baseFood: food),
+        ),
+      );
     }
   }
 
-  Future<void> _acceptFood(FoodItem food, {required String originalId, bool fromLogAll = false}) async {
+  Future<void> _acceptFood(
+    FoodItem food, {
+    required String originalId,
+    bool fromLogAll = false,
+  }) async {
     // If called internally from Log All, we bypass the main _isLogging guard
-    if ((_isLogging && !fromLogAll) || _currentlyLoggingIds.contains(originalId)) return;
+    if ((_isLogging && !fromLogAll) ||
+        _currentlyLoggingIds.contains(originalId))
+      return;
 
     if (!fromLogAll) setState(() => _isLogging = true);
     _currentlyLoggingIds.add(originalId);
 
     try {
-      final msgIndex = _messages.indexWhere((m) => m.food?.id == originalId && m.accepted == null);
+      final msgIndex = _messages.indexWhere(
+        (m) => m.food?.id == originalId && m.accepted == null,
+      );
       if (msgIndex != -1) {
         final msg = _messages[msgIndex];
-        
+
         if (msg.isCustomMealDraft && msg.draftIngredients != null) {
           final customs = ref.read(customMealsProvider).value ?? [];
           String finalName = food.name;
           int counter = 1;
-          while (customs.any((c) => c.name.toLowerCase() == finalName.toLowerCase())) {
-             finalName = '${food.name} ($counter)';
-             counter++;
+          while (customs.any(
+            (c) => c.name.toLowerCase() == finalName.toLowerCase(),
+          )) {
+            finalName = '${food.name} ($counter)';
+            counter++;
           }
 
-          final toLog = food.copyWith(name: finalName, isAiLogged: !msg.noAiUsed);
+          final toLog = food.copyWith(
+            name: finalName,
+            isAiLogged: !msg.noAiUsed,
+          );
           await ref.read(foodActionsProvider).logFood(toLog);
-          
+
           final draft = CustomMealDraft(
             name: finalName,
             servings: 1,
@@ -409,10 +480,13 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           );
           await CustomMealService.create(draft);
           if (!fromLogAll) _showSnackbar('Meal "$finalName" Logged & Saved! ✓');
-          
+
           if (mounted) {
             setState(() {
-              _messages[msgIndex] = _messages[msgIndex].copyAccepted(true, newFood: toLog);
+              _messages[msgIndex] = _messages[msgIndex].copyAccepted(
+                true,
+                newFood: toLog,
+              );
             });
           }
         } else {
@@ -425,13 +499,12 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           }
         }
       }
-      
+
       ref.invalidate(nutritionProvider);
       ref.invalidate(dailyTotalsProvider);
       if (!fromLogAll) _checkPop();
-      
-    } catch(e) {
-        if (mounted) _showSnackbar('Failed to log: $e', error: true);
+    } catch (e) {
+      if (mounted) _showSnackbar('Failed to log: $e', error: true);
     } finally {
       if (mounted) {
         _currentlyLoggingIds.remove(originalId);
@@ -449,13 +522,14 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
 
     if (msg != null && msg.isCustomMealDraft && msg.draftIngredients != null) {
       CustomMealFormScreen.push(
-        context, 
-        draftName: food.name, 
-        draftIngredients: msg.draftIngredients
+        context,
+        draftName: food.name,
+        draftIngredients: msg.draftIngredients,
       ).then((wasSaved) {
         if (!mounted || wasSaved != true) return;
         setState(() {
-          if (msgIndex != -1) _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
+          if (msgIndex != -1)
+            _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
         });
         _triggerDebouncedSave();
         _checkPop();
@@ -466,15 +540,14 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (_) => QuantitySelectionScreen(
-          baseFood: food,
-          popToHome: false,
-        ),
+        builder: (_) =>
+            QuantitySelectionScreen(baseFood: food, popToHome: false),
       ),
     ).then((wasLogged) {
       if (!mounted || wasLogged != true) return;
       setState(() {
-        if (msgIndex != -1) _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
+        if (msgIndex != -1)
+          _messages[msgIndex] = _messages[msgIndex].copyAccepted(true);
       });
       _triggerDebouncedSave();
       _checkPop();
@@ -485,15 +558,23 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     HapticFeedback.lightImpact();
     await ref.read(foodActionsProvider).toggleFavorite(food);
     final favs = ref.read(favoritesProvider).value ?? [];
-    final isFav = favs.any((f) => f.name.toLowerCase() == food.name.toLowerCase());
-    _showSnackbar(isFav ? '${food.name} removed from favourites' : '${food.name} saved to favourites ★');
+    final isFav = favs.any(
+      (f) => f.name.toLowerCase() == food.name.toLowerCase(),
+    );
+    _showSnackbar(
+      isFav
+          ? '${food.name} removed from favourites'
+          : '${food.name} saved to favourites ★',
+    );
     _triggerDebouncedSave();
   }
 
   void _denyFood(FoodItem food) {
     HapticFeedback.lightImpact();
     setState(() {
-      final idx = _messages.indexWhere((m) => m.food?.id == food.id && m.accepted == null);
+      final idx = _messages.indexWhere(
+        (m) => m.food?.id == food.id && m.accepted == null,
+      );
       if (idx != -1) {
         _messages[idx] = _messages[idx].copyAccepted(false);
       }
@@ -542,29 +623,46 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       backgroundColor: AppTheme.surface,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
       builder: (_) => SafeArea(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             ListTile(
-              leading: const Icon(Icons.camera_alt_rounded, color: Colors.white),
-              title: const Text('Take Photo', style: TextStyle(color: Colors.white)),
+              leading: const Icon(
+                Icons.camera_alt_rounded,
+                color: Colors.white,
+              ),
+              title: const Text(
+                'Take Photo',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () => Navigator.pop(context, ImageSource.camera),
             ),
             ListTile(
-              leading: const Icon(Icons.photo_library_rounded, color: Colors.white),
-              title: const Text('Choose from Gallery', style: TextStyle(color: Colors.white)),
+              leading: const Icon(
+                Icons.photo_library_rounded,
+                color: Colors.white,
+              ),
+              title: const Text(
+                'Choose from Gallery',
+                style: TextStyle(color: Colors.white),
+              ),
               onTap: () => Navigator.pop(context, ImageSource.gallery),
             ),
           ],
         ),
       ),
     );
-    
+
     if (source == null) return;
 
-    final XFile? image = await picker.pickImage(source: source, imageQuality: 85);
+    final XFile? image = await picker.pickImage(
+      source: source,
+      imageQuality: 85,
+    );
     if (image != null) {
       final streamId = DateTime.now().millisecondsSinceEpoch.toString();
       _activeStreamId = streamId;
@@ -574,7 +672,7 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         _messages.add(ChatMessage.user('📷 Photo submitted'));
       });
       _scrollToBottom();
-      
+
       try {
         final foods = await GeminiService.parseFoodFromImage(File(image.path));
         if (!mounted || _activeStreamId != streamId) return;
@@ -584,7 +682,11 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           final msgs = foods.map((f) => ChatMessage.foodCard(f)).toList();
           await _appendMessagesStaggered(msgs, streamId);
         } else {
-          setState(() => _messages.add(ChatMessage.error('Could not identify food from photo.')));
+          setState(
+            () => _messages.add(
+              ChatMessage.error('Could not identify food from photo.'),
+            ),
+          );
         }
       } finally {
         if (mounted && _activeStreamId == streamId) {
@@ -596,7 +698,9 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   }
 
   void _checkPop() {
-    final pendingCount = _messages.where((m) => m.type == MsgType.foodCard && m.accepted == null).length;
+    final pendingCount = _messages
+        .where((m) => m.type == MsgType.foodCard && m.accepted == null)
+        .length;
     if (pendingCount == 0 && mounted) {
       Navigator.pop(context);
     }
@@ -605,7 +709,9 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   void _logAll() async {
     if (_isLogging) return;
 
-    final pending = _messages.where((m) => m.type == MsgType.foodCard && m.accepted == null).toList();
+    final pending = _messages
+        .where((m) => m.type == MsgType.foodCard && m.accepted == null)
+        .toList();
     if (pending.isEmpty) return;
 
     setState(() => _isLogging = true);
@@ -615,7 +721,11 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
         if (!mounted) break;
         if (msg.food != null && !_currentlyLoggingIds.contains(msg.food!.id)) {
           // Send to standard _acceptFood internally bypassing the _isLogging check
-          await _acceptFood(msg.food!, originalId: msg.food!.id, fromLogAll: true);
+          await _acceptFood(
+            msg.food!,
+            originalId: msg.food!.id,
+            fromLogAll: true,
+          );
         }
       }
     } finally {
@@ -644,7 +754,9 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(msg),
-        backgroundColor: error ? Colors.redAccent.withValues(alpha: 0.9) : AppTheme.accent.withValues(alpha: 0.9),
+        backgroundColor: error
+            ? Colors.redAccent.withValues(alpha: 0.9)
+            : AppTheme.accent.withValues(alpha: 0.9),
         duration: const Duration(seconds: 2),
         behavior: SnackBarBehavior.floating,
       ),
@@ -655,22 +767,26 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height * 0.92;
     final bottomInset = MediaQuery.of(context).viewInsets.bottom;
-    
+
     final isSearchActive = _searchController.text.isNotEmpty;
     final favs = ref.watch(favoritesProvider).value ?? [];
 
     return Container(
       height: height,
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         color: AppTheme.background,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Column(
         children: [
           const SizedBox(height: 12),
           Container(
-            width: 40, height: 4,
-            decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(2))
+            width: 40,
+            height: 4,
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(2),
+            ),
           ),
           const SizedBox(height: 12),
 
@@ -679,11 +795,20 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Row(children: [
-                  Text('🪄', style: TextStyle(fontSize: 18)),
-                  SizedBox(width: 8),
-                  Text('Smart Logger', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
-                ]),
+                const Row(
+                  children: [
+                    Text('🪄', style: TextStyle(fontSize: 18)),
+                    SizedBox(width: 8),
+                    Text(
+                      'Smart Logger',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ],
+                ),
                 UsageChip(
                   used: _maxLimit - _remainingUses,
                   limitReached: _limitReached,
@@ -694,8 +819,8 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
           ),
 
           const SizedBox(height: 6),
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Text(
               'Normal food logging is unlimited. Credits are only used when AI helps identify meals, photos, or complex foods.',
               style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
@@ -712,25 +837,52 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
               style: const TextStyle(color: Colors.white, fontSize: 14),
               decoration: InputDecoration(
                 hintText: 'Search food…',
-                hintStyle: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+                hintStyle: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 13,
+                ),
                 prefixIcon: _isSearching
-                    ? const Padding(
-                        padding: EdgeInsets.all(12),
-                        child: SizedBox(width: 16, height: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.accent)))
-                    : const Icon(Icons.search_rounded, color: AppTheme.textSecondary, size: 20),
+                    ? Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppTheme.accent,
+                          ),
+                        ),
+                      )
+                    : Icon(
+                        Icons.search_rounded,
+                        color: AppTheme.textSecondary,
+                        size: 20,
+                      ),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     if (isSearchActive)
                       IconButton(
-                          icon: const Icon(Icons.close_rounded, color: AppTheme.textSecondary, size: 18),
-                          onPressed: () {
-                            _searchController.clear();
-                            setState(() { _searchResults = []; _hasSearched = false; _isSearching = false; });
-                          }),
+                        icon: Icon(
+                          Icons.close_rounded,
+                          color: AppTheme.textSecondary,
+                          size: 18,
+                        ),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() {
+                            _searchResults = [];
+                            _hasSearched = false;
+                            _isSearching = false;
+                          });
+                        },
+                      ),
                     IconButton(
-                      icon: const Icon(Icons.qr_code_scanner_rounded, color: AppTheme.textSecondary, size: 20),
+                      icon: Icon(
+                        Icons.qr_code_scanner_rounded,
+                        color: AppTheme.textSecondary,
+                        size: 20,
+                      ),
                       onPressed: _openBarcodeScanner,
                       tooltip: 'Scan barcode',
                     ),
@@ -738,23 +890,33 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                 ),
                 filled: true,
                 fillColor: AppTheme.surface,
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                  borderSide: BorderSide.none,
+                ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
-                  borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                  borderSide: BorderSide(color: AppTheme.accent, width: 1.5),
                 ),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                contentPadding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 10,
+                ),
               ),
             ),
           ),
 
           const SizedBox(height: 4),
-          const Divider(color: AppTheme.surface, height: 16),
+          Divider(color: AppTheme.surface, height: 16),
 
           Expanded(
             child: Consumer(
               builder: (context, ref, child) {
-                final pendingCount = _messages.where((m) => m.type == MsgType.foodCard && m.accepted == null).length;
+                final pendingCount = _messages
+                    .where(
+                      (m) => m.type == MsgType.foodCard && m.accepted == null,
+                    )
+                    .length;
                 return Stack(
                   children: [
                     if (isSearchActive)
@@ -770,26 +932,47 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                       ListView.builder(
                         controller: _scrollController,
                         physics: const BouncingScrollPhysics(),
-                        padding: EdgeInsets.fromLTRB(16, 8, 16, pendingCount >= 2 ? 68 : 8),
+                        padding: EdgeInsets.fromLTRB(
+                          16,
+                          8,
+                          16,
+                          pendingCount >= 2 ? 68 : 8,
+                        ),
                         itemCount: _messages.length + (_isResolving ? 1 : 0),
                         itemBuilder: (_, i) {
-                          if (i == _messages.length) return const RepaintBoundary(child: TypingIndicator());
-                          
+                          if (i == _messages.length)
+                            return const RepaintBoundary(
+                              child: TypingIndicator(),
+                            );
+
                           final msg = _messages[i];
-                          if (msg.type == MsgType.user) return RepaintBoundary(child: UserBubble(text: msg.text!));
-                          if (msg.type == MsgType.error) return ErrorBubble(text: msg.text!);
-                          
+                          if (msg.type == MsgType.user)
+                            return RepaintBoundary(
+                              child: UserBubble(text: msg.text!),
+                            );
+                          if (msg.type == MsgType.error)
+                            return ErrorBubble(text: msg.text!);
+
                           if (msg.type == MsgType.aiLock) {
                             return RepaintBoundary(
                               child: AiLockCard(
                                 hint: msg.text,
-                                onSignIn: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const LoginScreen())),
+                                onSignIn: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const LoginScreen(),
+                                  ),
+                                ),
                               ),
                             );
                           }
-                          
+
                           if (msg.type == MsgType.foodCard) {
-                            final isFav = favs.any((f) => f.name.toLowerCase() == msg.food!.name.toLowerCase());
+                            final isFav = favs.any(
+                              (f) =>
+                                  f.name.toLowerCase() ==
+                                  msg.food!.name.toLowerCase(),
+                            );
                             return RepaintBoundary(
                               child: FoodCardMsg(
                                 food: msg.food!,
@@ -797,7 +980,8 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                                 isFavorite: isFav,
                                 noAiUsed: msg.noAiUsed,
                                 isCustomMealDraft: msg.isCustomMealDraft,
-                                onAccept: (food) => _acceptFood(food, originalId: msg.food!.id),
+                                onAccept: (food) =>
+                                    _acceptFood(food, originalId: msg.food!.id),
                                 onEdit: () => _editFood(msg.food!),
                                 onFav: () => _favFood(msg.food!),
                                 onDeny: () => _denyFood(msg.food!),
@@ -807,10 +991,12 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                           return const SizedBox();
                         },
                       ),
-                    
+
                     if (!isSearchActive && pendingCount >= 2)
                       Positioned(
-                        bottom: 8, left: 40, right: 40,
+                        bottom: 8,
+                        left: 40,
+                        right: 40,
                         child: RepaintBoundary(
                           child: ElevatedButton.icon(
                             onPressed: _logAll,
@@ -819,7 +1005,9 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppTheme.accent,
                               foregroundColor: AppTheme.background,
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
                               elevation: 4,
                               padding: const EdgeInsets.symmetric(vertical: 12),
                             ),
@@ -831,13 +1019,20 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
               },
             ),
           ),
-          
+
           // ── BOTTOM NLP TEXT FIELD ───────────────────────────────────────
           Container(
-            padding: EdgeInsets.fromLTRB(16, 8, 16, bottomInset > 0 ? bottomInset : 24),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              8,
+              16,
+              bottomInset > 0 ? bottomInset : 24,
+            ),
             decoration: BoxDecoration(
               color: AppTheme.background,
-              border: Border(top: BorderSide(color: Colors.white.withValues(alpha: 0.08))),
+              border: Border(
+                top: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withValues(alpha: 0.4),
@@ -862,7 +1057,10 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                         isGuest: _isGuest,
                         onCustomMeal: () {
                           _inputController.text = '/custommeal "" ';
-                          _inputController.selection = TextSelection.fromPosition(const TextPosition(offset: 13));
+                          _inputController.selection =
+                              TextSelection.fromPosition(
+                                const TextPosition(offset: 13),
+                              );
                         },
                         onAiOnly: () {
                           if (_isGuest) {
@@ -870,7 +1068,10 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                             return;
                           }
                           _inputController.text = '/aionly ';
-                          _inputController.selection = TextSelection.fromPosition(const TextPosition(offset: 8));
+                          _inputController.selection =
+                              TextSelection.fromPosition(
+                                const TextPosition(offset: 8),
+                              );
                         },
                       ),
                     ),
@@ -883,36 +1084,59 @@ class _SmartLoggerSheetState extends ConsumerState<SmartLoggerSheet> {
                             child: TextField(
                               controller: _inputController,
                               onSubmitted: (_) => _sendMessage(),
-                              style: const TextStyle(color: Colors.white, fontSize: 14),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
                               textCapitalization: TextCapitalization.sentences,
                               maxLines: 3,
                               minLines: 1,
                               decoration: InputDecoration(
-                                hintText: _isListening ? '🎤 Listening…' : '"oats banana" or /custommeal',
+                                hintText: _isListening
+                                    ? '🎤 Listening…'
+                                    : '"oats banana" or /custommeal',
                                 hintStyle: TextStyle(
-                                  color: _isListening ? AppTheme.accent : AppTheme.textSecondary,
-                                  fontSize: 13
+                                  color: _isListening
+                                      ? AppTheme.accent
+                                      : AppTheme.textSecondary,
+                                  fontSize: 13,
                                 ),
                                 filled: true,
                                 fillColor: AppTheme.surface,
-                                border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                  borderSide: BorderSide.none,
+                                ),
                                 focusedBorder: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(14),
-                                  borderSide: const BorderSide(color: AppTheme.accent, width: 1.5),
+                                  borderSide: BorderSide(
+                                    color: AppTheme.accent,
+                                    width: 1.5,
+                                  ),
                                 ),
-                                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
                                 suffixIcon: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     IconButton(
-                                      icon: const Icon(Icons.camera_alt_outlined, color: AppTheme.textSecondary),
+                                      icon: Icon(
+                                        Icons.camera_alt_outlined,
+                                        color: AppTheme.textSecondary,
+                                      ),
                                       onPressed: _pickImage,
                                       tooltip: 'Log from photo',
                                     ),
                                     IconButton(
                                       icon: Icon(
-                                        _isListening ? Icons.mic_rounded : Icons.mic_none_rounded,
-                                        color: _isListening ? AppTheme.accent : AppTheme.textSecondary,
+                                        _isListening
+                                            ? Icons.mic_rounded
+                                            : Icons.mic_none_rounded,
+                                        color: _isListening
+                                            ? AppTheme.accent
+                                            : AppTheme.textSecondary,
                                       ),
                                       onPressed: _toggleListening,
                                     ),

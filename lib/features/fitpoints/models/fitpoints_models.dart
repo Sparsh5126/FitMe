@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../../nutrition/models/food_item.dart';
+import 'package:fitme/features/nutrition/models/food_item.dart';
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
@@ -20,45 +20,45 @@ typedef StreakLevel = StreakTier;
 extension StreakTierExtension on StreakTier {
   /// Displayed on the Streak Page (Weight-based)
   String get streakLabel => switch (this) {
-        StreakTier.lightDumbbell => 'Light Dumbbell',
-        StreakTier.heavyDumbbell => 'Heavy Dumbbell',
-        StreakTier.barbell => 'Barbell',
-        StreakTier.onePlateBarbell => '1 Plate Barbell',
-        StreakTier.twoPlateBarbell => '2 Plate Barbell',
-        StreakTier.fourPlateBarbell => '4 Plate Barbell',
-      };
+    StreakTier.lightDumbbell => 'Light Dumbbell',
+    StreakTier.heavyDumbbell => 'Heavy Dumbbell',
+    StreakTier.barbell => 'Barbell',
+    StreakTier.onePlateBarbell => '1 Plate Barbell',
+    StreakTier.twoPlateBarbell => '2 Plate Barbell',
+    StreakTier.fourPlateBarbell => '4 Plate Barbell',
+  };
 
   /// Displayed on Insights & Award Popups (Metal-based)
   String get efficiencyLabel => switch (this) {
-        StreakTier.lightDumbbell => 'Bronze Efficiency',
-        StreakTier.heavyDumbbell => 'Silver Efficiency',
-        StreakTier.barbell => 'Gold Efficiency',
-        StreakTier.onePlateBarbell => 'Platinum Efficiency',
-        StreakTier.twoPlateBarbell => 'Diamond Efficiency',
-        StreakTier.fourPlateBarbell => 'Diamond Efficiency',
-      };
+    StreakTier.lightDumbbell => 'Bronze Efficiency',
+    StreakTier.heavyDumbbell => 'Silver Efficiency',
+    StreakTier.barbell => 'Gold Efficiency',
+    StreakTier.onePlateBarbell => 'Platinum Efficiency',
+    StreakTier.twoPlateBarbell => 'Diamond Efficiency',
+    StreakTier.fourPlateBarbell => 'Diamond Efficiency',
+  };
 
   /// Legacy display name for backward compatibility
   String get displayName => efficiencyLabel;
 
   double get multiplier => switch (this) {
-        StreakTier.lightDumbbell => 1.0,
-        StreakTier.heavyDumbbell => 1.5,
-        StreakTier.barbell => 2.0,
-        StreakTier.onePlateBarbell => 3.0,
-        StreakTier.twoPlateBarbell => 5.0,
-        StreakTier.fourPlateBarbell => 5.0,
-      };
+    StreakTier.lightDumbbell => 1.0,
+    StreakTier.heavyDumbbell => 1.5,
+    StreakTier.barbell => 2.0,
+    StreakTier.onePlateBarbell => 3.0,
+    StreakTier.twoPlateBarbell => 5.0,
+    StreakTier.fourPlateBarbell => 5.0,
+  };
 }
 
 enum LoggingQuality { poor, normal, high }
 
 extension LoggingQualityExtension on LoggingQuality {
   double get modifier => switch (this) {
-        LoggingQuality.poor => 0.5,
-        LoggingQuality.normal => 1.0,
-        LoggingQuality.high => 1.25,
-      };
+    LoggingQuality.poor => 0.5,
+    LoggingQuality.normal => 1.0,
+    LoggingQuality.high => 1.25,
+  };
 }
 
 enum FitPointAction {
@@ -88,34 +88,34 @@ enum FitPointAction {
 
 extension FitPointActionExtension on FitPointAction {
   double get basePoints => switch (this) {
-        FitPointAction.logMeal => 1,
-        FitPointAction.completeDailyLogging => 2,
-        FitPointAction.hitProteinGoal => 1,
-        FitPointAction.hitCalorieTarget => 1,
-        FitPointAction.hitMacroAdherence => 1,
-        FitPointAction.completeHydrationGoal => 1,
-        FitPointAction.completeThreeExercises => 1,
-        FitPointAction.completeWorkout => 2,
-        FitPointAction.hitStepGoal => 1,
-        FitPointAction.completeActiveRecovery => 1,
-        FitPointAction.createCustomWorkoutPlan => 2,
-        FitPointAction.followGeneratedWorkoutPlan => 2,
-        FitPointAction.completeWorkoutPlanAnalysis => 2,
-        FitPointAction.shareWorkoutWithFriend => 2,
-        FitPointAction.shareAppOnSocial => 10,
-        FitPointAction.createUsefulCustomMeal => 1,
-        FitPointAction.createRecipe => 2,
-        FitPointAction.completeDietAnalysis => 2,
-        FitPointAction.followGeneratedDietPlanDay => 2,
-      };
+    FitPointAction.logMeal => 1,
+    FitPointAction.completeDailyLogging => 2,
+    FitPointAction.hitProteinGoal => 1,
+    FitPointAction.hitCalorieTarget => 1,
+    FitPointAction.hitMacroAdherence => 1,
+    FitPointAction.completeHydrationGoal => 1,
+    FitPointAction.completeThreeExercises => 1,
+    FitPointAction.completeWorkout => 2,
+    FitPointAction.hitStepGoal => 1,
+    FitPointAction.completeActiveRecovery => 1,
+    FitPointAction.createCustomWorkoutPlan => 2,
+    FitPointAction.followGeneratedWorkoutPlan => 2,
+    FitPointAction.completeWorkoutPlanAnalysis => 2,
+    FitPointAction.shareWorkoutWithFriend => 2,
+    FitPointAction.shareAppOnSocial => 10,
+    FitPointAction.createUsefulCustomMeal => 1,
+    FitPointAction.createRecipe => 2,
+    FitPointAction.completeDietAnalysis => 2,
+    FitPointAction.followGeneratedDietPlanDay => 2,
+  };
 
   /// Max times this action earns FP per day (null = no cap beyond daily total)
   int? get dailyActionCap => switch (this) {
-        FitPointAction.logMeal => 8,
-        FitPointAction.shareAppOnSocial => null, // monthly cap handled separately
-        FitPointAction.shareWorkoutWithFriend => 5,
-        _ => 1,
-      };
+    FitPointAction.logMeal => 8,
+    FitPointAction.shareAppOnSocial => null, // monthly cap handled separately
+    FitPointAction.shareWorkoutWithFriend => 5,
+    _ => 1,
+  };
 }
 
 enum ChallengeStatus { pending, active, completed, cancelled, disputed }
@@ -172,25 +172,26 @@ class FitPointsRecord {
   }
 
   Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'lifetimePoints': lifetimePoints,
-        'currentBalance': currentBalance,
-        'currentTier': currentTier.name,
-        'streakDays': streakDays,
-        'momentumScore': momentumScore,
-        'lastActiveDate': lastActiveDate.toIso8601String(),
-        'dailyEarnings': dailyEarnings,
-        'isGuest': isGuest,
-      };
+    'userId': userId,
+    'lifetimePoints': lifetimePoints,
+    'currentBalance': currentBalance,
+    'currentTier': currentTier.name,
+    'streakDays': streakDays,
+    'momentumScore': momentumScore,
+    'lastActiveDate': lastActiveDate.toIso8601String(),
+    'dailyEarnings': dailyEarnings,
+    'isGuest': isGuest,
+  };
 
   factory FitPointsRecord.fromJson(Map<String, dynamic> json) {
     try {
       return FitPointsRecord(
         userId: json['userId'] as String? ?? '',
-        lifetimePoints: (json['lifetimePoints'] as num? ??
-                json['currentBalance'] as num? ??
-                0.0)
-            .toDouble(),
+        lifetimePoints:
+            (json['lifetimePoints'] as num? ??
+                    json['currentBalance'] as num? ??
+                    0.0)
+                .toDouble(),
         currentBalance: (json['currentBalance'] as num? ?? 0.0).toDouble(),
         currentTier: json['currentTier'] != null
             ? StreakTier.values.byName(json['currentTier'] as String)
@@ -217,16 +218,16 @@ class FitPointsRecord {
   }
 
   factory FitPointsRecord.newGuest(String guestId) => FitPointsRecord(
-        userId: guestId,
-        lifetimePoints: 0,
-        currentBalance: 0,
-        currentTier: StreakTier.lightDumbbell,
-        streakDays: 0,
-        momentumScore: 0,
-        lastActiveDate: DateTime.now(),
-        dailyEarnings: {},
-        isGuest: true,
-      );
+    userId: guestId,
+    lifetimePoints: 0,
+    currentBalance: 0,
+    currentTier: StreakTier.lightDumbbell,
+    streakDays: 0,
+    momentumScore: 0,
+    lastActiveDate: DateTime.now(),
+    dailyEarnings: {},
+    isGuest: true,
+  );
 }
 
 @immutable
@@ -254,16 +255,16 @@ class FitPointTransaction {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'userId': userId,
-        'action': action.name,
-        'basePoints': basePoints,
-        'streakMultiplier': streakMultiplier,
-        'qualityModifier': qualityModifier,
-        'finalPoints': finalPoints,
-        'timestamp': timestamp.toIso8601String(),
-        'metadata': metadata,
-      };
+    'id': id,
+    'userId': userId,
+    'action': action.name,
+    'basePoints': basePoints,
+    'streakMultiplier': streakMultiplier,
+    'qualityModifier': qualityModifier,
+    'finalPoints': finalPoints,
+    'timestamp': timestamp.toIso8601String(),
+    'metadata': metadata,
+  };
 
   factory FitPointTransaction.fromJson(Map<String, dynamic> json) =>
       FitPointTransaction(
@@ -304,28 +305,28 @@ class MealLogEntry {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'userId': userId,
-        'mealName': mealName,
-        'ingredients': ingredients,
-        'calories': calories,
-        'proteinGrams': proteinGrams,
-        'carbGrams': carbGrams,
-        'fatGrams': fatGrams,
-        'loggedAt': loggedAt.toIso8601String(),
-      };
+    'id': id,
+    'userId': userId,
+    'mealName': mealName,
+    'ingredients': ingredients,
+    'calories': calories,
+    'proteinGrams': proteinGrams,
+    'carbGrams': carbGrams,
+    'fatGrams': fatGrams,
+    'loggedAt': loggedAt.toIso8601String(),
+  };
 
   factory MealLogEntry.fromJson(Map<String, dynamic> json) => MealLogEntry(
-        id: json['id'] as String,
-        userId: json['userId'] as String,
-        mealName: json['mealName'] as String,
-        ingredients: List<String>.from(json['ingredients'] as List),
-        calories: (json['calories'] as num).toDouble(),
-        proteinGrams: (json['proteinGrams'] as num).toDouble(),
-        carbGrams: (json['carbGrams'] as num).toDouble(),
-        fatGrams: (json['fatGrams'] as num).toDouble(),
-        loggedAt: DateTime.parse(json['loggedAt'] as String),
-      );
+    id: json['id'] as String,
+    userId: json['userId'] as String,
+    mealName: json['mealName'] as String,
+    ingredients: List<String>.from(json['ingredients'] as List),
+    calories: (json['calories'] as num).toDouble(),
+    proteinGrams: (json['proteinGrams'] as num).toDouble(),
+    carbGrams: (json['carbGrams'] as num).toDouble(),
+    fatGrams: (json['fatGrams'] as num).toDouble(),
+    loggedAt: DateTime.parse(json['loggedAt'] as String),
+  );
 }
 
 @immutable
@@ -349,14 +350,14 @@ class ConsistencyMetrics {
   });
 
   Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'adherenceScore': adherenceScore,
-        'loggingQualityScore': loggingQualityScore,
-        'goalCompletionRate': goalCompletionRate,
-        'activeDayFrequency': activeDayFrequency,
-        'consecutiveQualityDays': consecutiveQualityDays,
-        'calculatedAt': calculatedAt.toIso8601String(),
-      };
+    'userId': userId,
+    'adherenceScore': adherenceScore,
+    'loggingQualityScore': loggingQualityScore,
+    'goalCompletionRate': goalCompletionRate,
+    'activeDayFrequency': activeDayFrequency,
+    'consecutiveQualityDays': consecutiveQualityDays,
+    'calculatedAt': calculatedAt.toIso8601String(),
+  };
 }
 
 @immutable
@@ -390,19 +391,19 @@ class Challenge {
   });
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'type': type.name,
-        'status': status.name,
-        'participantIds': participantIds,
-        'stakes': stakes,
-        'bonusPool': bonusPool,
-        'createdAt': createdAt.toIso8601String(),
-        'startsAt': startsAt.toIso8601String(),
-        'endsAt': endsAt.toIso8601String(),
-        'goalConfig': goalConfig,
-        'progress': progress.map((k, v) => MapEntry(k, v.toJson())),
-        'winnerId': winnerId,
-      };
+    'id': id,
+    'type': type.name,
+    'status': status.name,
+    'participantIds': participantIds,
+    'stakes': stakes,
+    'bonusPool': bonusPool,
+    'createdAt': createdAt.toIso8601String(),
+    'startsAt': startsAt.toIso8601String(),
+    'endsAt': endsAt.toIso8601String(),
+    'goalConfig': goalConfig,
+    'progress': progress.map((k, v) => MapEntry(k, v.toJson())),
+    'winnerId': winnerId,
+  };
 }
 
 @immutable
@@ -430,13 +431,13 @@ class ChallengeProgress {
       (adherenceScore * 0.2);
 
   Map<String, dynamic> toJson() => {
-        'userId': userId,
-        'completionPercent': completionPercent,
-        'consistencyScore': consistencyScore,
-        'adherenceScore': adherenceScore,
-        'activeDays': activeDays.map((d) => d.toIso8601String()).toList(),
-        'goalSpecificData': goalSpecificData,
-      };
+    'userId': userId,
+    'completionPercent': completionPercent,
+    'consistencyScore': consistencyScore,
+    'adherenceScore': adherenceScore,
+    'activeDays': activeDays.map((d) => d.toIso8601String()).toList(),
+    'goalSpecificData': goalSpecificData,
+  };
 }
 
 @immutable
@@ -494,24 +495,26 @@ class ConsistencySnapshot {
   StreakLevel get streakLevel => consistencyTier;
 
   static ConsistencySnapshot empty() => ConsistencySnapshot(
-        currentStreak: 0,
-        longestStreak: 0,
-        weeklyActiveDays: 0,
-        monthlyActiveDays: 0,
-        momentum: 0,
-        fitPoints: 0,
-        lifetimePoints: 0,
-        consistencyTier: StreakTier.lightDumbbell,
-        hitDays: {},
-        lastCalculated: DateTime.now(),
-      );
+    currentStreak: 0,
+    longestStreak: 0,
+    weeklyActiveDays: 0,
+    monthlyActiveDays: 0,
+    momentum: 0,
+    fitPoints: 0,
+    lifetimePoints: 0,
+    consistencyTier: StreakTier.lightDumbbell,
+    hitDays: {},
+    lastCalculated: DateTime.now(),
+  );
 
   double get levelProgress {
     final thresholds = [0, 8, 22, 45, 90, 150, 180];
     final idx = consistencyTier.index;
     final current = currentStreak;
     final start = thresholds[idx];
-    final end = idx + 1 < thresholds.length ? thresholds[idx + 1] : thresholds.last;
+    final end = idx + 1 < thresholds.length
+        ? thresholds[idx + 1]
+        : thresholds.last;
     return ((current - start) / (end - start)).clamp(0.0, 1.0);
   }
 
@@ -585,9 +588,14 @@ class ActiveDayEvaluator {
       }).toList();
 
       if (meaningfulLogs.length >= _minLogsForActivity) {
-        final totalCalories = meaningfulLogs.fold<double>(0, (s, item) => s + item.calories);
+        final totalCalories = meaningfulLogs.fold<double>(
+          0,
+          (s, item) => s + item.calories,
+        );
         if (totalCalories >= _minDailyCalories) {
-          debugPrint('[ActiveDayEvaluator] Active via nutrition: ${meaningfulLogs.length} logs, ${totalCalories.toStringAsFixed(0)} cals');
+          debugPrint(
+            '[ActiveDayEvaluator] Active via nutrition: ${meaningfulLogs.length} logs, ${totalCalories.toStringAsFixed(0)} cals',
+          );
           return true;
         }
       }
@@ -596,7 +604,9 @@ class ActiveDayEvaluator {
     // Path 2: Meaningful workout activity
     if (workouts != null && workouts.isNotEmpty) {
       if (_hasCompletedWorkout(workouts)) {
-        debugPrint('[ActiveDayEvaluator] Active via workout: ${workouts.length} sessions');
+        debugPrint(
+          '[ActiveDayEvaluator] Active via workout: ${workouts.length} sessions',
+        );
         return true;
       }
     }

@@ -16,7 +16,7 @@ class MacroDetailScreen extends ConsumerWidget {
     final mealsAsync = ref.watch(nutritionProvider);
 
     if (profile == null) {
-      return const Scaffold(backgroundColor: AppTheme.background);
+      return Scaffold(backgroundColor: AppTheme.background);
     }
 
     final cals = singleFood != null
@@ -126,7 +126,7 @@ class MacroDetailScreen extends ConsumerWidget {
                     // ── Micros section ───────────────────
                     const _SectionHeader('Micronutrients (Estimated)'),
                     const SizedBox(height: 4),
-                    const Text(
+                    Text(
                       'Based on your logged meals. Values are estimates.',
                       style: TextStyle(
                         color: AppTheme.textSecondary,
@@ -204,7 +204,7 @@ class MacroDetailScreen extends ConsumerWidget {
 
                       mealsAsync.when(
                         data: (meals) => meals.isEmpty
-                            ? const Text(
+                            ? Text(
                                 'No meals logged yet.',
                                 style: TextStyle(color: AppTheme.textSecondary),
                               )
@@ -213,9 +213,8 @@ class MacroDetailScreen extends ConsumerWidget {
                                     .map((m) => _LoggedMealRow(food: m))
                                     .toList(),
                               ),
-                        loading: () => const CircularProgressIndicator(
-                          color: AppTheme.accent,
-                        ),
+                        loading: () =>
+                            CircularProgressIndicator(color: AppTheme.accent),
                         error: (_, __) => const SizedBox(),
                       ),
                     ],
@@ -290,7 +289,7 @@ class _MacroBar extends StatelessWidget {
           const SizedBox(height: 4),
           Text(
             note,
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
           ),
           const SizedBox(height: 10),
           ClipRRect(
@@ -305,7 +304,7 @@ class _MacroBar extends StatelessWidget {
           const SizedBox(height: 6),
           Text(
             '${(pct * 100).round()}% of daily goal',
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
           ),
         ],
       ),
@@ -347,10 +346,7 @@ class _MicroRow extends StatelessWidget {
               const SizedBox(width: 8),
               Text(
                 'goal: $goal',
-                style: const TextStyle(
-                  color: AppTheme.textSecondary,
-                  fontSize: 11,
-                ),
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
               ),
             ],
           ),
@@ -449,10 +445,7 @@ class _PieSegment extends StatelessWidget {
             ),
             Text(
               label,
-              style: const TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 11,
-              ),
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
             ),
           ],
         ),
@@ -497,17 +490,14 @@ class _LoggedMealRow extends StatelessWidget {
                 Text(
                   '${food.consumedAmount.toStringAsFixed(food.consumedAmount % 1 == 0 ? 0 : 1)} ${food.consumedUnit}  •  '
                   '${food.protein}g P  •  ${food.carbs}g C  •  ${food.fats}g F',
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
-                    fontSize: 11,
-                  ),
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                 ),
               ],
             ),
           ),
           Text(
             '${food.calories} kcal',
-            style: const TextStyle(
+            style: TextStyle(
               color: AppTheme.accent,
               fontWeight: FontWeight.bold,
               fontSize: 13,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:fitme/core/theme/app_theme.dart';
+import 'package:fitme/core/theme/managers/theme_manager.dart';
 import 'package:fitme/features/auth/providers/auth_provider.dart';
 import 'package:fitme/features/backup/services/backup_service.dart';
 
@@ -33,9 +33,10 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final isLoggedIn = ref.watch(authNotifierProvider).value != null;
+    final theme = ThemeManager.instance.activeTheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: theme.colors.backgroundPrimary,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,16 +47,16 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(
+                    icon: Icon(
                       Icons.arrow_back_rounded,
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const Text(
+                  Text(
                     'Cloud Backup',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colors.textPrimary,
                       fontWeight: FontWeight.bold,
                       fontSize: 18,
                     ),
@@ -76,25 +77,25 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.accent.withOpacity(0.12),
+                          color: theme.colors.accent.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(14),
                           border: Border.all(
-                            color: AppTheme.accent.withOpacity(0.3),
+                            color: theme.colors.accent.withOpacity(0.3),
                           ),
                         ),
-                        child: const Row(
+                        child: Row(
                           children: [
                             Icon(
                               Icons.info_outline_rounded,
-                              color: AppTheme.accent,
+                              color: theme.colors.accent,
                               size: 20,
                             ),
-                            SizedBox(width: 12),
+                            const SizedBox(width: 12),
                             Expanded(
                               child: Text(
                                 'Sign in to enable cloud backup & multi-device sync.',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: theme.colors.textPrimary,
                                   fontSize: 13,
                                 ),
                               ),
@@ -119,14 +120,12 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                       const SizedBox(height: 40),
                     ] else ...[
                       // ── Status card ──────────────────────
-                      const _GroupLabel('Status'),
+                      _GroupLabel('Status', theme: theme),
                       const SizedBox(height: 10),
                       _status != null
-                          ? _StatusCard(status: _status!)
-                          : const Center(
-                              child: CircularProgressIndicator(
-                                color: AppTheme.accent,
-                              ),
+                          ? _StatusCard(status: _status!, theme: theme)
+                          : CircularProgressIndicator(
+                              color: theme.colors.accent,
                             ),
 
                       const SizedBox(height: 24),
@@ -137,16 +136,16 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                           width: double.infinity,
                           padding: const EdgeInsets.all(14),
                           decoration: BoxDecoration(
-                            color: AppTheme.success.withOpacity(0.12),
+                            color: theme.colors.success.withOpacity(0.12),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: AppTheme.success.withOpacity(0.3),
+                              color: theme.colors.success.withOpacity(0.3),
                             ),
                           ),
                           child: Text(
                             _message!,
-                            style: const TextStyle(
-                              color: AppTheme.success,
+                            style: TextStyle(
+                              color: theme.colors.success,
                               fontSize: 13,
                             ),
                           ),
@@ -155,7 +154,7 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                       ],
 
                       // ── Actions ──────────────────────────
-                      const _GroupLabel('Actions'),
+                      _GroupLabel('Actions', theme: theme),
                       const SizedBox(height: 10),
 
                       // Backup button
@@ -164,12 +163,12 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                         child: ElevatedButton.icon(
                           onPressed: _backing ? null : _doBackup,
                           icon: _backing
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppTheme.background,
+                                    color: theme.colors.backgroundPrimary,
                                   ),
                                 )
                               : const Icon(Icons.cloud_upload_outlined),
@@ -190,12 +189,12 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                         child: OutlinedButton.icon(
                           onPressed: _restoring ? null : _doRestore,
                           icon: _restoring
-                              ? const SizedBox(
+                              ? SizedBox(
                                   width: 16,
                                   height: 16,
                                   child: CircularProgressIndicator(
                                     strokeWidth: 2,
-                                    color: AppTheme.accent,
+                                    color: theme.colors.accent,
                                   ),
                                 )
                               : const Icon(Icons.cloud_download_outlined),
@@ -208,7 +207,7 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                       const SizedBox(height: 24),
 
                       // ── Danger zone ──────────────────────
-                      const _GroupLabel('Danger Zone'),
+                      _GroupLabel('Danger Zone', theme: theme),
                       const SizedBox(height: 10),
 
                       OutlinedButton.icon(
@@ -216,9 +215,9 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                         icon: const Icon(Icons.delete_outline_rounded),
                         label: const Text('Delete Backup'),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppTheme.error,
+                          foregroundColor: theme.colors.error,
                           side: BorderSide(
-                            color: AppTheme.error.withOpacity(0.3),
+                            color: theme.colors.error.withOpacity(0.3),
                           ),
                         ),
                       ),
@@ -226,12 +225,12 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                       const SizedBox(height: 24),
 
                       // ── Info ─────────────────────────────
-                      const _GroupLabel('About'),
+                      _GroupLabel('About', theme: theme),
                       const SizedBox(height: 10),
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: AppTheme.surface,
+                          color: theme.colors.surfacePrimary,
                           borderRadius: BorderRadius.circular(14),
                         ),
                         child: Column(
@@ -241,18 +240,20 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
                               'Backed up',
                               _status?.logsCount.toString() ?? '—',
                               'meal logs',
+                              theme: theme,
                             ),
                             const SizedBox(height: 10),
                             _InfoRow(
                               'Last backup',
                               _status?.lastBackupText ?? '—',
                               '',
+                              theme: theme,
                             ),
                             const SizedBox(height: 10),
-                            const Text(
+                            Text(
                               'Backup includes: meal logs, streak data, and profile settings. Favorites sync locally on your device.',
                               style: TextStyle(
-                                color: AppTheme.textSecondary,
+                                color: theme.colors.textSecondary,
                                 fontSize: 12,
                               ),
                             ),
@@ -289,17 +290,18 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
   }
 
   Future<void> _doRestore() async {
+    final theme = ThemeManager.instance.activeTheme;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        title: const Text(
+        backgroundColor: theme.colors.surfacePrimary,
+        title: Text(
           'Restore from Backup?',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: theme.colors.textPrimary),
         ),
-        content: const Text(
+        content: Text(
           'This will merge backed-up meals into your current device.',
-          style: TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: theme.colors.textSecondary),
         ),
         actions: [
           OutlinedButton(
@@ -333,17 +335,18 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
   }
 
   Future<void> _doDelete() async {
+    final theme = ThemeManager.instance.activeTheme;
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        backgroundColor: AppTheme.surface,
-        title: const Text(
+        backgroundColor: theme.colors.surfacePrimary,
+        title: Text(
           'Delete Backup?',
-          style: TextStyle(color: AppTheme.error),
+          style: TextStyle(color: theme.colors.error),
         ),
-        content: const Text(
+        content: Text(
           'This permanently deletes your cloud backup. You can still backup again anytime.',
-          style: TextStyle(color: AppTheme.textSecondary),
+          style: TextStyle(color: theme.colors.textSecondary),
         ),
         actions: [
           OutlinedButton(
@@ -351,7 +354,9 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
             child: const Text('Cancel'),
           ),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: theme.colors.error,
+            ),
             onPressed: () => Navigator.pop(ctx, true),
             child: const Text('Delete'),
           ),
@@ -383,17 +388,21 @@ class _BackupSettingsScreenState extends ConsumerState<BackupSettingsScreen> {
 // ── Status card ───────────────────────────────────────
 class _StatusCard extends StatelessWidget {
   final BackupStatus status;
-  const _StatusCard({required this.status});
+  final dynamic theme;
+  const _StatusCard({required this.status, required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppTheme.surface,
+        color: theme.colors.surfacePrimary,
         borderRadius: BorderRadius.circular(16),
         border: status.hasBackup
-            ? Border.all(color: AppTheme.success.withOpacity(0.4), width: 1.5)
+            ? Border.all(
+                color: theme.colors.success.withOpacity(0.4),
+                width: 1.5,
+              )
             : null,
       ),
       child: Row(
@@ -402,7 +411,9 @@ class _StatusCard extends StatelessWidget {
             status.hasBackup
                 ? Icons.check_circle_rounded
                 : Icons.cloud_off_rounded,
-            color: status.hasBackup ? AppTheme.success : AppTheme.textSecondary,
+            color: status.hasBackup
+                ? theme.colors.success
+                : theme.colors.textSecondary,
             size: 24,
           ),
           const SizedBox(width: 12),
@@ -412,16 +423,16 @@ class _StatusCard extends StatelessWidget {
               children: [
                 Text(
                   status.hasBackup ? 'Backup exists' : 'No backup yet',
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: theme.colors.textPrimary,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
                   status.lastBackupText,
-                  style: const TextStyle(
-                    color: AppTheme.textSecondary,
+                  style: TextStyle(
+                    color: theme.colors.textSecondary,
                     fontSize: 12,
                   ),
                 ),
@@ -439,8 +450,9 @@ class _InfoRow extends StatelessWidget {
   final String label;
   final String value;
   final String unit;
+  final dynamic theme;
 
-  const _InfoRow(this.label, this.value, this.unit);
+  const _InfoRow(this.label, this.value, this.unit, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
@@ -449,12 +461,12 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          style: TextStyle(color: theme.colors.textSecondary, fontSize: 12),
         ),
         Text(
           '$value $unit',
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: theme.colors.textPrimary,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -466,14 +478,15 @@ class _InfoRow extends StatelessWidget {
 // ── Group label ───────────────────────────────────────
 class _GroupLabel extends StatelessWidget {
   final String label;
-  const _GroupLabel(this.label);
+  final dynamic theme;
+  const _GroupLabel(this.label, {required this.theme});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: const TextStyle(
-        color: AppTheme.textSecondary,
+      style: TextStyle(
+        color: theme.colors.textSecondary,
         fontSize: 11,
         fontWeight: FontWeight.bold,
         letterSpacing: 1.2,

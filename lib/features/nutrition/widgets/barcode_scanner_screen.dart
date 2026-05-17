@@ -179,7 +179,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                       ),
                     ),
                     const SizedBox(height: 6),
-                    const Text(
+                    Text(
                       'Looking up product details',
                       style: TextStyle(
                         color: AppTheme.textSecondary,
@@ -237,7 +237,7 @@ class _BarcodeScannerScreenState extends State<BarcodeScannerScreen> {
                             ),
                           ),
                           const SizedBox(height: 6),
-                          const Text(
+                          Text(
                             "This product isn't in our database yet.\nYou can search by name or add it manually.",
                             textAlign: TextAlign.center,
                             style: TextStyle(

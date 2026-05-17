@@ -204,9 +204,9 @@ class _GoalPaceSliderState extends State<GoalPaceSlider> {
             style: const TextStyle(color: Colors.white),
             decoration: InputDecoration(
               labelText: 'Target Calories (kcal/day)',
-              labelStyle: const TextStyle(color: AppTheme.textSecondary),
+              labelStyle: TextStyle(color: AppTheme.textSecondary),
               suffixText: 'kcal',
-              suffixStyle: const TextStyle(color: AppTheme.textSecondary),
+              suffixStyle: TextStyle(color: AppTheme.textSecondary),
               filled: true,
               fillColor: AppTheme.surface,
               border: OutlineInputBorder(
@@ -215,10 +215,7 @@ class _GoalPaceSliderState extends State<GoalPaceSlider> {
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(
-                  color: AppTheme.accent,
-                  width: 1.5,
-                ),
+                borderSide: BorderSide(color: AppTheme.accent, width: 1.5),
               ),
             ),
             onChanged: (v) {
@@ -229,7 +226,7 @@ class _GoalPaceSliderState extends State<GoalPaceSlider> {
           const SizedBox(height: 10),
           Text(
             'Auto macro split will be applied.',
-            style: const TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
           ),
         ],
 
@@ -250,7 +247,7 @@ class _GoalPaceSliderState extends State<GoalPaceSlider> {
                 _manualMode
                     ? 'Use pace selector instead'
                     : 'Set calories manually',
-                style: const TextStyle(
+                style: TextStyle(
                   color: AppTheme.accent,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
@@ -283,7 +280,7 @@ class _ProjRow extends StatelessWidget {
       const SizedBox(width: 8),
       Text(
         label,
-        style: const TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+        style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
       ),
       const Spacer(),
       Text(
